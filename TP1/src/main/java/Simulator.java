@@ -14,19 +14,27 @@ public class Simulator {
      */
 
     public static void main(String[] args) throws FileNotFoundException {
-        long start = System.currentTimeMillis();
         double L = 5, rc = 1, r = 0.25;
-        int M = 9, N = 200;
+        int M = 4, N = 200;
         int i = 0;
 
+        // TODO: Print coordinates with code on grid
         PrintWriter outputWriter = new PrintWriter("particle-coordinates.txt");
+
         Grid grid = new Grid(L, M, rc, true, N);
         grid.fillCells(L/M, r);
 
         try {
             outputWriter = new PrintWriter("cell-neighbours.txt");
 
-            for(Map.Entry<Integer, List<Integer>> particle : grid.getNeighbours().entrySet()) {
+            long start = System.currentTimeMillis();
+            Map<Integer, List<Integer>> particleNeighbours = grid.getNeighbours();
+            long end = System.currentTimeMillis();
+            System.out.println(end - start);
+
+            grid.writeParticleCoordinates();
+
+            for(Map.Entry<Integer, List<Integer>> particle : particleNeighbours.entrySet()) {
                 outputWriter.print(particle.getKey() + "\t");
                 PrintWriter finalOutputWriter = outputWriter;
                 particle.getValue().forEach(neighbour -> finalOutputWriter.print(neighbour + " "));
@@ -50,9 +58,6 @@ public class Simulator {
         } catch (FileNotFoundException e) {
             System.out.println("ERROR");
         }
-
-        long end = System.currentTimeMillis();
-        System.out.println(end - start);
     }
 
 }

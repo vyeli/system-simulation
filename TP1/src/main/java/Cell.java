@@ -4,21 +4,10 @@ import java.util.List;
 public class Cell {
 
     private List<Particle> particles;
-
-    private final boolean isEmpty = false;
-    private boolean isChecked;
+    private boolean isChecked = false;
 
     public Cell() {
         this.particles = new ArrayList<>();
-        this.isChecked = false;
-    }
-
-    public Cell(boolean isEmpty) {
-        isEmpty = true;
-    }
-
-    public boolean isEmpty() {
-        return isEmpty;
     }
 
     public void addParticle(Particle particle) {

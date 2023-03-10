@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Grid {
 
-    private Map<Integer, Cell> cells = new HashMap<>();
+    private Cell[][] cells;
     private final double L;
     private final int M;
     private final double RC;
@@ -18,9 +18,10 @@ public class Grid {
         this.periodic = periodic;
         RC = rc;
         N = n;
+        this.cells = new Cell[m][m];
     }
 
-    public Map<Integer, Cell> getCells() {
+    public Cell[][] getCells() {
         return cells;
     }
 
@@ -51,16 +52,49 @@ public class Grid {
     public Map<Integer, List<Integer>> getNeighbours() {
         Map<Integer, List<Integer>> neighbours = new HashMap<>();
 
+        int mod = M;
+        if(!periodic)
+            mod = 1;
+
+        for (int row=0 ; row < M ; row++) {
+            for (int col=0 ; col < M ; col++) {
+                if (cells[row][col] != null) {
+                    for (int i=-1 ; i <= 1 ; i++) {
+                        for (int j=-1 ; j <= 1 ; j++) {
+                            Cell neighbour = cells[(row + i + M) % mod][(col + j + M) % mod];
+                            System.out.println("ROW=" + (row + i + M) % mod + ", COL=" + (col + j + M) % mod);
+                            if (neighbour != null) {                 // Algorithm has not passed cell yet
+                                for (Particle particle : cells[row][col].getParticles()) {
+                                    for (Particle maybeNeighbour : neighbour.getParticles()) {
+                                        if (particle != maybeNeighbour &&
+                                                (particle.isNeighbour(maybeNeighbour.getId()) || particleIsDistanceNeighbour(particle, maybeNeighbour))) {
+                                            neighbours.putIfAbsent(particle.getId(), new ArrayList<>());
+                                            neighbours.get(particle.getId()).add(maybeNeighbour.getId());
+                                            maybeNeighbour.addNeighbour(particle.getId());
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    cells[row][col].checkCell();
+                }
+            }
+        }
+
+        /*
         for(Map.Entry<Integer, Cell> cellData : cells.entrySet()) {
             if(cellData.getValue() != null) {
                 for (int i = -M; i <= M; i += M) {             // Select row
                     for (int j = -1; j <= 1; j++) {             // Select column
-                        int neighbourId = (cellData.getKey() + M + j) % (M * M);
+                        int neighbourId = (cellData.getKey() + i + j + M*M) % (M * M);
                         Cell neighbourCell = cells.get(neighbourId);
+                        System.out.println("VEO LA CELL " + cellData.getKey() + " CON SU VECINA " + neighbourId + " SI I=" + i + ", J=" + j);
                         if (neighbourCell != null && !neighbourCell.isChecked()) {                 // Algorithm has not passed cell yet
                             for (Particle particle : cellData.getValue().getParticles()) {
-                                for (Particle maybeNeighbour : cells.get(neighbourId).getParticles()) {
-                                    if (particle.isNeighbour(maybeNeighbour.getId()) || particleIsNeighbor(particle, maybeNeighbour)) {
+                                for (Particle maybeNeighbour : neighbourCell.getParticles()) {
+                                    if (particle != maybeNeighbour &&
+                                            (particle.isNeighbour(maybeNeighbour.getId()) || particleIsDistanceNeighbour(particle, maybeNeighbour))) {
                                         neighbours.putIfAbsent(particle.getId(), new ArrayList<>());
                                         neighbours.get(particle.getId()).add(maybeNeighbour.getId());
                                         maybeNeighbour.addNeighbour(particle.getId());
@@ -74,6 +108,8 @@ public class Grid {
             }
         }
 
+         */
+
         return neighbours;
     }
 
@@ -83,7 +119,7 @@ public class Grid {
      * @param p2
      * @return boolean true if two particles are neighbor, false if not
      */
-    private boolean particleIsNeighbor(Particle p1, Particle p2) {
+    private boolean particleIsDistanceNeighbour(Particle p1, Particle p2) {
         return (Point.distance(p1.getPoint(), p2.getPoint()) - p1.getRadius() - p2.getRadius()) < RC;
     }
 
@@ -96,9 +132,14 @@ public class Grid {
         while (i < N) {
             double y = yPoints.next();
             double x = xPoints.next();
-            Integer cellNumber = ((int) (y / cellWidth)) * M + ((int) (x / cellWidth));
-            cells.putIfAbsent(cellNumber, new Cell());
-            cells.get(cellNumber).addParticle(new Particle(i, new Point(x, y), r));
+
+            int row = (int) (y / cellWidth);
+            int col = (int) (x / cellWidth);
+
+            if(cells[row][col] == null)
+                cells[row][col] = new Cell();
+            cells[row][col].addParticle(new Particle(i, new Point(x, y), r));
+
             // TODO: Increment only when particle is valid
             i++;
         }
@@ -107,11 +148,19 @@ public class Grid {
     public void writeParticleCoordinates() {
         try {
             PrintWriter outputWriter = new PrintWriter("particle-coordinates.txt");
-
+            for(int i = 0; i < M; i++) {
+                for(int j = 0; j< M; j++) {
+                    if (cells[i][j] != null) {
+                        for (Particle p : cells[i][j].getParticles()) {
+                            outputWriter.println(p.getId() + " " + p.getPoint().getX() + " " + p.getPoint().getY());
+                        }
+                    }
+                }
+            }
+            outputWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
 }
