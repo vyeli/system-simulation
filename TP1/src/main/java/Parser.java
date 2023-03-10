@@ -8,8 +8,7 @@ import java.util.List;
  * class parser to read static and dynamic input file that describe the problem
  */
 public class Parser {
-    int L, M, N;
-    double rc;
+    int L, N;
 
     List<Particle> particles;
     public Parser(String staticFileLocation) throws FileNotFoundException, IOException {
@@ -25,20 +24,16 @@ public class Parser {
         }
 
         /*
-         * Read static file (L M N rc)
-         * L: length of the square
-         * M: number of cells per side
+         * Read static file (N L)
          * N: number of particles
-         * rc: radius of the interaction
+         * L: length of the square
          *
          * Read N lines with the radius of each particle
          *
          */
         try {
-            L = Integer.parseInt(staticFile.readLine());
-            M = Integer.parseInt(staticFile.readLine());
             N = Integer.parseInt(staticFile.readLine());
-            rc = Double.parseDouble(staticFile.readLine());
+            L = Integer.parseInt(staticFile.readLine());
 
             for (int i = 0; i < N; i++) {
                 String[] line = staticFile.readLine().split(" ");

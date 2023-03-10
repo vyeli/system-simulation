@@ -1,30 +1,58 @@
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 
 public class Simulator {
 
-    public static void main(String[] args) {
-        double L = 20, rc = 1, r = 0.25;
-        int M = 15, N = 200;
+    /*
+     * Read static file (L M N rc)
+     * L: length of the square
+     * M: number of cells per side
+     * N: number of particles
+     * rc: radius of the interaction
+     *
+     */
 
-        // TODO: Throw error when L/M <= rc
-        double cellWidth = L / M;
-        
-        Random coordinateGenerator = new Random();
+    public static void main(String[] args) throws FileNotFoundException {
+        long start = System.currentTimeMillis();
+        double L = 5, rc = 1, r = 0.25;
+        int M = 9, N = 200;
+        int i = 0;
 
-        // TODO: Upper bound is exclusive, make inclusive
-        Iterator<Double> xPoints = coordinateGenerator.doubles(N, 0, L).iterator();
-        Iterator<Double> yPoints = coordinateGenerator.doubles(N, 0, L).iterator();
+        PrintWriter outputWriter = new PrintWriter("particle-coordinates.txt");
+        Grid grid = new Grid(L, M, rc, true, N);
+        grid.fillCells(L/M, r);
 
-        Map<Integer, List<Particle>> cellMap = new HashMap<>();
-        for(int i=0 ; i < N ; i++) {
-            double y = yPoints.next();
-            double x = xPoints.next();
-            Integer cellNumber = ((int)(y / cellWidth)) * M + ((int)(x / cellWidth));
-            cellMap.putIfAbsent(cellNumber, new ArrayList<>());
-            //cellMap.get(cellNumber).add(new Particle(new Point(x, y), 0));
-            if(i % N == 50)
-                System.out.println("METO LA PARTÍCULA " + i + " EN LA CELDA " + cellNumber + " CON COORDENADAS\n -X: " + x + "\n -Y: " + y);
+        try {
+            outputWriter = new PrintWriter("cell-neighbours.txt");
+
+            for(Map.Entry<Integer, List<Integer>> particle : grid.getNeighbours().entrySet()) {
+                outputWriter.print(particle.getKey() + "\t");
+                PrintWriter finalOutputWriter = outputWriter;
+                particle.getValue().forEach(neighbour -> finalOutputWriter.print(neighbour + " "));
+                outputWriter.println();
+            }
+
+            // Getting neighbours
+            /*
+            for(Integer cellId : cellMap.keySet()) {            // TODO: Change to entry set
+                List<Particle> cellParticles = cellMap.get(cellId).getParticles();
+                for(Particle p : cellParticles) {
+                    outputWriter.print(p.getId() + "\t");
+                    PrintWriter finalOutputWriter = outputWriter;
+                    grid.getNeighbours(cellId, p).forEach((neighbour) -> finalOutputWriter.print(neighbour.getId() + " "));
+                    outputWriter.println();
+                }
+            }
+            */
+
+            outputWriter.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("ERROR");
         }
+
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
     }
 
 }

@@ -1,9 +1,11 @@
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 public class Particle {
 
     private int id;
+    private Set<Integer> neighbours;
 
     private Point point;
     private double radius;
@@ -12,6 +14,7 @@ public class Particle {
         this.id = id;
         this.point = point;
         this.radius = radius;
+        this.neighbours = new HashSet<>();
     }
 
     public int getId() {
@@ -37,4 +40,28 @@ public class Particle {
     public void setRadius(double radius) {
         this.radius = radius;
     }
+
+    public void addNeighbour(int particleId) {
+        neighbours.add(particleId);
+    }
+
+    public boolean isNeighbour(int maybeNeighbourId) {
+        return neighbours.contains(maybeNeighbourId);
+    }
+
+    public Set<Integer> getNeighboursIds() {
+        return neighbours;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if(obj == null || obj.getClass() != getClass())
+            return false;
+
+        Particle p = (Particle) obj;
+        return p.id == id;
+    }
+
 }
