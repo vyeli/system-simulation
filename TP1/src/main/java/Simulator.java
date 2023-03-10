@@ -20,8 +20,8 @@ public class Simulator {
             double y = yPoints.next();
             double x = xPoints.next();
             Integer cellNumber = ((int)(y / cellWidth)) * M + ((int)(x / cellWidth));
-            cellMap.putIfAbsent(cellNumber, new ArrayList());
-            cellMap.get(cellNumber).add(new Particle(x, y, 0));
+            cellMap.putIfAbsent(cellNumber, new ArrayList<>());
+            //cellMap.get(cellNumber).add(new Particle(new Point(x, y), 0));
             if(i % N == 50)
                 System.out.println("METO LA PARTÍCULA " + i + " EN LA CELDA " + cellNumber + " CON COORDENADAS\n -X: " + x + "\n -Y: " + y);
         }

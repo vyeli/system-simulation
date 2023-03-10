@@ -2,30 +2,32 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Particle {
-    double x;
-    double y;
-    double radius;
 
-    public Particle(double x, double y, double radius) {
-        this.x = x;
-        this.y = y;
+    private int id;
+
+    private Point point;
+    private double radius;
+
+    public Particle(int id, Point point, double radius) {
+        this.id = id;
+        this.point = point;
         this.radius = radius;
     }
 
-    public double getX() {
-        return x;
+    public int getId() {
+        return id;
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public double getY() {
-        return y;
+    public Point getPoint() {
+        return point;
     }
 
-    public void setY(double y) {
-        this.y = y;
+    public void setPoint(Point point) {
+        this.point = point;
     }
 
     public double getRadius() {
