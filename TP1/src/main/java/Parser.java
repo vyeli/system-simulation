@@ -47,4 +47,15 @@ public class Parser {
         }
     }
 
+    public int getL() {
+        return L;
+    }
+
+    public int getN() {
+        return N;
+    }
+
+    public List<Particle> getParticles() {
+        return particles;
+    }
 }

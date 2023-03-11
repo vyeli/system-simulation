@@ -111,13 +111,13 @@ public class Grid {
         return (Point.distance(p1Point, p2Point) - p1.getRadius() - p2.getRadius()) < RC;
     }
 
-    public void fillCells(double cellWidth, double r) {
+    public void fillCells(double cellWidth, List<Particle> particles) {
         Random coordinateGenerator = new Random();
         // TODO: Upper bound is exclusive, make inclusive
         Iterator<Double> xPoints = coordinateGenerator.doubles(0, L).iterator();
         Iterator<Double> yPoints = coordinateGenerator.doubles(0, L).iterator();
-        int i = 0;
-        while (i < N) {
+
+        for (Particle p : particles) {
             double y = yPoints.next();
             double x = xPoints.next();
 
@@ -126,10 +126,10 @@ public class Grid {
 
             if(cells[row][col] == null)
                 cells[row][col] = new Cell();
-            cells[row][col].addParticle(new Particle(i, new Point(x, y), r));
+            p.setPoint(new Point(x, y));
+            cells[row][col].addParticle(p);
 
-            // TODO: Increment only when particle is valid
-            i++;
+            // TODO: Add particle without collision
         }
     }
 

@@ -5,7 +5,7 @@ import java.util.Set;
 public class Particle {
 
     private int id;
-    private Set<Integer> neighbours;
+    private final Set<Integer> neighbours;
 
     private Point point;
     private double radius;

@@ -1,4 +1,5 @@
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.Instant;
@@ -6,21 +7,35 @@ import java.util.*;
 
 public class Simulator {
 
-    /*
-     * Read static file (L M N rc)
-     * L: length of the square
-     * M: number of cells per side
-     * N: number of particles
-     * rc: radius of the interaction
+    /**
+     *
+     * @param args
+     * args[0] = staticInput.txt
+     * args[1] = M
+     * args[2] = rc
+     * args[3] = periodic (any other thing will be consider not periodic)
      *
      */
-
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         double L = 20, rc = 1, r = 0.25;
+        String periodic;
         int M = 4, N = 4000;
 
-        Grid grid = new Grid(L, M, rc, false, N);
-        grid.fillCells(L/M, r);
+        if (args.length != 4) {
+            System.out.print("Debe ingresar todos los argumentos");
+            return;
+        }
+
+        Parser parser = new Parser(args[0]);
+        L = parser.getL();
+        N = parser.getN();
+
+        M = Integer.parseInt(args[1]);
+        rc = Double.parseDouble(args[2]);
+        periodic = args[3].toLowerCase(Locale.ROOT);
+
+        Grid grid = new Grid(L, M, rc, periodic.equals("periodic"), N);
+        grid.fillCells(L/M, parser.getParticles());
 
         try {
             final PrintWriter outputWriter = new PrintWriter("cell-neighbours.txt");
