@@ -17,7 +17,7 @@ public class Simulator {
 
     public static void main(String[] args) throws FileNotFoundException {
         double L = 20, rc = 1, r = 0.25;
-        int M = 4, N = 800;
+        int M = 4, N = 50;
 
         Grid grid = new Grid(L, M, rc, true, N);
         grid.fillCells(L/M, r);
