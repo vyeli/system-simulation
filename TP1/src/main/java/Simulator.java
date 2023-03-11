@@ -17,9 +17,9 @@ public class Simulator {
 
     public static void main(String[] args) throws FileNotFoundException {
         double L = 20, rc = 1, r = 0.25;
-        int M = 4, N = 800;
+        int M = 4, N = 4000;
 
-        Grid grid = new Grid(L, M, rc, true, N);
+        Grid grid = new Grid(L, M, rc, false, N);
         grid.fillCells(L/M, r);
 
         try {
@@ -32,7 +32,7 @@ public class Simulator {
 
             grid.writeParticleCoordinates();
 
-            for(Map.Entry<Integer, List<Integer>> particle : particleNeighbours.entrySet()) {
+            for (Map.Entry<Integer, List<Integer>> particle : particleNeighbours.entrySet()) {
                 outputWriter.print(particle.getKey() + "\t");
                 particle.getValue().forEach(neighbour -> outputWriter.print(neighbour + " "));
                 outputWriter.println();

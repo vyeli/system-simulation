@@ -4,7 +4,7 @@ class CellGrid(Scene):
     def construct(self):
         L = 20
         M = 4
-        cell = 128
+        cell = 2478
 
         grid = NumberPlane(
             x_range=(0, L, L/M),
@@ -46,4 +46,4 @@ class CellGrid(Scene):
         self.add(grid, *cells)
         # self.play(Create(grid))
         # for cell in cells:
-        #    self.play(ChangeSpeed(Create(cell), speedinfo={1: 5}))
+        #     self.play(ChangeSpeed(Create(cell), speedinfo={1: 5}))

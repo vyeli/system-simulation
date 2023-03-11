@@ -33,18 +33,6 @@ public class Grid {
         return M;
     }
 
-    /*
-    *   6   7   8
-    *   3   4   5
-    *   0   1   2
-    */
-
-    /*
-    * 0 1 0
-    * 2 3 2
-    * 0 1 0
-    * */
-
     /**
      * For each cell, get the neighbors of each particle inside the cell
      * @return Map<Particle id, List<Neighbours ids>>
@@ -106,16 +94,17 @@ public class Grid {
 
         if (!hasContinuousRows) {
             if (p1Point.getY() > p2Point.getY()) {
-                p1Point.setY(p1Point.getY() - L * M);
+                p1Point.setY(p1Point.getY() - L);
             } else {
-                p2Point.setY(p1Point.getY() - L * M);
+                p2Point.setY(p2Point.getY() - L);
             }
         }
+
         if (!hasContinuousCols) {
             if (p1Point.getX() > p2Point.getX()) {
-                p1Point.setX(p1Point.getX() - L * M);
+                p1Point.setX(p1Point.getX() - L);
             } else {
-                p2Point.setX(p1Point.getX() - L * M);
+                p2Point.setX(p2Point.getX() - L);
             }
         }
 
