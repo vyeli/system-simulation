@@ -52,22 +52,30 @@ public class Grid {
     public Map<Integer, List<Integer>> getNeighbours() {
         Map<Integer, List<Integer>> neighbours = new HashMap<>();
 
-        int mod = M;
-        if(!periodic)
-            mod = 1;
-
         for (int row=0 ; row < M ; row++) {
-            for (int col=0 ; col < M ; col++) {
+            for (int col=0 ; col < M ; col++) {                          // looping cells
                 if (cells[row][col] != null) {
-                    for (int i=-1 ; i <= 1 ; i++) {
+                    for (int i=-1 ; i <= 1 ; i++) {                      // looping possible neighbours
                         for (int j=-1 ; j <= 1 ; j++) {
-                            Cell neighbour = cells[(row + i + M) % mod][(col + j + M) % mod];
-                            System.out.println("ROW=" + (row + i + M) % mod + ", COL=" + (col + j + M) % mod);
-                            if (neighbour != null) {                 // Algorithm has not passed cell yet
+                            int neighbourRow = Math.floorMod(row + i, M);
+                            int neighbourCol = Math.floorMod(col + j, M);
+
+                            if (!periodic) {
+                                neighbourRow = row + i;
+                                neighbourCol = col + j;
+                                if (neighbourRow < 0 || neighbourRow >= M) continue;
+                                if (neighbourCol < 0 || neighbourCol >= M) continue;
+                            }
+
+                            Cell neighbour = cells[neighbourRow][neighbourCol];
+                            //System.out.println("ROW=" + neighbourRow + ", COL=" + neighbourCol);
+
+                            if (neighbour != null) {
                                 for (Particle particle : cells[row][col].getParticles()) {
                                     for (Particle maybeNeighbour : neighbour.getParticles()) {
                                         if (particle != maybeNeighbour &&
-                                                (particle.isNeighbour(maybeNeighbour.getId()) || particleIsDistanceNeighbour(particle, maybeNeighbour))) {
+                                                (particle.isNeighbour(maybeNeighbour.getId()) || particleIsDistanceNeighbour(particle, maybeNeighbour,
+                                                        Math.abs(neighbourRow - row) <= 1, Math.abs(neighbourCol - col) <= 1))) {
                                             neighbours.putIfAbsent(particle.getId(), new ArrayList<>());
                                             neighbours.get(particle.getId()).add(maybeNeighbour.getId());
                                             maybeNeighbour.addNeighbour(particle.getId());
@@ -77,38 +85,11 @@ public class Grid {
                             }
                         }
                     }
-                    cells[row][col].checkCell();
+                    // TODO: Check if this is necessary
+                    // cells[row][col].checkCell();
                 }
             }
         }
-
-        /*
-        for(Map.Entry<Integer, Cell> cellData : cells.entrySet()) {
-            if(cellData.getValue() != null) {
-                for (int i = -M; i <= M; i += M) {             // Select row
-                    for (int j = -1; j <= 1; j++) {             // Select column
-                        int neighbourId = (cellData.getKey() + i + j + M*M) % (M * M);
-                        Cell neighbourCell = cells.get(neighbourId);
-                        System.out.println("VEO LA CELL " + cellData.getKey() + " CON SU VECINA " + neighbourId + " SI I=" + i + ", J=" + j);
-                        if (neighbourCell != null && !neighbourCell.isChecked()) {                 // Algorithm has not passed cell yet
-                            for (Particle particle : cellData.getValue().getParticles()) {
-                                for (Particle maybeNeighbour : neighbourCell.getParticles()) {
-                                    if (particle != maybeNeighbour &&
-                                            (particle.isNeighbour(maybeNeighbour.getId()) || particleIsDistanceNeighbour(particle, maybeNeighbour))) {
-                                        neighbours.putIfAbsent(particle.getId(), new ArrayList<>());
-                                        neighbours.get(particle.getId()).add(maybeNeighbour.getId());
-                                        maybeNeighbour.addNeighbour(particle.getId());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                cellData.getValue().checkCell();
-            }
-        }
-
-         */
 
         return neighbours;
     }
@@ -119,8 +100,26 @@ public class Grid {
      * @param p2
      * @return boolean true if two particles are neighbor, false if not
      */
-    private boolean particleIsDistanceNeighbour(Particle p1, Particle p2) {
-        return (Point.distance(p1.getPoint(), p2.getPoint()) - p1.getRadius() - p2.getRadius()) < RC;
+    private boolean particleIsDistanceNeighbour(Particle p1, Particle p2, boolean hasContinuousRows, boolean hasContinuousCols) {
+        Point p1Point = new Point(p1.getPoint());
+        Point p2Point = new Point(p2.getPoint());
+
+        if (!hasContinuousRows) {
+            if (p1Point.getY() > p2Point.getY()) {
+                p1Point.setY(p1Point.getY() - L * M);
+            } else {
+                p2Point.setY(p1Point.getY() - L * M);
+            }
+        }
+        if (!hasContinuousCols) {
+            if (p1Point.getX() > p2Point.getX()) {
+                p1Point.setX(p1Point.getX() - L * M);
+            } else {
+                p2Point.setX(p1Point.getX() - L * M);
+            }
+        }
+
+        return (Point.distance(p1Point, p2Point) - p1.getRadius() - p2.getRadius()) < RC;
     }
 
     public void fillCells(double cellWidth, double r) {
