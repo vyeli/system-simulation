@@ -11,6 +11,3 @@ file.write(str(N) + '\n' + str(L) + '\n');
 
 for i in range(N):
     file.write(str(random.uniform(0, 1)) + '\n')
-    
-
-

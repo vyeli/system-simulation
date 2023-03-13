@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +35,7 @@ public class Parser {
         try {
             N = Integer.parseInt(staticFile.readLine());
             L = Integer.parseInt(staticFile.readLine());
+            particles = new ArrayList<>();
 
             for (int i = 0; i < N; i++) {
                 String[] line = staticFile.readLine().split(" ");

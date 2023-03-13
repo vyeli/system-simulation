@@ -17,9 +17,9 @@ public class Simulator {
      *
      */
     public static void main(String[] args) throws IOException {
-        double L = 20, rc = 1, r = 0.25;
+        double L, rc;
         String periodic;
-        int M = 4, N = 4000;
+        int M, N;
 
         if (args.length != 4) {
             System.out.print("Debe ingresar todos los argumentos");
