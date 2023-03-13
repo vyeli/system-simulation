@@ -3,8 +3,8 @@ from manim import *
 class CellGrid(Scene):
     def construct(self):
         L = 20
-        M = 4
-        cell = 392
+        M = 8
+        cell = 185
 
         grid = NumberPlane(
             x_range=(0, L, L/M),
@@ -28,7 +28,7 @@ class CellGrid(Scene):
             break
 
         cells = []
-        cell_file = open('../../particle-coordinates.txt', 'r')
+        cell_file = open('../utils/dynamic.txt', 'r')
         while True:
             color = '#FFFFFF'
             line = cell_file.readline()
@@ -43,7 +43,7 @@ class CellGrid(Scene):
             y = float(processed_line[2])
             cells.append(Dot(point=grid.c2p(x, y), radius=0.05, color=color))
 
-        # self.add(grid, *cells)
-        self.play(Create(grid))
-        for cell in cells:
-            self.play(ChangeSpeed(Create(cell), speedinfo={1: 5}))
+        self.add(grid, *cells)
+        # self.play(Create(grid))
+        # for cell in cells:
+        #     self.play(ChangeSpeed(Create(cell), speedinfo={1: 5}))

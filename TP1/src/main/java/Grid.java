@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Grid {
 
-    private Cell[][] cells;
+    private final Cell[][] cells;
     private final double L;
     private final int M;
     private final double RC;
@@ -112,42 +112,16 @@ public class Grid {
     }
 
     public void fillCells(double cellWidth, List<Particle> particles) {
-        Random coordinateGenerator = new Random();
-        // TODO: Upper bound is exclusive, make inclusive
-        Iterator<Double> xPoints = coordinateGenerator.doubles(0, L).iterator();
-        Iterator<Double> yPoints = coordinateGenerator.doubles(0, L).iterator();
 
         for (Particle p : particles) {
-            double y = yPoints.next();
-            double x = xPoints.next();
-
-            int row = (int) (y / cellWidth);
-            int col = (int) (x / cellWidth);
+            int row = (int) (p.getPoint().getY() / cellWidth);
+            int col = (int) (p.getPoint().getX() / cellWidth);
 
             if(cells[row][col] == null)
                 cells[row][col] = new Cell();
-            p.setPoint(new Point(x, y));
             cells[row][col].addParticle(p);
 
             // TODO: Add particle without collision
-        }
-    }
-
-    public void writeParticleCoordinates() {
-        try {
-            PrintWriter outputWriter = new PrintWriter("particle-coordinates.txt");
-            for(int i = 0; i < M; i++) {
-                for(int j = 0; j< M; j++) {
-                    if (cells[i][j] != null) {
-                        for (Particle p : cells[i][j].getParticles()) {
-                            outputWriter.println(p.getId() + " " + p.getPoint().getX() + " " + p.getPoint().getY());
-                        }
-                    }
-                }
-            }
-            outputWriter.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
     }
 

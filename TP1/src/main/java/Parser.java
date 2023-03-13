@@ -12,13 +12,14 @@ public class Parser {
     int L, N;
 
     List<Particle> particles;
-    public Parser(String staticFileLocation) throws FileNotFoundException, IOException {
+    public Parser(String staticFileLocation, String dynamicFileLocation) throws FileNotFoundException, IOException {
         /*
         *   Create buffered reader for static and dynamic file since they are huge files
         */
-        BufferedReader staticFile;
+        BufferedReader staticFile, dynamicFile;
         try {
             staticFile = new BufferedReader(new FileReader(staticFileLocation));
+            dynamicFile = new BufferedReader(new FileReader(dynamicFileLocation));
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
             throw e;
@@ -38,9 +39,12 @@ public class Parser {
             particles = new ArrayList<>();
 
             for (int i = 0; i < N; i++) {
-                String[] line = staticFile.readLine().split(" ");
-                double r = Double.parseDouble(line[0]);
-                particles.add(new Particle(i, null, r));
+                String[] staticFileLine = staticFile.readLine().split(" ");
+                String[] dynamicFileLine = dynamicFile.readLine().split(" ");
+                double r = Double.parseDouble(staticFileLine[0]);
+                double x = Double.parseDouble(dynamicFileLine[1]);
+                double y = Double.parseDouble(dynamicFileLine[2]);
+                particles.add(new Particle(i, new Point(x, y), r));
             }
             staticFile.close();
         } catch (IOException e) {
