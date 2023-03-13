@@ -147,6 +147,7 @@ Thumbs.db
 *.csv
 
 *.txt
+!TP1/requirements.txt
 
 *.iml
 *.env
