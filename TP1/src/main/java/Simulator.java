@@ -1,29 +1,60 @@
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class Simulator {
 
-    public static void main(String[] args) {
-        double L = 20, rc = 1, r = 0.25;
-        int M = 15, N = 200;
+    /**
+     *
+     * @param args
+     * args[0] = static.txt
+     * args[1] = dynamic.txt
+     * args[2] = M
+     * args[3] = rc
+     * args[4] = periodic (any other thing will be consider not periodic)
+     *
+     */
+    public static void main(String[] args) throws IOException {
+        double L, rc;
+        String periodic;
+        int M, N;
 
-        // TODO: Throw error when L/M <= rc
-        double cellWidth = L / M;
-        
-        Random coordinateGenerator = new Random();
+        if (args.length != 5) {
+            System.out.print("Debe ingresar todos los argumentos");
+            return;
+        }
 
-        // TODO: Upper bound is exclusive, make inclusive
-        Iterator<Double> xPoints = coordinateGenerator.doubles(N, 0, L).iterator();
-        Iterator<Double> yPoints = coordinateGenerator.doubles(N, 0, L).iterator();
+        Parser parser = new Parser(args[0], args[1]);
+        L = parser.getL();
+        N = parser.getN();
 
-        Map<Integer, List<Particle>> cellMap = new HashMap<>();
-        for(int i=0 ; i < N ; i++) {
-            double y = yPoints.next();
-            double x = xPoints.next();
-            Integer cellNumber = ((int)(y / cellWidth)) * M + ((int)(x / cellWidth));
-            cellMap.putIfAbsent(cellNumber, new ArrayList<>());
-            //cellMap.get(cellNumber).add(new Particle(new Point(x, y), 0));
-            if(i % N == 50)
-                System.out.println("METO LA PARTÍCULA " + i + " EN LA CELDA " + cellNumber + " CON COORDENADAS\n -X: " + x + "\n -Y: " + y);
+        M = Integer.parseInt(args[2]);
+        rc = Double.parseDouble(args[3]);
+        periodic = args[4].toLowerCase(Locale.ROOT);
+
+        Grid grid = new Grid(L, M, rc, periodic.equals("periodic"), N);
+        grid.fillCells(L/M, parser.getParticles());
+
+        try {
+            final PrintWriter outputWriter = new PrintWriter("cell-neighbours.txt");
+
+            Instant start = Instant.now();
+            Map<Integer, List<Integer>> particleNeighbours = grid.getNeighbours();
+            Instant end = Instant.now();
+            System.out.println(Duration.between(start, end));
+
+            for (Map.Entry<Integer, List<Integer>> particle : particleNeighbours.entrySet()) {
+                outputWriter.print(particle.getKey() + "\t");
+                particle.getValue().forEach(neighbour -> outputWriter.print(neighbour + " "));
+                outputWriter.println();
+            }
+            outputWriter.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("ERROR");
         }
     }
 

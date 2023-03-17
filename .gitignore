@@ -77,6 +77,10 @@ cmake-build-*/
 # IntelliJ
 out/
 
+# Manim stuff
+*/animations/media
+*/animations/__pycache__
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
@@ -143,6 +147,7 @@ Thumbs.db
 *.csv
 
 *.txt
+!TP1/requirements.txt
 
 *.iml
 *.env
