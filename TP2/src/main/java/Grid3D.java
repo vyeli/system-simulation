@@ -1,15 +1,15 @@
 import interfaces.Grid;
 
-public class Grid3D implements Grid {
+public class Grid3D implements Grid<Integer[][][]> {
 
     private final int size;
     private final int domain;
-    private int [][][] grid;
+    private Integer[][][] grid;
 
     public Grid3D(int size, int domain) {
         this.size = size;
         this.domain = domain;
-        this.grid = new int[size][size][size];
+        this.grid = new Integer[size][size][size];
     }
 
     @Override
@@ -28,8 +28,59 @@ public class Grid3D implements Grid {
         }
     }
 
-    public int[][][] getGrid() {
+    @Override
+    public Integer[][][] getGrid() {
         return this.grid;
+    }
+
+    @Override
+    public Integer[][][] getNextGeneration(Integer[][][] grid) {
+        Integer[][][] nextGeneration = new Integer[size][size][size];
+
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                for (int zcol = 0; zcol < size; zcol++) {
+                    int neighbors = countLiveNeighbors(grid, row, col);
+
+                    if (grid[row][col][zcol] == 1) {
+                        if (neighbors < 2 || neighbors > 3) {
+                            nextGeneration[row][col][zcol] = 0;
+                        } else {
+                            nextGeneration[row][col][zcol] = 1;
+                        }
+                    } else {
+                        if (neighbors == 3) {
+                            nextGeneration[row][col][zcol] = 1;
+                        } else {
+                            nextGeneration[row][col][zcol] = 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        return nextGeneration;
+    }
+
+    // TODO: Transform to 3D
+    @Override
+    public int countLiveNeighbors(Integer[][][] grid, int row, int col) {
+        int count = 0;
+        int[] rows = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] cols = {-1, 0, 1, -1, 1, -1, 0, 1};
+
+        for (int i = 0; i < 8; i++) {
+            int neighborRow = row + rows[i];
+            int neighborCol = col + cols[i];
+
+            if (neighborRow >= 0 && neighborRow < grid.length && neighborCol >= 0 && neighborCol < grid[0].length) {
+                if (grid[neighborRow][neighborCol][0] == 1) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
     }
 
 }
