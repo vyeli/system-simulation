@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import interfaces.Grid;
 
 public class GameOfLife {
     public static void main(String[] args) {
@@ -21,7 +20,7 @@ public class GameOfLife {
         if(args.length == 1) {
             percentage = Double.parseDouble(args[0]);
         }
-        Grid grid = new Grid2D(10, 3);
+        Grid2D grid = new Grid2D(11, 3);
         grid.generateRandomCells(percentage);
         System.out.println(grid);
     }
@@ -32,5 +31,5 @@ public class GameOfLife {
         }
         System.out.println();
     }
-    
+
 }

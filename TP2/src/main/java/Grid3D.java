@@ -1,15 +1,15 @@
 import interfaces.Grid;
 
-public class Grid3D implements Grid<Integer[][][]> {
+public class Grid3D implements Grid<int[][][]> {
 
     private final int size;
     private final int domain;
-    private Integer[][][] grid;
+    private int[][][] grid;
 
     public Grid3D(int size, int domain) {
         this.size = size;
         this.domain = domain;
-        this.grid = new Integer[size][size][size];
+        this.grid = new int[size][size][size];
     }
 
     @Override
@@ -29,13 +29,13 @@ public class Grid3D implements Grid<Integer[][][]> {
     }
 
     @Override
-    public Integer[][][] getGrid() {
+    public int[][][] getGrid() {
         return this.grid;
     }
 
     @Override
-    public Integer[][][] getNextGeneration(Integer[][][] grid) {
-        Integer[][][] nextGeneration = new Integer[size][size][size];
+    public int[][][] getNextGeneration(int[][][] grid) {
+        int[][][] nextGeneration = new int[size][size][size];
 
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
@@ -64,7 +64,7 @@ public class Grid3D implements Grid<Integer[][][]> {
 
     // TODO: Transform to 3D
     @Override
-    public int countLiveNeighbors(Integer[][][] grid, int row, int col) {
+    public int countLiveNeighbors(int[][][] grid, int row, int col) {
         int count = 0;
         int[] rows = {-1, -1, -1, 0, 0, 1, 1, 1};
         int[] cols = {-1, 0, 1, -1, 1, -1, 0, 1};

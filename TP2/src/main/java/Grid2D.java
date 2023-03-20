@@ -1,16 +1,16 @@
 import java.util.Arrays;
 import interfaces.Grid;
 
-public class Grid2D implements Grid<Integer[][]> {
+public class Grid2D implements Grid<int[][]> {
 
     private final int size;
     private final int domain;
-    private Integer[][] grid;
+    private int[][] grid;
     
     public Grid2D(int size, int domain) {
         this.size = size;
         this.domain = domain;
-        this.grid = new Integer[size][size];
+        this.grid = new int[size][size];
     }
 
     /**
@@ -23,8 +23,8 @@ public class Grid2D implements Grid<Integer[][]> {
         int cellsToSet = (int) (totalDomainCells*percentage);
         int cellsSet = 0;
         while (cellsSet < cellsToSet){
-            int x = (int) (Math.random()*domain + domain);
-            int y = (int) (Math.random()*domain + domain);
+            int x = (int) (int)((0.5 - Math.random())*domain) + (int)size/2;
+            int y = (int) (int)((0.5 - Math.random())*domain) + (int)size/2;
             if (grid[x][y] == 0){
                 grid[x][y] = 1;
                 cellsSet++;
@@ -33,15 +33,15 @@ public class Grid2D implements Grid<Integer[][]> {
     }
 
     @Override
-    public Integer[][] getGrid() {
+    public int[][] getGrid() {
         return this.grid;
     }
 
     @Override
-    public Integer[][] getNextGeneration(Integer[][] grid) {
+    public int[][] getNextGeneration(int[][] grid) {
         int rows = grid.length;
         int cols = grid[0].length;
-        Integer[][] nextGeneration = new Integer[rows][cols];
+        int[][] nextGeneration = new int[rows][cols];
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
@@ -67,7 +67,7 @@ public class Grid2D implements Grid<Integer[][]> {
     }
 
     @Override
-    public int countLiveNeighbors(Integer[][] grid, int row, int col) {
+    public int countLiveNeighbors(int[][] grid, int row, int col) {
         int count = 0;
         int[] rows = {-1, -1, -1, 0, 0, 1, 1, 1};
         int[] cols = {-1, 0, 1, -1, 1, -1, 0, 1};
