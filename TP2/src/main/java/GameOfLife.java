@@ -2,12 +2,12 @@ import java.util.Arrays;
 
 public class GameOfLife {
     public static void main(String[] args) {
-        boolean[][] grid = {
-                {false, false, false, false},
-                {false, true, true, false},
-                {false, true, true, false},
-                {false, false, false, false}
-        };
+        int N = 4;
+        boolean[][] grid = new boolean[N][N];
+        // Set live cells
+        grid[0][1] = true;
+        grid[0][2] = true;
+        grid[0][3] = true;
         int generations = 10;
 
         for (int i = 0; i < generations; i++) {
