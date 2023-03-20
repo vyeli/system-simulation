@@ -1,7 +1,9 @@
 import java.util.Arrays;
+import interfaces.Grid;
 
 public class GameOfLife {
     public static void main(String[] args) {
+        /*
         int N = 4;
         boolean[][] grid = new boolean[N][N];
         // Set live cells
@@ -14,6 +16,14 @@ public class GameOfLife {
             printGrid(grid);
             grid = getNextGeneration(grid);
         }
+         */
+        double percentage = 0.5;
+        if(args.length == 1) {
+            percentage = Double.parseDouble(args[0]);
+        }
+        Grid2D grid = new Grid2D(10, 3);
+        grid.generateRandomCells(percentage);
+        System.out.println(grid);
     }
 
     public static boolean[][] getNextGeneration(boolean[][] grid) {
