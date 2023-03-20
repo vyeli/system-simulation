@@ -35,15 +35,17 @@ class CellGrid(Scene):
             if not line:
                 break
             processed_line = line.split()
-            if int(processed_line[0]) == cell:
-                color = '#FC0000'
-            if int(processed_line[0]) in neighbours:
-                color = '#26FC00'
             x = float(processed_line[1])
             y = float(processed_line[2])
+            if int(processed_line[0]) == cell:
+                color = '#FC0000'
+                circle = Circle.from_three_points(x + 0.25 + 0.05, x - 0.25 - 0.05, y+0.25+0.05)
+            if int(processed_line[0]) in neighbours:
+                color = '#26FC00'
             cells.append(Dot(point=grid.c2p(x, y), radius=0.05, color=color))
+            
 
-        self.add(grid, *cells)
+        self.add(grid, *cells, circle)
         # self.play(Create(grid))
         # for cell in cells:
         #     self.play(ChangeSpeed(Create(cell), speedinfo={1: 5}))
