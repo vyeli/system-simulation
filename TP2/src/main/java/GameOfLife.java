@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import interfaces.Grid;
 
 public class GameOfLife {
     public static void main(String[] args) {
