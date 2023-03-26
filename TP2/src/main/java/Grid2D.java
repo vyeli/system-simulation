@@ -10,9 +10,9 @@ public class Grid2D implements Grid<int[][]> {
 
     private final int size;
     private final int domain;
-    private final Integer neighboursForRevive;
-
     private int[][] grid;
+
+    private final Integer neighboursForRevive;
     private Set<Pair<Integer, Integer>> liveCells = new HashSet<>();
     private boolean hasCellsOutside = false;
     
@@ -23,6 +23,14 @@ public class Grid2D implements Grid<int[][]> {
         this.grid = new int[size][];
         for (int i=0 ; i < size ; i++) {
             this.grid[i] = new int[size];
+        }
+    }
+
+    private void addAndCheckIfBorderCell(int x, int y) {
+        Pair<Integer, Integer> cell = new Pair<>(x, y);
+        this.liveCells.add(cell);
+        if (x == 0 || x == size-1 || y == 0 || y == size-1) {
+            this.hasCellsOutside = true;
         }
     }
 
@@ -61,13 +69,7 @@ public class Grid2D implements Grid<int[][]> {
         return hasCellsOutside;
     }
 
-    private void addAndCheckIfBorderCell(int x, int y) {
-        Pair<Integer, Integer> cell = new Pair<>(x, y);
-        this.liveCells.add(cell);
-        if (x == 0 || x == size-1 || y == 0 || y == size-1) {
-            this.hasCellsOutside = true;
-        }
-    }
+
 
     @Override
     public int[][] getGrid() {
@@ -112,7 +114,6 @@ public class Grid2D implements Grid<int[][]> {
         this.grid = nextGeneration;
     }
 
-    @Override
     public int countLiveNeighbors(int[][] grid, int row, int col) {
         int count = 0;
         int[] rows = {-1, -1, -1, 0, 0, 1, 1, 1};
