@@ -1,16 +1,40 @@
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
+import helpers.Pair;
 import interfaces.Grid;
 
 public class Grid2D implements Grid<int[][]> {
 
     private final int size;
     private final int domain;
+    private final Integer neighboursForRevive;
+
     private int[][] grid;
+    private Set<Pair<Integer, Integer>> liveCells = new HashSet<>();
+    private boolean hasCellsOutside = false;
     
-    public Grid2D(int size, int domain) {
+    public Grid2D(int size, int domain, Integer neighboursForRevive) {
         this.size = size;
         this.domain = domain;
-        this.grid = new int[size][size];
+        this.neighboursForRevive = neighboursForRevive;
+        this.grid = new int[size][];
+        for (int i=0 ; i < size ; i++) {
+            this.grid[i] = new int[size];
+        }
+    }
+
+    public void insertLiveCells() {
+        for (int x=0 ; x < size ; x++) {
+            this.grid[x] = new int[size];
+            for (int y=0 ; y < size ; y++) {
+                if (this.grid[x][y] == 1) {
+                    this.addAndCheckIfBorderCell(x, y);
+                }
+            }
+        }
     }
 
     /**
@@ -18,17 +42,30 @@ public class Grid2D implements Grid<int[][]> {
      * @param percentage float between 0 and 1 indicating the percentage of cells alive
     */
     @Override
-    public void generateRandomCells(double percentage){
+    public void generateRandomCells(double percentage) {
         int totalDomainCells = domain*domain;
         int cellsToSet = (int) (totalDomainCells*percentage);
         int cellsSet = 0;
         while (cellsSet < cellsToSet){
-            int x = (int) (int)((0.5 - Math.random())*domain) + (int)size/2;
-            int y = (int) (int)((0.5 - Math.random())*domain) + (int)size/2;
+            int x = (int)((0.5 - Math.random())*domain) + size/2;
+            int y = (int)((0.5 - Math.random())*domain) + size/2;
             if (grid[x][y] == 0){
                 grid[x][y] = 1;
+                this.addAndCheckIfBorderCell(x, y);
                 cellsSet++;
             }
+        }
+    }
+
+    public boolean hasCellsOutside() {
+        return hasCellsOutside;
+    }
+
+    private void addAndCheckIfBorderCell(int x, int y) {
+        Pair<Integer, Integer> cell = new Pair<>(x, y);
+        this.liveCells.add(cell);
+        if (x == 0 || x == size-1 || y == 0 || y == size-1) {
+            this.hasCellsOutside = true;
         }
     }
 
@@ -37,33 +74,42 @@ public class Grid2D implements Grid<int[][]> {
         return this.grid;
     }
 
-    @Override
-    public int[][] getNextGeneration(int[][] grid) {
-        int rows = grid.length;
-        int cols = grid[0].length;
-        int[][] nextGeneration = new int[rows][cols];
+    public void setGrid(int[][] grid) {
+        this.grid = grid;
+        this.liveCells = new HashSet<>();
+        this.hasCellsOutside = false;
+        insertLiveCells();
+    }
 
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
+    @Override
+    public void nextGeneration() {
+        int[][] nextGeneration = new int[size][size];
+
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
                 int neighbors = countLiveNeighbors(grid, row, col);
 
                 if (grid[row][col] == 1) {
                     if (neighbors < 2 || neighbors > 3) {
                         nextGeneration[row][col] = 0;
+                        this.liveCells.remove(new Pair<>(row, col));
                     } else {
                         nextGeneration[row][col] = 1;
+                        this.addAndCheckIfBorderCell(row, col);
                     }
-                } else {
-                    if (neighbors == 3) {
+                } else if (neighboursForRevive != null) {
+                    if (neighbors == neighboursForRevive) {
                         nextGeneration[row][col] = 1;
+                        this.addAndCheckIfBorderCell(row, col);
                     } else {
                         nextGeneration[row][col] = 0;
+                        this.liveCells.remove(new Pair<>(row, col));
                     }
                 }
             }
         }
 
-        return nextGeneration;
+        this.grid = nextGeneration;
     }
 
     @Override
@@ -86,6 +132,10 @@ public class Grid2D implements Grid<int[][]> {
         return count;
     }
 
+    public int getLiveCellsAmount() {
+        return liveCells.size();
+    }
+
     @Override
     public String toString() {
         StringBuilder returnString = new StringBuilder();
@@ -96,4 +146,15 @@ public class Grid2D implements Grid<int[][]> {
         return returnString.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Grid2D grid2D = (Grid2D) o;
+        return size == grid2D.size && Objects.equals(liveCells, grid2D.liveCells);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(size, liveCells);
+    }
 }
