@@ -1,6 +1,9 @@
 from operator import ge
 from manim import *
+
 import random
+import sys
+import json
 
 # Source: https://github.com/SergenKaraoglan/Manim_projects
 class GameOfLife(Scene):
@@ -16,8 +19,11 @@ class GameOfLife(Scene):
         self.add(self.grid)
         self.wait(time)
 
+        gens = len(self.generations)
+        gens_to_iter = self.config['max_generations'] if gens > self.config['max_generations'] else gens
+
         # simulate game of life
-        for generation in range(1, len(self.generations)):
+        for generation in range(1, gens_to_iter):
             #self.update_rules()
             self.update_grid(generation)
             self.add(self.grid)
@@ -27,7 +33,10 @@ class GameOfLife(Scene):
     def parse_generations(self):
         self.generations = []
         current_generation = -1
-        file = open("./output/2dGeneration.txt", "r")
+        json_file = open('animations/config.json', 'r')
+        self.config = json.load(json_file)
+
+        file = open(self.config['file'], "r")
 
         self.grid_size = int(file.readline())
         self.domain = int(file.readline())
@@ -50,6 +59,7 @@ class GameOfLife(Scene):
             self.generations[current_generation].append((x, y))
 
         file.close()
+        json_file.close()
 
 
     def create_grid(self, num_row, num_col, side_length):
