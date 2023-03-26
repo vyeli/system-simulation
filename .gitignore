@@ -148,6 +148,9 @@ Thumbs.db
 
 *.txt
 !TP1/requirements.txt
+TP2/output
+
+media/
 
 *.iml
 *.env
