@@ -161,8 +161,4 @@ public class Grid2D implements Grid<int[][]> {
     public int hashCode() {
         return Objects.hash(size, liveCells);
     }
-
-    public Set<Pair<Integer, Integer>> getLiveCells() {
-        return liveCells;
-    }
 }
