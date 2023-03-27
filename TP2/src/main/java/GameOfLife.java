@@ -1,4 +1,7 @@
-import java.time.Instant;
+import helpers.Serializer;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,30 +24,20 @@ public class GameOfLife {
         Grid2D grid = new Grid2D(gridSize, domain, neighboursForRevive);
         SimpleRegression regression = new SimpleRegression();
 
-        for (int p=10 ; p < 100 ; p += 10) {
-            double percentage = (double) p / 100;
-            System.out.println("Sistema con " + p + "%:");
-            for (int j = 0; j < 10; j++) {
-                // Set up initial pattern
-                grid.setGrid(new int[gridSize][gridSize]);
-                grid.generateRandomCells(percentage);
+        // Set up control values
+        Set<Grid2D> previousStates = new HashSet<>();
+        int initialCells = grid.getLiveCellsAmount();
+        int finalCells = initialCells, steps = 0;
+        
+        do {
+            previousStates.add(grid);
+            regression.addData(steps, finalCells);
+            grid.nextGeneration();
+            finalCells = grid.getLiveCellsAmount();
+            steps++;
+        } while (!grid.hasCellsOutside() && !previousStates.contains(grid));
 
-                // Set up control values
-                Set<Grid2D> previousStates = new HashSet<>();
-                int initialCells = grid.getLiveCellsAmount();
-                int finalCells = initialCells, steps = 0;
-                do {
-                    previousStates.add(grid);
-                    regression.addData(steps, finalCells);
-                    grid.nextGeneration();
-                    finalCells = grid.getLiveCellsAmount();
-                    steps++;
-                } while (!grid.hasCellsOutside() && !previousStates.contains(grid));
-
-                System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
-                regression.clear();
-            }
-        }
+        System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
+        regression.clear();
     }
-
 }
