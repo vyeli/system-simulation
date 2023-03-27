@@ -8,11 +8,11 @@ import java.util.Set;
 public class GameOfLife {
 
     public static void main(String[] args) {
-        //random2D(null);
+        random2D(null);
         System.out.println();
         random2D(3);
         System.out.println();
-        //random2D(6);
+        random2D(6);
     }
 
     public static void random2D(Integer neighboursForRevive) {
@@ -20,7 +20,7 @@ public class GameOfLife {
         int domain = 11;
 
         try {
-            final PrintWriter outputWriter = new PrintWriter("cellsPositions.txt");
+            final PrintWriter outputWriter = new PrintWriter("2DPositionsN" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".txt");
             outputWriter.println(gridSize);
             outputWriter.println(domain);
             outputWriter.println();
