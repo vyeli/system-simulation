@@ -20,21 +20,25 @@ public class GameOfLife {
         int domain = 11;
 
         try {
-            final PrintWriter outputWriter = new PrintWriter("2DPositionsN" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".txt");
-            outputWriter.println(gridSize);
-            outputWriter.println(domain);
-            outputWriter.println();
-
             Grid2D grid = new Grid2D(gridSize, domain, neighboursForRevive);
-
             for (int p = 10; p < 100; p += 10) {
                 double percentage = (double) p / 100;
                 System.out.println("Sistema con " + p + "%:");
                 for (int j = 0; j < 10; j++) {
+
                     // Set up initial pattern
                     grid.setGrid(new int[gridSize][gridSize]);
                     grid.generateRandomCells(percentage);
-                    outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+                    PrintWriter outputWriter = null;
+
+                    if ((p == 30 || p == 60 || p == 90) && j == 0) {
+                        outputWriter = new PrintWriter("./2DPositionsN" + (neighboursForRevive == null ? "" : neighboursForRevive) + "P" + percentage + ".txt");
+                        outputWriter.println(gridSize);
+                        outputWriter.println(domain);
+                        outputWriter.println();
+                        outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+                    }
+
                     // Set up control values
                     Set<Grid2D> previousStates = new HashSet<>();
                     int initialCells = grid.getLiveCellsAmount();
@@ -42,11 +46,15 @@ public class GameOfLife {
                     do {
                         previousStates.add(grid);
                         grid.nextGeneration();
-                        outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+                        if ((p == 30 || p == 60 || p == 90) && j == 0) {
+                            outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+                        }
                         finalCells = grid.getLiveCellsAmount();
                         steps++;
                     } while (!grid.hasCellsOutside() && !previousStates.contains(grid));
-                    outputWriter.close();
+                    if (outputWriter != null) {
+                        outputWriter.close();
+                    }
                     System.out.println("- Iteración " + (j + 1) + ": " + ((double) (finalCells - initialCells) / steps));
 
                 }
