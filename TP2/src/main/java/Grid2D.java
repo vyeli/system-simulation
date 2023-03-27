@@ -26,10 +26,14 @@ public class Grid2D implements Grid<int[][]> {
         }
     }
 
-    private void addAndCheckIfBorderCell(int x, int y) {
-        Pair<Integer, Integer> cell = new Pair<>(x, y);
+    private boolean isBorder(int coord, int border) {
+        return coord == 0 || coord == border;
+    }
+
+    private void addAndCheckIfBorderCell(Pair<Integer, Integer> cell) {
         this.liveCells.add(cell);
-        if (x == 0 || x == size-1 || y == 0 || y == size-1) {
+        int border = size - 1;
+        if (isBorder(cell.getX(), border) || isBorder(cell.getY(), border)) {
             this.hasCellsOutside = true;
         }
     }
@@ -39,7 +43,7 @@ public class Grid2D implements Grid<int[][]> {
             this.grid[x] = new int[size];
             for (int y=0 ; y < size ; y++) {
                 if (this.grid[x][y] == 1) {
-                    this.addAndCheckIfBorderCell(x, y);
+                    this.addAndCheckIfBorderCell(new Pair<>(x, y));
                 }
             }
         }
@@ -59,7 +63,7 @@ public class Grid2D implements Grid<int[][]> {
             int y = (int)((0.5 - Math.random())*domain) + size/2;
             if (grid[x][y] == 0){
                 grid[x][y] = 1;
-                this.addAndCheckIfBorderCell(x, y);
+                this.addAndCheckIfBorderCell(new Pair<>(x, y));
                 cellsSet++;
             }
         }
@@ -68,8 +72,6 @@ public class Grid2D implements Grid<int[][]> {
     public boolean hasCellsOutside() {
         return hasCellsOutside;
     }
-
-
 
     @Override
     public int[][] getGrid() {
@@ -90,22 +92,23 @@ public class Grid2D implements Grid<int[][]> {
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
                 int neighbors = countLiveNeighbors(grid, row, col);
+                Pair<Integer, Integer> cell = new Pair<>(row, col);
 
                 if (grid[row][col] == 1) {
                     if (neighbors < 2 || neighbors > 3) {
                         nextGeneration[row][col] = 0;
-                        this.liveCells.remove(new Pair<>(row, col));
+                        this.liveCells.remove(cell);
                     } else {
                         nextGeneration[row][col] = 1;
-                        this.addAndCheckIfBorderCell(row, col);
+                        this.addAndCheckIfBorderCell(cell);
                     }
                 } else if (neighboursForRevive != null) {
                     if (neighbors == neighboursForRevive) {
                         nextGeneration[row][col] = 1;
-                        this.addAndCheckIfBorderCell(row, col);
+                        this.addAndCheckIfBorderCell(cell);
                     } else {
                         nextGeneration[row][col] = 0;
-                        this.liveCells.remove(new Pair<>(row, col));
+                        this.liveCells.remove(cell);
                     }
                 }
             }

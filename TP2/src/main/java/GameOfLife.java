@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+
 public class GameOfLife {
 
     public static void main(String[] args) {
@@ -21,6 +23,7 @@ public class GameOfLife {
 
         try {
             Grid2D grid = new Grid2D(gridSize, domain, neighboursForRevive);
+            SimpleRegression regression = new SimpleRegression();
             for (int p = 10; p < 100; p += 10) {
                 double percentage = (double) p / 100;
                 System.out.println("Sistema con " + p + "%:");
@@ -41,10 +44,10 @@ public class GameOfLife {
 
                     // Set up control values
                     Set<Grid2D> previousStates = new HashSet<>();
-                    int initialCells = grid.getLiveCellsAmount();
-                    int finalCells, steps = 0;
+                    int finalCells= grid.getLiveCellsAmount(), steps = 0;
                     do {
                         previousStates.add(grid);
+                        regression.addData(steps, finalCells);
                         grid.nextGeneration();
                         if ((p == 30 || p == 60 || p == 90) && j == 0) {
                             outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
@@ -55,7 +58,8 @@ public class GameOfLife {
                     if (outputWriter != null) {
                         outputWriter.close();
                     }
-                    System.out.println("- Iteración " + (j + 1) + ": " + ((double) (finalCells - initialCells) / steps));
+                    System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
+                    regression.clear();
 
                 }
             }
