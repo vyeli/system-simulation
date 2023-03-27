@@ -25,10 +25,14 @@ public class Grid3D implements Grid<int[][][]> {
         this.grid = new int[size][size][size];
     }
 
-    private void addAndCheckIfBorderCell(int x, int y, int z) {
-        Trio<Integer, Integer, Integer> cell = new Trio<>(x, y, z);
+    private boolean isBorder(int coord, int border) {
+        return coord == 0 || coord == border;
+    }
+
+    private void addAndCheckIfBorderCell(Trio<Integer, Integer, Integer> cell) {
+        int border = size - 1;
         this.liveCells.add(cell);
-        if (x == 0 || x == size-1 || y == 0 || y == size-1 || z == 0 || z == size-1) {
+        if (isBorder(cell.getX(), border) || isBorder(cell.getY(), border) || isBorder(cell.getZ(), border)) {
             this.hasCellsOutside = true;
         }
     }
@@ -38,7 +42,7 @@ public class Grid3D implements Grid<int[][][]> {
             for (int y = 0; y < size; y++) {
                 for (int z = 0; z < size; z++) {
                     if(grid[x][y][z] == 1)
-                        this.addAndCheckIfBorderCell(x, y, z);
+                        this.addAndCheckIfBorderCell(new Trio<>(x, y, z));
                 }
             }
         }
@@ -50,12 +54,12 @@ public class Grid3D implements Grid<int[][][]> {
         int cellsToSet = (int) (totalDomainCells*percentage);
         int cellsSet = 0;
         while (cellsSet < cellsToSet){
-            int x = (int) ((0.5 - Math.random())*domain) - 1 + size/2;
-            int y = (int) ((0.5 - Math.random())*domain) - 1 + size/2;
-            int z = (int) ((0.5 - Math.random())*domain) - 1 + size/2;
+            int x = (int) ((0.5 - Math.random())*domain) + size/2;
+            int y = (int) ((0.5 - Math.random())*domain) + size/2;
+            int z = (int) ((0.5 - Math.random())*domain) + size/2;
             if (grid[x][y][z] == 0){
                 grid[x][y][z] = 1;
-                this.addAndCheckIfBorderCell(x, y, z);
+                this.addAndCheckIfBorderCell(new Trio<>(x, y, z));
                 cellsSet++;
             }
         }
@@ -85,18 +89,23 @@ public class Grid3D implements Grid<int[][][]> {
             for (int col = 0; col < size; col++) {
                 for (int zcol = 0; zcol < size; zcol++) {
                     int neighbors = countLiveNeighbors(grid, row, col, zcol);
+                    Trio<Integer, Integer, Integer> cell = new Trio<>(row, col, zcol);
 
                     if (grid[row][col][zcol] == 1) {
                         if (neighbors < 4 || neighbors > 9) {
                             nextGeneration[row][col][zcol] = 0;
+                            this.liveCells.remove(cell);
                         } else {
                             nextGeneration[row][col][zcol] = 1;
+                            this.addAndCheckIfBorderCell(cell);
                         }
                     } else {
                         if (neighbors == neighboursForRevive) {
                             nextGeneration[row][col][zcol] = 1;
+                            this.addAndCheckIfBorderCell(cell);
                         } else {
                             nextGeneration[row][col][zcol] = 0;
+                            this.liveCells.remove(cell);
                         }
                     }
                 }
@@ -105,6 +114,7 @@ public class Grid3D implements Grid<int[][][]> {
 
         this.grid = nextGeneration;
     }
+    
     public int countLiveNeighbors(int[][][] grid, int row, int col, int zcol) {
         int count = 0;
         int[] rows = {-1, -1, -1, 0, 0, 1, 1, 1};
