@@ -1,5 +1,6 @@
 from operator import ge
 from manim import *
+from gameParser import GameParser
 
 import json
 
@@ -28,32 +29,13 @@ class GameOfLife(Scene):
     
     def parse_generations(self):
         self.generations = []
-        current_generation = -1
-        json_file = open('animations/config.json', 'r')
+        json_file = open('./config.json', 'r')
         self.config = json.load(json_file)
 
         file = open(self.config['file'], "r")
 
-        self.grid_size = int(file.readline())
-        self.domain = int(file.readline())
-
-        while True:
-            line = file.readline()
-
-            if line == '':
-                break
-
-            maybe_cell_coords = line.split(' ')
-
-            if len(maybe_cell_coords) < 2:
-                current_generation = current_generation + 1
-                self.generations.append([])
-                continue
-            
-            x = int(maybe_cell_coords[0])
-            y = int(maybe_cell_coords[1])
-            self.generations[current_generation].append((x, y))
-
+        game_parser = GameParser(self.config['file'])
+        self.grid_size, self.domain, self.generations = game_parser.parse()
         file.close()
         json_file.close()
 
