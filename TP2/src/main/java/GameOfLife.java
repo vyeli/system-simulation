@@ -14,15 +14,13 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 public class GameOfLife {
 
-    // TODO: Get percentages info from config file
-    private static final String[] CSV_HEADERS = {"iteracion", "15%", "30%", "45%", "60%", "75%", "90%"};
-
-    private static final String OBSERVABLE_DATA_FOLDER_PATH = "./output/";
-    private static final String OBSERVABLE_DATA_FILE_NAME = "2d_obs.csv";
+    private static final String[] CSV_HEADERS = {"porcentaje", "pendiente"};
+    private static final String DATA_FOLDER_PATH = "./output/";
+    private static final String OBSERVABLE_DATA_BASE_FILE_NAME = "2d_obs";
 
     public static void main(String[] args) {
         try {
-            File folder = new File(OBSERVABLE_DATA_FOLDER_PATH);
+            File folder = new File(DATA_FOLDER_PATH);
             if (!folder.exists()) {
                 folder.mkdirs();
             }
@@ -35,14 +33,16 @@ public class GameOfLife {
     }
 
     private static boolean isGenerationOnGraphic(int percentageCells, int generation) {
-        return (percentageCells == 15 || percentageCells == 45 || percentageCells == 75) && generation == 0;
+        // return (percentageCells == 15 || percentageCells == 45 || percentageCells == 75) && generation == 0;
+        // TODO: Ask if all 6 percentages must be printed
+        return generation == 0;
     }
 
     public static void random2D(Integer neighboursForRevive) throws IOException {
         int gridSize = 19;
         int domain = 11;
 
-        BufferedWriter bw = Files.newBufferedWriter(Paths.get(OBSERVABLE_DATA_FOLDER_PATH + OBSERVABLE_DATA_FILE_NAME));
+        BufferedWriter bw = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + OBSERVABLE_DATA_BASE_FILE_NAME + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
         final CSVPrinter printer = new CSVPrinter(bw, csvFormat);
 
@@ -51,11 +51,11 @@ public class GameOfLife {
 
         for (int j = 0; j < 10; j++) {
             List<Double> csvLine = new ArrayList<>();
-            csvLine.add((double)j);
 
             // System.out.println("Sistema con " + p + "%:");
             for (int p = 15; p < 100; p += 15) {
                 double percentage = (double) p / 100;
+                csvLine.add(percentage);
 
                 // Set up initial pattern
                 grid.setGrid(new int[gridSize][gridSize]);
@@ -63,7 +63,7 @@ public class GameOfLife {
                 PrintWriter outputWriter = null;
 
                 if (isGenerationOnGraphic(p, j)) {
-                    outputWriter = new PrintWriter("./output/2DPositionsN" + (neighboursForRevive == null ? "" : neighboursForRevive) + "P" + percentage + ".txt");
+                    outputWriter = new PrintWriter("./output/2d_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + p + ".txt");
                     outputWriter.println(gridSize);
                     outputWriter.println(domain);
                     outputWriter.println();
@@ -90,11 +90,14 @@ public class GameOfLife {
 
                 // System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
                 csvLine.add(regression.getSlope());
-                regression.clear();
-            }
-            printer.printRecord(csvLine);
-        }
+                printer.printRecord(csvLine);
 
+                regression.clear();
+                csvLine.clear();
+            }
+            
+        }
         printer.flush();
+        printer.close();
     }
 }
