@@ -3,6 +3,8 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import helpers.Pair;
 import interfaces.Grid;
 
@@ -17,6 +19,9 @@ public class Grid2D implements Grid<int[][]> {
     private boolean hasCellsOutside = false;
     
     public Grid2D(int size, int domain, Integer neighboursForRevive) {
+        if (size % 2 == 0) {
+            throw new RuntimeException("Grid size must be odd");
+        }
         this.size = size;
         this.domain = domain;
         this.neighboursForRevive = neighboursForRevive;
@@ -165,4 +170,19 @@ public class Grid2D implements Grid<int[][]> {
     public Set<Pair<Integer, Integer>> getLiveCells() {
         return liveCells;
     }
+
+    @Override
+    public double getCellsRadius() {
+        double radius = 0;
+        for (Pair<Integer, Integer> cell : liveCells) {
+            double xSquaredDist = Math.pow((int)(size/2) + 1 - cell.getX(), 2);
+            double ySquaredDist = Math.pow((int)(size/2) + 1 - cell.getY(), 2);
+            double dist = Math.sqrt(xSquaredDist + ySquaredDist);
+            if (dist > radius) {
+                radius = dist;
+            }
+        }
+        return radius;
+    }
+
 }

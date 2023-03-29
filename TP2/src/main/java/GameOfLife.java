@@ -1,3 +1,4 @@
+import helpers.Pair;
 import helpers.Serializer;
 
 import java.io.BufferedWriter;
@@ -14,9 +15,12 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 public class GameOfLife {
 
-    private static final String[] CSV_HEADERS = {"porcentaje", "pendiente"};
     private static final String DATA_FOLDER_PATH = "./output/";
     private static final String OBSERVABLE_DATA_BASE_FILE_NAME = "2d_obs";
+    private static final String CONFIGS_DATA_BASE_FILE_NAME = "2d_configs";
+
+    private static final String[] OBS_CSV_HEADERS = {"porcentaje", "pendiente"};
+    private static final String[] CONFIGS_CSV_HEADERS = {"porcentaje", "iteracion", "cant_celulas_vivas", "dist_al_centro"};
 
     public static void main(String[] args) {
         try {
@@ -42,20 +46,27 @@ public class GameOfLife {
         int gridSize = 19;
         int domain = 11;
 
-        BufferedWriter bw = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + OBSERVABLE_DATA_BASE_FILE_NAME + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
-        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
-        final CSVPrinter printer = new CSVPrinter(bw, csvFormat);
+        // Archivo del observable
+        BufferedWriter bwObs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + OBSERVABLE_DATA_BASE_FILE_NAME + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
+        CSVFormat csvFormatObs = CSVFormat.DEFAULT.builder().setHeader(OBS_CSV_HEADERS).build();
+        final CSVPrinter printerObs = new CSVPrinter(bwObs, csvFormatObs);
+
+        // Archivo de cant celulas vivas y radio al centro
+        BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + CONFIGS_DATA_BASE_FILE_NAME + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
+        CSVFormat csvFormatCOnfigs = CSVFormat.DEFAULT.builder().setHeader(CONFIGS_CSV_HEADERS).build();
+        final CSVPrinter printerConfigs = new CSVPrinter(bwConfigs, csvFormatCOnfigs);
 
         Grid2D grid = new Grid2D(gridSize, domain, neighboursForRevive);
         SimpleRegression regression = new SimpleRegression();
 
         for (int j = 0; j < 10; j++) {
-            List<Double> csvLine = new ArrayList<>();
+            List<Double> csvLineObs = new ArrayList<>();
+            // List<Double> csvLineConfigs = new ArrayList<>();
 
             // System.out.println("Sistema con " + p + "%:");
             for (int p = 15; p < 100; p += 15) {
                 double percentage = (double) p / 100;
-                csvLine.add(percentage);
+                csvLineObs.add(percentage);
 
                 // Set up initial pattern
                 grid.setGrid(new int[gridSize][gridSize]);
@@ -68,6 +79,10 @@ public class GameOfLife {
                     outputWriter.println(domain);
                     outputWriter.println();
                     outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+
+                    Set<Pair<Integer, Integer>> liveCells = grid.getLiveCells();
+                    outputWriter.println(Serializer.serialize2D(liveCells));
+                    printerConfigs.printRecord(percentage, 0, liveCells.size(), grid.getCellsRadius());
                 }
 
                 // Set up control values
@@ -78,26 +93,31 @@ public class GameOfLife {
                     regression.addData(steps, finalCells);
                     grid.nextGeneration();
                     if (isGenerationOnGraphic(p, j)) {
-                        outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+                        Set<Pair<Integer, Integer>> liveCells = grid.getLiveCells();
+                        outputWriter.println(Serializer.serialize2D(liveCells));
+                        printerConfigs.printRecord(percentage, steps+1, liveCells.size(), grid.getCellsRadius());
                     }
                     finalCells = grid.getLiveCellsAmount();
                     steps++;
-                } while (!grid.hasCellsOutside() && !previousStates.contains(grid));
+                } while (!grid.hasCellsOutside() && !previousStates.contains(grid) && grid.getLiveCellsAmount() > 0);
 
                 if (outputWriter != null) {
                     outputWriter.close();
                 }
 
                 // System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
-                csvLine.add(regression.getSlope());
-                printer.printRecord(csvLine);
+                csvLineObs.add(regression.getSlope());
+                printerObs.printRecord(csvLineObs);
 
                 regression.clear();
-                csvLine.clear();
+                csvLineObs.clear();
             }
             
         }
-        printer.flush();
-        printer.close();
+        printerObs.flush();
+        printerObs.close();
+
+        printerConfigs.flush();
+        printerConfigs.close();
     }
 }

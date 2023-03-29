@@ -151,4 +151,10 @@ public class Grid3D implements Grid<int[][][]> {
     public int hashCode() {
        return Objects.hash(size, liveCells);
     }
+
+    @Override
+    public double getCellsRadius() {
+        return 0;
+    }
+
 }
