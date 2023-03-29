@@ -1,6 +1,7 @@
 import helpers.Serializer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
@@ -16,10 +17,15 @@ public class GameOfLife {
     // TODO: Get percentages info from config file
     private static final String[] CSV_HEADERS = {"iteracion", "15%", "30%", "45%", "60%", "75%", "90%"};
 
-    private static final String OBSERVABLE_DATA_FILE_PATH = "./output/2d_obs.csv";
+    private static final String OBSERVABLE_DATA_FOLDER_PATH = "./output/";
+    private static final String OBSERVABLE_DATA_FILE_NAME = "2d_obs.csv";
 
     public static void main(String[] args) {
         try {
+            File folder = new File(OBSERVABLE_DATA_FOLDER_PATH);
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
             random2D(null);
             random2D(3);
             random2D(6);
@@ -36,7 +42,7 @@ public class GameOfLife {
         int gridSize = 19;
         int domain = 11;
 
-        BufferedWriter bw = Files.newBufferedWriter(Paths.get(OBSERVABLE_DATA_FILE_PATH));
+        BufferedWriter bw = Files.newBufferedWriter(Paths.get(OBSERVABLE_DATA_FOLDER_PATH + OBSERVABLE_DATA_FILE_NAME));
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
         final CSVPrinter printer = new CSVPrinter(bw, csvFormat);
 
