@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Grid3D implements Grid<int[][][]> {
+public class Grid3D extends RandomGrid<int[][][], Trio<Integer, Integer, Integer>> implements Grid<int[][][]> {
 
     private final int size;
     private final int domain;
@@ -136,8 +136,12 @@ public class Grid3D implements Grid<int[][][]> {
         return count;
     }
 
-    public int getLiveCells() {
-        return this.liveCells.size();
+    public Set<Trio<Integer, Integer, Integer>> getLiveCells() {
+        return this.liveCells;
+    }
+
+    public int getLiveCellsAmount() {
+        return liveCells.size();
     }
 
     @Override
