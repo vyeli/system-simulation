@@ -32,9 +32,9 @@ public class GameOfLife {
             if (!folder.exists()) {
                 folder.mkdirs();
             }
-            random(null, 2);
+            random(2, 2);
             random(3, 2);
-            random(6, 2);
+            random(4, 2);
             random(9, 3);
         } catch (IOException e) {
             System.out.println(e.getMessage());
