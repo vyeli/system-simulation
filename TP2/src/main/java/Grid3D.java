@@ -158,7 +158,17 @@ public class Grid3D extends RandomGrid<int[][][], Trio<Integer, Integer, Integer
 
     @Override
     public double getCellsRadius() {
-        return 0;
+        double radius = 0;
+        for (Trio<Integer, Integer, Integer> cell : liveCells) {
+            double xSquaredDist = Math.pow((int)(size/2) + 1 - cell.getX(), 2);
+            double ySquaredDist = Math.pow((int)(size/2) + 1 - cell.getY(), 2);
+            double zSquaredDist = Math.pow((int)(size/2) + 1 - cell.getZ(), 2);
+            double dist = Math.sqrt(xSquaredDist + ySquaredDist + zSquaredDist);
+            if (dist > radius) {
+                radius = dist;
+            }
+        }
+        return radius;
     }
 
 }

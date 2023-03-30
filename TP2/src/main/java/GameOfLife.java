@@ -16,7 +16,10 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 public class GameOfLife {
 
     private static final String DATA_FOLDER_PATH = "./output/";
-    private static final String CONFIGS_DATA_BASE_FILE_NAME = "2d_configs";
+
+    private static final String CONFIGS_2D_DATA_BASE_FILE_NAME = "2d_configs";
+    private static final String CONFIGS_3D_DATA_BASE_FILE_NAME = "3d_configs";
+
     private static final String OBSERVABLE_2D_DATA_BASE_FILE_NAME = "2d_obs";
     private static final String OBSERVABLE_3D_DATA_BASE_FILE_NAME = "3d_obs";
 
@@ -32,10 +35,15 @@ public class GameOfLife {
             if (!folder.exists()) {
                 folder.mkdirs();
             }
+            // 2D
             random(2, 2);
             random(3, 2);
             random(4, 2);
+
+            // 3D
+            random(4, 3);
             random(9, 3);
+            random(16, 3);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -53,7 +61,7 @@ public class GameOfLife {
         final CSVPrinter printerObs = new CSVPrinter(bwObs, csvFormatObs);
 
         // Archivo de cant celulas vivas y radio al centro
-        BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + CONFIGS_DATA_BASE_FILE_NAME + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
+        BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + (dimension == 2 ? CONFIGS_2D_DATA_BASE_FILE_NAME : CONFIGS_3D_DATA_BASE_FILE_NAME) + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
         CSVFormat csvFormatCOnfigs = CSVFormat.DEFAULT.builder().setHeader(CONFIGS_CSV_HEADERS).build();
         final CSVPrinter printerConfigs = new CSVPrinter(bwConfigs, csvFormatCOnfigs);
 
