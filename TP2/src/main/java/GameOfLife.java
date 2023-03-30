@@ -1,4 +1,3 @@
-import helpers.Pair;
 import helpers.Serializer;
 
 import java.io.BufferedWriter;
@@ -9,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import helpers.Trio;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -17,17 +15,16 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 public class GameOfLife {
 
     // TODO: Get percentages info from config file
-    private static final String[] CSV_HEADERS = {"iteracion", "15%", "30%", "45%", "60%", "75%", "90%"};
-
-    private static final String OBSERVABLE_DATA_FOLDER_PATH = "./output/";
-    private static final String OBSERVABLE_2D_DATA_FILE_NAME = "2d_obs.csv";
-    private static final  String OBSERVABLE_3D_DATA_FILE_NAME = "3d_obs.csv";
     private static final int GRID_SIZE = 19;
     private static final int DOMAIN = 11;
+    private static final String[] CSV_HEADERS = {"porcentaje", "pendiente"};
+    private static final String DATA_FOLDER_PATH = "./output/";
+    private static final String OBSERVABLE_2D_DATA_BASE_FILE_NAME = "2d_obs";
+    private static final String OBSERVABLE_3D_DATA_BASE_FILE_NAME = "3d_obs";
 
     public static void main(String[] args) {
         try {
-            File folder = new File(OBSERVABLE_DATA_FOLDER_PATH);
+            File folder = new File(DATA_FOLDER_PATH);
             if (!folder.exists()) {
                 folder.mkdirs();
             }
@@ -41,11 +38,14 @@ public class GameOfLife {
     }
 
     private static boolean isGenerationOnGraphic(int percentageCells, int generation) {
-        return (percentageCells == 15 || percentageCells == 45 || percentageCells == 75) && generation == 0;
+        // return (percentageCells == 15 || percentageCells == 45 || percentageCells == 75) && generation == 0;
+        // TODO: Ask if all 6 percentages must be printed
+        return generation == 0;
     }
 
+
     public static void random(Integer neighboursForRevive, int dimension) throws IOException {
-        BufferedWriter bw = Files.newBufferedWriter(Paths.get(OBSERVABLE_DATA_FOLDER_PATH + (dimension == 2 ? OBSERVABLE_2D_DATA_FILE_NAME : OBSERVABLE_3D_DATA_FILE_NAME)));
+        BufferedWriter bw = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + (dimension == 2 ? OBSERVABLE_2D_DATA_BASE_FILE_NAME : OBSERVABLE_3D_DATA_BASE_FILE_NAME) + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
         final CSVPrinter printer = new CSVPrinter(bw, csvFormat);
         SimpleRegression regression = new SimpleRegression();
@@ -58,11 +58,11 @@ public class GameOfLife {
 
         for (int j = 0; j < 10; j++) {
             List<Double> csvLine = new ArrayList<>();
-            csvLine.add((double) j);
 
             // System.out.println("Sistema con " + p + "%:");
             for (int p = 15; p < 100; p += 15) {
                 double percentage = (double) p / 100;
+                csvLine.add(percentage);
 
                 // Set up initial pattern
                 if (dimension == 2) {
@@ -74,7 +74,7 @@ public class GameOfLife {
                 PrintWriter outputWriter = null;
 
                 if (isGenerationOnGraphic(p, j)) {
-                    outputWriter = new PrintWriter("./output/" + (dimension == 2 ? "2D" : "3D") + "PositionsN" + (neighboursForRevive == null ? "" : neighboursForRevive) + "P" + percentage + ".txt");
+                    outputWriter = new PrintWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + p + ".txt");
                     outputWriter.println(GRID_SIZE);
                     outputWriter.println(DOMAIN);
                     outputWriter.println();
@@ -110,11 +110,15 @@ public class GameOfLife {
 
                 // System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
                 csvLine.add(regression.getSlope());
+
+                printer.printRecord(csvLine);
+
                 regression.clear();
+                csvLine.clear();
             }
-            printer.printRecord(csvLine);
         }
         printer.flush();
+        printer.close();
     }
 
 }
