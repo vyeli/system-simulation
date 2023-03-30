@@ -8,7 +8,7 @@ import javax.management.RuntimeErrorException;
 import helpers.Pair;
 import interfaces.Grid;
 
-public class Grid2D implements Grid<int[][]> {
+public class Grid2D extends RandomGrid<int[][], Pair<Integer, Integer>> implements Grid<int[][]> {
 
     private final int size;
     private final int domain;
@@ -17,7 +17,7 @@ public class Grid2D implements Grid<int[][]> {
     private final Integer neighboursForRevive;
     private Set<Pair<Integer, Integer>> liveCells = new HashSet<>();
     private boolean hasCellsOutside = false;
-    
+
     public Grid2D(int size, int domain, Integer neighboursForRevive) {
         if (size % 2 == 0) {
             throw new RuntimeException("Grid size must be odd");

@@ -16,11 +16,15 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 public class GameOfLife {
 
     private static final String DATA_FOLDER_PATH = "./output/";
-    private static final String OBSERVABLE_DATA_BASE_FILE_NAME = "2d_obs";
     private static final String CONFIGS_DATA_BASE_FILE_NAME = "2d_configs";
+    private static final String OBSERVABLE_2D_DATA_BASE_FILE_NAME = "2d_obs";
+    private static final String OBSERVABLE_3D_DATA_BASE_FILE_NAME = "3d_obs";
 
     private static final String[] OBS_CSV_HEADERS = {"porcentaje", "pendiente"};
     private static final String[] CONFIGS_CSV_HEADERS = {"porcentaje", "iteracion", "cant_celulas_vivas", "dist_al_centro"};
+    // TODO: Get percentages info from config file
+    private static final int GRID_SIZE = 19;
+    private static final int DOMAIN = 11;
 
     public static void main(String[] args) {
         try {
@@ -28,9 +32,10 @@ public class GameOfLife {
             if (!folder.exists()) {
                 folder.mkdirs();
             }
-            random2D(null);
-            random2D(3);
-            random2D(6);
+            random(null, 2);
+            random(3, 2);
+            random(6, 2);
+            random(9, 3);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -41,13 +46,9 @@ public class GameOfLife {
         // TODO: Ask if all 6 percentages must be printed
         return generation == 0;
     }
-
-    public static void random2D(Integer neighboursForRevive) throws IOException {
-        int gridSize = 19;
-        int domain = 11;
-
-        // Archivo del observable
-        BufferedWriter bwObs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + OBSERVABLE_DATA_BASE_FILE_NAME + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
+        
+    public static void random(Integer neighboursForRevive, int dimension) throws IOException {
+        BufferedWriter bwObs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + (dimension == 2 ? OBSERVABLE_2D_DATA_BASE_FILE_NAME : OBSERVABLE_3D_DATA_BASE_FILE_NAME) + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
         CSVFormat csvFormatObs = CSVFormat.DEFAULT.builder().setHeader(OBS_CSV_HEADERS).build();
         final CSVPrinter printerObs = new CSVPrinter(bwObs, csvFormatObs);
 
@@ -56,8 +57,13 @@ public class GameOfLife {
         CSVFormat csvFormatCOnfigs = CSVFormat.DEFAULT.builder().setHeader(CONFIGS_CSV_HEADERS).build();
         final CSVPrinter printerConfigs = new CSVPrinter(bwConfigs, csvFormatCOnfigs);
 
-        Grid2D grid = new Grid2D(gridSize, domain, neighboursForRevive);
         SimpleRegression regression = new SimpleRegression();
+
+        if (dimension != 2 && dimension != 3) {
+            throw new IllegalArgumentException("Dimension must be 2 or 3");
+        }
+
+        RandomGrid grid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
 
         for (int j = 0; j < 10; j++) {
             List<Double> csvLineObs = new ArrayList<>();
@@ -69,33 +75,45 @@ public class GameOfLife {
                 csvLineObs.add(percentage);
 
                 // Set up initial pattern
-                grid.setGrid(new int[gridSize][gridSize]);
+                if (dimension == 2) {
+                    grid.setGrid(new int[GRID_SIZE][GRID_SIZE]);
+                } else {
+                    grid.setGrid(new int[GRID_SIZE][GRID_SIZE][GRID_SIZE]);
+                }
                 grid.generateRandomCells(percentage);
                 PrintWriter outputWriter = null;
 
                 if (isGenerationOnGraphic(p, j)) {
-                    outputWriter = new PrintWriter("./output/2d_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + p + ".txt");
-                    outputWriter.println(gridSize);
-                    outputWriter.println(domain);
+                    outputWriter = new PrintWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + p + ".txt");
+                    outputWriter.println(GRID_SIZE);
+                    outputWriter.println(DOMAIN);
                     outputWriter.println();
-                    outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
 
-                    Set<Pair<Integer, Integer>> liveCells = grid.getLiveCells();
-                    outputWriter.println(Serializer.serialize2D(liveCells));
+                    Set liveCells = grid.getLiveCells();
+                    if (dimension == 2) {
+                        outputWriter.println(Serializer.serialize2D(liveCells));
+                    } else {
+                        outputWriter.println(Serializer.serialize3D(liveCells));
+                    }
+
                     printerConfigs.printRecord(percentage, 0, liveCells.size(), grid.getCellsRadius());
                 }
 
+
                 // Set up control values
-                Set<Grid2D> previousStates = new HashSet<>();
-                int finalCells= grid.getLiveCellsAmount(), steps = 0;
+                Set<RandomGrid> previousStates = new HashSet<>();
+                int finalCells = grid.getLiveCellsAmount(), steps = 0;
                 do {
                     previousStates.add(grid);
                     regression.addData(steps, finalCells);
                     grid.nextGeneration();
                     if (isGenerationOnGraphic(p, j)) {
-                        Set<Pair<Integer, Integer>> liveCells = grid.getLiveCells();
-                        outputWriter.println(Serializer.serialize2D(liveCells));
-                        printerConfigs.printRecord(percentage, steps+1, liveCells.size(), grid.getCellsRadius());
+                        if (dimension == 2) {
+                            outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
+                        } else {
+                            outputWriter.println(Serializer.serialize3D(grid.getLiveCells()));
+                        }
+                        printerConfigs.printRecord(percentage, steps+1, grid.getLiveCells().size(), grid.getCellsRadius());
                     }
                     finalCells = grid.getLiveCellsAmount();
                     steps++;
@@ -112,7 +130,6 @@ public class GameOfLife {
                 regression.clear();
                 csvLineObs.clear();
             }
-            
         }
         printerObs.flush();
         printerObs.close();
@@ -120,4 +137,5 @@ public class GameOfLife {
         printerConfigs.flush();
         printerConfigs.close();
     }
+
 }

@@ -5,7 +5,7 @@ from enum import Enum
 # inspired by https://softologyblog.wordpress.com/2019/12/28/3d-cellular-automata-3/
 
 # Source: https://slama.dev/manim/3d-and-the-other-graphs/
-# class Grid:
+# class RandomGrid:
 #     class ColorType(Enum):
 #         FROM_COORDINATES = 0
 #         FROM_PALETTE = 1
@@ -181,14 +181,14 @@ from enum import Enum
 #         grid_size = 16
 #         size = 3.5
 
-#         grid = Grid(
+#         grid = RandomGrid(
 #             self,
 #             grid_size,
 #             [2, 6, 9],
 #             [4, 6, 8, 9],
 #             state_count=10,
 #             size=size,
-#             color_type=Grid.ColorType.FROM_PALETTE,
+#             color_type=RandomGrid.ColorType.FROM_PALETTE,
 #         )
 
 #         for i in range(grid_size):
@@ -210,7 +210,7 @@ from enum import Enum
 #         self.wait(2)
 
 #         grid.fadeOut()
-class Grid:
+class RandomGrid:
     class ColorType(Enum):
         FROM_COORDINATES = 0
         FROM_PALETTE = 1
@@ -386,14 +386,14 @@ class GOLSecond(ThreeDScene):
         grid_size = 16
         size = 3.5
 
-        grid = Grid(
+        grid = RandomGrid(
             self,
             grid_size,
             [2, 6, 9],
             [4, 6, 8, 9],
             state_count=10,
             size=size,
-            color_type=Grid.ColorType.FROM_PALETTE,
+            color_type=RandomGrid.ColorType.FROM_PALETTE,
         )
 
         # for i in range(grid_size):
