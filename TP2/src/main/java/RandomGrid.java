@@ -18,4 +18,6 @@ public abstract class RandomGrid<T, W> {
     public abstract int hashCode();
 
     public abstract boolean hasCellsOutside();
+
+    public abstract double getCellsRadius();
 }

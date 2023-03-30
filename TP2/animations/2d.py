@@ -29,7 +29,7 @@ class GameOfLife(Scene):
     
     def parse_generations(self):
         self.generations = []
-        json_file = open('./config.json', 'r')
+        json_file = open('./animations/config.json', 'r')
         self.config = json.load(json_file)
 
         file = open(self.config['file'], "r")
