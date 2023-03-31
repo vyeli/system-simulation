@@ -1,4 +1,4 @@
 {
-    "file": "./output/2D_N3_P15.txt",
-    "max_generations": 100
+    "file": "./output/2d_N3_P60.txt",
+    "max_generations": 300
 }

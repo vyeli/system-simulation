@@ -1,7 +1,6 @@
 import helpers.Trio;
 import interfaces.Grid;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -92,7 +91,7 @@ public class Grid3D extends RandomGrid<int[][][], Trio<Integer, Integer, Integer
                     Trio<Integer, Integer, Integer> cell = new Trio<>(row, col, zcol);
 
                     if (grid[row][col][zcol] == 1) {
-                        if (neighbors < 4 || neighbors > 9) {
+                        if (neighbors < 2 || neighbors > 3) {
                             nextGeneration[row][col][zcol] = 0;
                             this.liveCells.remove(cell);
                         } else {
