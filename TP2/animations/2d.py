@@ -4,10 +4,12 @@ from manim import *
 from gameParser import GameParser
 
 import json
+from timeit import default_timer as timer
 
 # Source: https://github.com/SergenKaraoglan/Manim_projects
 class GameOfLife(Scene):
     def construct(self):
+        start = timer()
         # time interval between generations
         time = 0.3
         self.parse_generations()
@@ -27,6 +29,9 @@ class GameOfLife(Scene):
             self.update_grid(generation)
             self.add(self.grid)
             self.wait(time)
+        
+        end = timer()
+        print('Execution time: {}s'.format(end - start))
     
     def parse_generations(self):
         self.generations = []
@@ -42,7 +47,7 @@ class GameOfLife(Scene):
 
     def create_grid(self, num_row, num_col, side_length):
         # create cells
-        cells = [Square(side_length=side_length) for _ in range(num_row*num_col)]
+        cells = [Square(side_length=side_length, stroke_width=1) for _ in range(num_row*num_col)]
         # arrange cells into a grid
         self.grid = VGroup(*cells).arrange_in_grid(rows=num_row, cols=num_col, buff=0,)
 
@@ -71,7 +76,7 @@ class GameOfLife(Scene):
     def get_distance_color(self, x: int, y: int):
         max_dist = self.get_center_distance(self.grid_size, self.grid_size)
         dist = self.get_center_distance(x, y)
-        return utils.color.rgb_to_color((dist/max_dist, 0, 1 - dist/max_dist))
+        return utils.color.rgb_to_color((1 - dist/max_dist, 0, dist/max_dist))
     
     def get_center_distance(self, x: int, y: int):
         center = int(self.grid_size / 2) + 1
