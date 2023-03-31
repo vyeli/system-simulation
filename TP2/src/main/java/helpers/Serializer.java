@@ -27,4 +27,20 @@ public class Serializer {
         return sb.toString();
     }
 
+    public static int [][] deserialize2D(Set<Pair<Integer, Integer>> liveCells, int size) {
+        int[][] grid = new int[size][size];
+        for (Pair<Integer, Integer> cell : liveCells) {
+            grid[cell.getX()][cell.getY()] = 1;
+        }
+        return grid;
+    }
+
+    public static int [][][] deserialize3D(Set<Trio<Integer, Integer, Integer>> liveCells, int size) {
+        int[][][] grid = new int[size][size][size];
+        for (Trio<Integer, Integer, Integer> cell : liveCells) {
+            grid[cell.getX()][cell.getY()][cell.getZ()] = 1;
+        }
+        return grid;
+    }
+
 }

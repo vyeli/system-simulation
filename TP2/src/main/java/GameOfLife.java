@@ -1,14 +1,12 @@
 import helpers.Pair;
 import helpers.Serializer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import helpers.Trio;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -51,7 +49,6 @@ public class GameOfLife {
 
     private static boolean isGenerationOnGraphic(int percentageCells, int generation) {
         // return (percentageCells == 15 || percentageCells == 45 || percentageCells == 75) && generation == 0;
-        // TODO: Ask if all 6 percentages must be printed
         return generation == 0;
     }
         
@@ -78,6 +75,11 @@ public class GameOfLife {
             // List<Double> csvLineConfigs = new ArrayList<>();
 
             // System.out.println("Sistema con " + p + "%:");
+
+            // To write into file the grid that are cycles with maxSteps of evolution of non-cycles
+            List<Trio> cycles = new ArrayList<>();
+            int maxSteps = -1;
+
             for (int p = 15; p < 100; p += 15) {
                 double percentage = (double) p / 100;
                 csvLineObs.add(percentage);
@@ -115,6 +117,8 @@ public class GameOfLife {
                     previousStates.add(grid);
                     regression.addData(steps, finalCells);
                     grid.nextGeneration();
+                    finalCells = grid.getLiveCellsAmount();
+                    steps++;
                     if (isGenerationOnGraphic(p, j)) {
                         if (dimension == 2) {
                             outputWriter.println(Serializer.serialize2D(grid.getLiveCells()));
@@ -122,10 +126,16 @@ public class GameOfLife {
                             outputWriter.println(Serializer.serialize3D(grid.getLiveCells()));
                         }
                         printerConfigs.printRecord(percentage, steps+1, grid.getLiveCells().size(), grid.getCellsRadius());
+                        if (maxSteps < steps) {
+                            maxSteps = steps;
+                        }
                     }
-                    finalCells = grid.getLiveCellsAmount();
-                    steps++;
                 } while (!grid.hasCellsOutside() && !previousStates.contains(grid) && grid.getLiveCellsAmount() > 0);
+
+                // Add cycle iteration to comple later
+                if (isGenerationOnGraphic(p, j) && previousStates.contains(grid)) {
+                    cycles.add(new Trio<>(p, steps, grid.getLiveCells()));
+                }
 
                 if (outputWriter != null) {
                     outputWriter.close();
@@ -138,6 +148,29 @@ public class GameOfLife {
                 regression.clear();
                 csvLineObs.clear();
             }
+
+            // Complete cycles
+            for (Trio<Integer, Integer, Set> cycle : cycles) {
+                FileWriter fileWriter = new FileWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + cycle.getX() + ".txt", true);
+                PrintWriter outputWriter = new PrintWriter(fileWriter);
+                RandomGrid cycleGrid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
+                if (dimension == 2)
+                    cycleGrid.setGrid(Serializer.deserialize2D(cycle.getZ(), dimension));
+                else
+                    cycleGrid.setGrid(Serializer.deserialize3D(cycle.getZ(), dimension));
+                for (int i = cycle.getY(); i < maxSteps; i++) {
+                    cycleGrid.nextGeneration();
+                    if (dimension == 2) {
+                        outputWriter.println(Serializer.serialize2D(cycleGrid.getLiveCells()));
+                    } else {
+                        outputWriter.println(Serializer.serialize3D(cycleGrid.getLiveCells()));
+                    }
+                    printerConfigs.printRecord(cycle.getX(), i+1, cycle.getZ().size(), cycleGrid.getCellsRadius());
+                }
+            }
+
+
+
         }
         printerObs.flush();
         printerObs.close();
