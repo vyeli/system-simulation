@@ -39,21 +39,33 @@ class GameOfLife(Scene):
         file.close()
         json_file.close()
 
-
     def create_grid(self, num_row, num_col, side_length):
         # create cells
-        cells = [Square(color=BLUE_E, side_length=side_length) for _ in range(num_row*num_col)]
+        # cells = [Square(color=BLUE_E, side_length=side_length) for _ in range(num_row*num_col)]
         # arrange cells into a grid
-        self.grid = VGroup(*cells).arrange_in_grid(rows=num_row, cols=num_col, buff=0,)
+        self.grid = VGroup(*[Square(color=BLUE_E, side_length=side_length) for _ in range(num_row*num_col)]).arrange_in_grid(rows=num_row, cols=num_col, buff=0,)
 
         # set cell colours based on rules
         self.update_grid(0)
 
     def update_grid(self, generation):
-        for i in range(self.grid_size):
-            for j in range(self.grid_size):
+        prev_gen = generation - 1
+        if prev_gen > -1:
+            for (i, j) in self.generations[prev_gen]:
                 pos = i * self.grid_size + j
-                if (i, j) in self.generations[generation]:
-                    self.grid[pos].set_fill(BLUE_C, opacity = 1)
-                else:
-                    self.grid[pos].set_fill(BLACK, opacity = 1)
+                if not (i, j) in self.generations[generation]:
+                    self.grid[pos].set_fill(color=BLACK, opacity = 1)
+        
+        for (i, j) in self.generations[generation]:
+            pos = i * self.grid_size + j
+            self.grid[pos].set_fill(color=BLUE_E, opacity = 1)
+        # for i in range(self.grid_size):
+        #     for j in range(self.grid_size):
+        #         pos = i * self.grid_size + j
+        #         if (i, j) in self.generations[generation]:
+        #             self.grid[pos].set_fill(self.get_distance_color(i, j, self.grid_size), opacity = 1)
+        #         else:
+        #             self.grid[pos].set_fill(BLACK, opacity = 1)
+    
+    # def get_distance_color(self, x: int, y: int, grid_size: int):
+    #     return BLUE_E

@@ -1,4 +1,3 @@
-import helpers.Pair;
 import helpers.Serializer;
 
 import java.io.BufferedWriter;
@@ -26,8 +25,8 @@ public class GameOfLife {
     private static final String[] OBS_CSV_HEADERS = {"porcentaje", "pendiente"};
     private static final String[] CONFIGS_CSV_HEADERS = {"porcentaje", "iteracion", "cant_celulas_vivas", "dist_al_centro"};
     // TODO: Get percentages info from config file
-    private static final int GRID_SIZE = 19;
-    private static final int DOMAIN = 11;
+    private static final int GRID_SIZE = 59;
+    private static final int DOMAIN = 19;
 
     public static void main(String[] args) {
         try {
@@ -41,9 +40,9 @@ public class GameOfLife {
             random(4, 2);
 
             // 3D
+            random(2, 3);
+            random(3, 3);
             random(4, 3);
-            random(9, 3);
-            random(16, 3);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -68,6 +67,9 @@ public class GameOfLife {
         SimpleRegression regression = new SimpleRegression();
 
         if (dimension != 2 && dimension != 3) {
+            printerObs.close();
+            printerConfigs.close();
+
             throw new IllegalArgumentException("Dimension must be 2 or 3");
         }
 
@@ -139,10 +141,7 @@ public class GameOfLife {
                 csvLineObs.clear();
             }
         }
-        printerObs.flush();
         printerObs.close();
-
-        printerConfigs.flush();
         printerConfigs.close();
     }
 
