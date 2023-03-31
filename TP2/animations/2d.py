@@ -1,3 +1,4 @@
+import math
 from operator import ge
 from manim import *
 from gameParser import GameParser
@@ -41,9 +42,9 @@ class GameOfLife(Scene):
 
     def create_grid(self, num_row, num_col, side_length):
         # create cells
-        # cells = [Square(color=BLUE_E, side_length=side_length) for _ in range(num_row*num_col)]
+        cells = [Square(side_length=side_length) for _ in range(num_row*num_col)]
         # arrange cells into a grid
-        self.grid = VGroup(*[Square(color=BLUE_E, side_length=side_length) for _ in range(num_row*num_col)]).arrange_in_grid(rows=num_row, cols=num_col, buff=0,)
+        self.grid = VGroup(*cells).arrange_in_grid(rows=num_row, cols=num_col, buff=0,)
 
         # set cell colours based on rules
         self.update_grid(0)
@@ -58,7 +59,7 @@ class GameOfLife(Scene):
         
         for (i, j) in self.generations[generation]:
             pos = i * self.grid_size + j
-            self.grid[pos].set_fill(color=BLUE_E, opacity = 1)
+            self.grid[pos].set_fill(color=self.get_distance_color(i, j), opacity = 1)
         # for i in range(self.grid_size):
         #     for j in range(self.grid_size):
         #         pos = i * self.grid_size + j
@@ -67,5 +68,13 @@ class GameOfLife(Scene):
         #         else:
         #             self.grid[pos].set_fill(BLACK, opacity = 1)
     
-    # def get_distance_color(self, x: int, y: int, grid_size: int):
-    #     return BLUE_E
+    def get_distance_color(self, x: int, y: int):
+        max_dist = self.get_center_distance(self.grid_size, self.grid_size)
+        dist = self.get_center_distance(x, y)
+        return utils.color.rgb_to_color((dist/max_dist, 0, 1 - dist/max_dist))
+    
+    def get_center_distance(self, x: int, y: int):
+        center = int(self.grid_size / 2) + 1
+        x_dist = math.pow(x - center, 2)
+        y_dist = math.pow(y - center, 2)
+        return math.sqrt(x_dist + y_dist)
