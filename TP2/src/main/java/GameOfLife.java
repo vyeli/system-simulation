@@ -22,8 +22,8 @@ public class GameOfLife {
     private static final String[] OBS_CSV_HEADERS = {"porcentaje", "pendiente"};
     private static final String[] CONFIGS_CSV_HEADERS = {"porcentaje", "iteracion", "cant_celulas_vivas", "dist_al_centro"};
     // TODO: Get percentages info from config file
-    private static final int GRID_SIZE = 59;
-    private static final int DOMAIN = 19;
+    private static final int GRID_SIZE = 19;
+    private static final int DOMAIN = 11;
 
     public static void main(String[] args) {
         try {

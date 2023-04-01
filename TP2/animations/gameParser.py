@@ -17,16 +17,12 @@ class GameParser:
 
             # Parse positions for each iteration
             while line:
-                line = f.readline()
                 if line == '\n':
+                    line = f.readline()
                     iterations.append(cells)
                     cells = []
                 else:
                     cells.append(tuple(map(int, line.strip().split())))
                 line = f.readline()
 
-            # Append last iteration
-            # if cells:
-            #     iterations.append(cells)
-
-            return size, domain, iterations
+            return size, domain, iterations[:-1]
