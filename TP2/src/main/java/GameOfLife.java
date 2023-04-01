@@ -72,16 +72,15 @@ public class GameOfLife {
 
         RandomGrid grid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
 
+        // To write into file the grid that are cycles with maxSteps of evolution of non-cycles
+        List<Trio> cycles = new ArrayList<>();
+        int maxSteps = -1;
+
         for (int j = 0; j < 10; j++) {
             List<Double> csvLineObs = new ArrayList<>();
             // List<Double> csvLineConfigs = new ArrayList<>();
 
             // System.out.println("Sistema con " + p + "%:");
-
-            // To write into file the grid that are cycles with maxSteps of evolution of non-cycles
-            List<Trio> cycles = new ArrayList<>();
-            int maxSteps = -1;
-
             for (int p = 15; p < 100; p += 15) {
                 double percentage = (double) p / 100;
                 csvLineObs.add(percentage);
@@ -157,9 +156,9 @@ public class GameOfLife {
                 PrintWriter outputWriter = new PrintWriter(fileWriter);
                 RandomGrid cycleGrid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
                 if (dimension == 2)
-                    cycleGrid.setGrid(Serializer.deserialize2D(cycle.getZ(), dimension));
+                    cycleGrid.setGrid(Serializer.deserialize2D(cycle.getZ(), GRID_SIZE));
                 else
-                    cycleGrid.setGrid(Serializer.deserialize3D(cycle.getZ(), dimension));
+                    cycleGrid.setGrid(Serializer.deserialize3D(cycle.getZ(), GRID_SIZE));
                 for (int i = cycle.getY(); i < maxSteps; i++) {
                     cycleGrid.nextGeneration();
                     if (dimension == 2) {
