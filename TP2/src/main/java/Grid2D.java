@@ -29,6 +29,20 @@ public class Grid2D extends RandomGrid<int[][], Pair<Integer, Integer>> implemen
         }
     }
 
+    /*
+    public Grid2D(Grid2D grid2D) {
+        this.size = grid2D.size;
+        this.domain = grid2D.domain;
+        this.neighboursForRevive = grid2D.neighboursForRevive;
+
+        for (int i=0 ; i < size ; i++) {
+            this.grid[i] = Arrays.copyOf(grid2D.grid[i], size);
+        }
+        
+        insertLiveCells();
+    }
+    */
+
     private boolean isBorder(int coord, int border) {
         return coord == 0 || coord == border;
     }
@@ -43,7 +57,7 @@ public class Grid2D extends RandomGrid<int[][], Pair<Integer, Integer>> implemen
 
     public void insertLiveCells() {
         for (int x=0 ; x < size ; x++) {
-            this.grid[x] = new int[size];
+            // this.grid[x] = new int[size];
             for (int y=0 ; y < size ; y++) {
                 if (this.grid[x][y] == 1) {
                     this.addAndCheckIfBorderCell(new Pair<>(x, y));

@@ -139,7 +139,7 @@ public class GameOfLife {
                     // TODO: VER SI ESTO ESTA BIEN DE CREAR UN NUEVO REGRESION A BASE DE OTRO
                     SimpleRegression newRegression = new SimpleRegression();
                     newRegression.append(regression);
-                    cycles.add(new Cycle(percentage, steps, grid.getLiveCells(), newRegression));
+                    cycles.add(new Cycle(percentage, steps, new HashSet<>(grid.getLiveCells()), newRegression));
                 } else {
                     csvLineObs.add(regression.getSlope());
                     printerObs.printRecord(csvLineObs);
@@ -155,8 +155,9 @@ public class GameOfLife {
 
             // Complete cycles
             for (Cycle cycle : cycles) {
-                //System.out.println("Ciclo en " + cycle.getPercentage() + ", iter: " + cycle.getSteps());
-                FileWriter fileWriter = new FileWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + cycle.getPercentage() + ".txt", true);
+                //if (j == 0)
+                //    System.out.println("Ciclo en " + cycle.getPercentage() + ", sistema: " + (neighboursForRevive-1));
+                FileWriter fileWriter = new FileWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + (int) (cycle.getPercentage() * 100) + ".txt", true);
                 PrintWriter outputWriter = new PrintWriter(fileWriter);
                 RandomGrid cycleGrid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
                 if (dimension == 2)
