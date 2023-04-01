@@ -383,7 +383,7 @@ class GOLSecond(ThreeDScene):
         self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.15)
 
-        grid_size = 16
+        grid_size = 59
         size = 3.5
 
         grid = RandomGrid(

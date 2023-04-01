@@ -2,6 +2,7 @@ import math
 from operator import ge
 from manim import *
 from gameParser import GameParser
+import numpy as np
 
 import json
 from timeit import default_timer as timer
@@ -17,7 +18,7 @@ class GameOfLife(Scene):
         side_length = 7.65 / self.grid_size     # For screen adjust
 
         # initialise grid
-        self.create_grid(self.grid_size, self.grid_size, side_length)
+        self.create_grid(side_length)
         self.add(self.grid)
         self.wait(time)
 
@@ -27,7 +28,7 @@ class GameOfLife(Scene):
         # simulate game of life
         for generation in range(1, gens_to_iter):
             self.update_grid(generation)
-            self.add(self.grid)
+            # self.add(self.grid)
             self.wait(time)
         
         end = timer()
@@ -45,12 +46,14 @@ class GameOfLife(Scene):
         file.close()
         json_file.close()
 
-    def create_grid(self, num_row, num_col, side_length):
+    def create_grid(self, side_length):
         # create cells
-        cells = [Square(side_length=side_length, stroke_width=1) for _ in range(num_row*num_col)]
+        cells = [Square(side_length=side_length, stroke_width=1) for _ in np.arange(self.grid_size * 59)]# self.grid_size)])
+        print('CHAU 1')
         # arrange cells into a grid
-        self.grid = VGroup(*cells).arrange_in_grid(rows=num_row, cols=num_col, buff=0,)
+        self.grid = VGroup(cells).arrange_in_grid(rows=self.grid_size, cols=self.grid_size, buff=0,)
 
+        print('CHAU 2')
         # set cell colours based on rules
         self.update_grid(0)
 
