@@ -23,7 +23,8 @@ for string in systems_strings_2d:
     groupby_perc = df.groupby('porcentaje')
 
     for perc, grouped_table in groupby_perc:
-        if perc == 0.3 or perc == 0.6 or perc == 0.9:
+        # if perc == 0.3 or perc == 0.6 or perc == 0.9:
+        if perc is not None:
             cells = []
             radius = []
             #print(grouped_table['cant_celulas_vivas'])
@@ -88,8 +89,8 @@ for string in systems_strings_3d:
     groupby_perc = df.groupby('porcentaje')
 
     for perc, grouped_table in groupby_perc:
-        if perc == 0.3 or perc == 0.6 or perc == 0.9:
-        # if perc is not None:
+        # if perc == 0.3 or perc == 0.6 or perc == 0.9:
+        if perc is not None:
             cells = []
             radius = []
             #print(grouped_table['cant_celulas_vivas'])

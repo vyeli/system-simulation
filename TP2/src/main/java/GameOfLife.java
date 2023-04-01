@@ -58,8 +58,8 @@ public class GameOfLife {
 
         // Archivo de cant celulas vivas y radio al centro
         BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get(DATA_FOLDER_PATH + (dimension == 2 ? CONFIGS_2D_DATA_BASE_FILE_NAME : CONFIGS_3D_DATA_BASE_FILE_NAME) + "_N" + (neighboursForRevive == null ? "" : neighboursForRevive) + ".csv"));
-        CSVFormat csvFormatCOnfigs = CSVFormat.DEFAULT.builder().setHeader(CONFIGS_CSV_HEADERS).build();
-        final CSVPrinter printerConfigs = new CSVPrinter(bwConfigs, csvFormatCOnfigs);
+        CSVFormat csvFormatConfigs = CSVFormat.DEFAULT.builder().setHeader(CONFIGS_CSV_HEADERS).build();
+        final CSVPrinter printerConfigs = new CSVPrinter(bwConfigs, csvFormatConfigs);
 
         SimpleRegression regression = new SimpleRegression();
 
@@ -73,11 +73,11 @@ public class GameOfLife {
         RandomGrid grid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
 
         // To write into file the grid that are cycles with maxSteps of evolution of non-cycles
-        List<Trio> cycles = new ArrayList<>();
         int maxSteps = -1;
 
         for (int j = 0; j < 10; j++) {
             List<Double> csvLineObs = new ArrayList<>();
+            List<Trio> cycles = new ArrayList<>();
             // List<Double> csvLineConfigs = new ArrayList<>();
 
             // System.out.println("Sistema con " + p + "%:");
@@ -127,24 +127,25 @@ public class GameOfLife {
                             outputWriter.println(Serializer.serialize3D(grid.getLiveCells()));
                         }
                         printerConfigs.printRecord(percentage, steps+1, grid.getLiveCells().size(), grid.getCellsRadius());
-                        if (maxSteps < steps) {
-                            maxSteps = steps;
-                        }
                     }
                 } while (!grid.hasCellsOutside() && !previousStates.contains(grid) && grid.getLiveCellsAmount() > 0);
 
-                // Add cycle iteration to comple later
-                if (isGenerationOnGraphic(p, j) && previousStates.contains(grid)) {
-                    cycles.add(new Trio<>(p, steps, grid.getLiveCells()));
+                if (maxSteps < steps) {
+                    maxSteps = steps;
+                }
+
+                // Add cycle iteration to complete later
+                if (previousStates.contains(grid)) {
+                    // cycles.add(new Cycle(percentage, steps, grid.getLiveCells(), regression))
+                    cycles.add(new Trio<>(percentage, steps, grid.getLiveCells())); // Nuevo objeto ciclo
+                } else {
+                    csvLineObs.add(regression.getSlope());
+                    printerObs.printRecord(csvLineObs);
                 }
 
                 if (outputWriter != null) {
                     outputWriter.close();
-                }
-
-                // System.out.println("- Iteración " + (j+1) + ": " + regression.getSlope());
-                csvLineObs.add(regression.getSlope());
-                printerObs.printRecord(csvLineObs);
+                }    
 
                 regression.clear();
                 csvLineObs.clear();
@@ -152,6 +153,7 @@ public class GameOfLife {
 
             // Complete cycles
             for (Trio<Integer, Integer, Set> cycle : cycles) {
+                System.out.println("Ciclo en " + cycle.getX() + ", iter: " + cycle.getY());
                 FileWriter fileWriter = new FileWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + cycle.getX() + ".txt", true);
                 PrintWriter outputWriter = new PrintWriter(fileWriter);
                 RandomGrid cycleGrid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
@@ -161,16 +163,18 @@ public class GameOfLife {
                     cycleGrid.setGrid(Serializer.deserialize3D(cycle.getZ(), GRID_SIZE));
                 for (int i = cycle.getY(); i < maxSteps; i++) {
                     cycleGrid.nextGeneration();
-                    if (dimension == 2) {
+                    // regression.addData(steps, finalCells);
+                    
+                    if (isGenerationOnGraphic(cycle.getX(), j)) {
+                        if (dimension == 2) {
                         outputWriter.println(Serializer.serialize2D(cycleGrid.getLiveCells()));
-                    } else {
-                        outputWriter.println(Serializer.serialize3D(cycleGrid.getLiveCells()));
+                        } else {
+                            outputWriter.println(Serializer.serialize3D(cycleGrid.getLiveCells()));
+                        }
+                        printerConfigs.printRecord(cycle.getX(), i+1, cycle.getZ().size(), cycleGrid.getCellsRadius());
                     }
-                    printerConfigs.printRecord(cycle.getX(), i+1, cycle.getZ().size(), cycleGrid.getCellsRadius());
                 }
             }
-
-
 
         }
         printerObs.close();
