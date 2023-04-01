@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-import helpers.Trio;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -77,7 +76,7 @@ public class GameOfLife {
 
         for (int j = 0; j < 10; j++) {
             List<Double> csvLineObs = new ArrayList<>();
-            List<Trio> cycles = new ArrayList<>();
+            List<Cycle> cycles = new ArrayList<>();
             // List<Double> csvLineConfigs = new ArrayList<>();
 
             // System.out.println("Sistema con " + p + "%:");
@@ -136,8 +135,11 @@ public class GameOfLife {
 
                 // Add cycle iteration to complete later
                 if (previousStates.contains(grid)) {
-                    // cycles.add(new Cycle(percentage, steps, grid.getLiveCells(), regression))
-                    cycles.add(new Trio<>(percentage, steps, grid.getLiveCells())); // Nuevo objeto ciclo
+                    // Create a new SimpleRegression instance based on the initial one
+                    // TODO: VER SI ESTO ESTA BIEN DE CREAR UN NUEVO REGRESION A BASE DE OTRO
+                    SimpleRegression newRegression = new SimpleRegression();
+                    newRegression.append(regression);
+                    cycles.add(new Cycle(percentage, steps, grid.getLiveCells(), newRegression));
                 } else {
                     csvLineObs.add(regression.getSlope());
                     printerObs.printRecord(csvLineObs);
@@ -145,36 +147,43 @@ public class GameOfLife {
 
                 if (outputWriter != null) {
                     outputWriter.close();
-                }    
+                }
 
                 regression.clear();
                 csvLineObs.clear();
             }
 
             // Complete cycles
-            for (Trio<Integer, Integer, Set> cycle : cycles) {
-                System.out.println("Ciclo en " + cycle.getX() + ", iter: " + cycle.getY());
-                FileWriter fileWriter = new FileWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + cycle.getX() + ".txt", true);
+            for (Cycle cycle : cycles) {
+                //System.out.println("Ciclo en " + cycle.getPercentage() + ", iter: " + cycle.getSteps());
+                FileWriter fileWriter = new FileWriter("./output/" + (dimension == 2 ? "2d_N" : "3d_N") + (neighboursForRevive == null ? "" : neighboursForRevive) + "_P" + cycle.getPercentage() + ".txt", true);
                 PrintWriter outputWriter = new PrintWriter(fileWriter);
                 RandomGrid cycleGrid = dimension == 2 ? new Grid2D(GRID_SIZE, DOMAIN, neighboursForRevive) : new Grid3D(GRID_SIZE, DOMAIN, neighboursForRevive);
                 if (dimension == 2)
-                    cycleGrid.setGrid(Serializer.deserialize2D(cycle.getZ(), GRID_SIZE));
+                    cycleGrid.setGrid(Serializer.deserialize2D(cycle.getLiveCells(), GRID_SIZE));
                 else
-                    cycleGrid.setGrid(Serializer.deserialize3D(cycle.getZ(), GRID_SIZE));
-                for (int i = cycle.getY(); i < maxSteps; i++) {
+                    cycleGrid.setGrid(Serializer.deserialize3D(cycle.getLiveCells(), GRID_SIZE));
+                for (int i = cycle.getSteps(); i < maxSteps; i++) {
                     cycleGrid.nextGeneration();
-                    // regression.addData(steps, finalCells);
-                    
-                    if (isGenerationOnGraphic(cycle.getX(), j)) {
+                    cycle.getRegression().addData(i, cycleGrid.getLiveCellsAmount());
+                    if (isGenerationOnGraphic((int) (cycle.getPercentage() * 100), j)) {
                         if (dimension == 2) {
                         outputWriter.println(Serializer.serialize2D(cycleGrid.getLiveCells()));
                         } else {
                             outputWriter.println(Serializer.serialize3D(cycleGrid.getLiveCells()));
                         }
-                        printerConfigs.printRecord(cycle.getX(), i+1, cycle.getZ().size(), cycleGrid.getCellsRadius());
+                        printerConfigs.printRecord(cycle.getPercentage(), i+1, cycle.getLiveCells().size(), cycleGrid.getCellsRadius());
                     }
                 }
+                List<Double> cycleObs = new ArrayList<>();
+                cycleObs.add(cycle.getPercentage());
+                cycleObs.add(cycle.getRegression().getSlope());
+                printerObs.printRecord(cycleObs);
+                cycle.getRegression().clear();
+                cycleObs.clear();
+                outputWriter.close();
             }
+
 
         }
         printerObs.close();
