@@ -1,4 +1,3 @@
-# TODO: Make observable graphs with generated data
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -14,6 +13,11 @@ radius_fig_3d, radius_axs_3d = plt.subplots(3, figsize=(12, 8), layout="tight")
 
 obs_fig_2d, obs_axs_2d = plt.subplots(3, figsize=(12, 8), layout="tight")
 obs_fig_3d, obs_axs_3d = plt.subplots(3, figsize=(12, 8), layout="tight")
+obs_fig_2d.xsticks = [0.15, 0.3, 0.45, 0.6, 0.75, 0.9]
+obs_fig_3d.xsticks = [0.15, 0.3, 0.45, 0.6, 0.75, 0.9]
+
+total_domain_number_of_cells_2d = 15 * 15
+total_domain_number_of_cells_3d = 15 * 15 * 15
 
 ##################################### 2D #############################################################
 
@@ -29,7 +33,8 @@ for string in systems_strings_2d:
             radius = []
             #print(grouped_table['cant_celulas_vivas'])
             for count in grouped_table['cant_celulas_vivas']:
-                cells.append(count)
+                live_cells_percentage = count / total_domain_number_of_cells_2d * 100
+                cells.append(live_cells_percentage)
             # print(grouped_table['dist_al_centro'])
             for count in grouped_table['dist_al_centro']:
                 radius.append(count)
@@ -61,7 +66,7 @@ for string in systems_strings_2d:
 
     cells_axs_2d[system_idx].set_title('Sistema {} en 2D'.format(system_idx+1))
     cells_axs_2d[system_idx].set_xlabel('N° de generación'.format(system_idx))
-    cells_axs_2d[system_idx].set_ylabel('Cantidad de celdas vivas')
+    cells_axs_2d[system_idx].set_ylabel('Porcentaje de celdas vivas %')
 
     radius_axs_2d[system_idx].set_title('Sistema {} en 2D'.format(system_idx+1))
     radius_axs_2d[system_idx].set_xlabel('N° de generación'.format(system_idx))
@@ -69,7 +74,8 @@ for string in systems_strings_2d:
 
     obs_axs_2d[system_idx].set_title('Sistema {} en 2D'.format(system_idx+1))
     obs_axs_2d[system_idx].set_xlabel('Porcentaje de celdas vivas en el dominio acotado')
-    obs_axs_2d[system_idx].set_ylabel('Pendiente de celdas vivas por generación')
+    obs_axs_2d[system_idx].set_ylabel('Pendiente de celdas vivas')
+    obs_axs_2d[system_idx].set_xticks([0.15, 0.3, 0.45, 0.6, 0.75, 0.9])
 
     # print something on 3d
 
@@ -95,7 +101,8 @@ for string in systems_strings_3d:
             radius = []
             #print(grouped_table['cant_celulas_vivas'])
             for count in grouped_table['cant_celulas_vivas']:
-                cells.append(count)
+                live_cells_percentage = count / total_domain_number_of_cells_3d * 100
+                cells.append(live_cells_percentage)
             #print(grouped_table['dist_al_centro'])
             for count in grouped_table['dist_al_centro']:
                 radius.append(count)
@@ -126,7 +133,7 @@ for string in systems_strings_3d:
 
     cells_axs_3d[system_idx].set_title('Sistema {} en 3D'.format(system_idx+1))
     cells_axs_3d[system_idx].set_xlabel('N° de generación'.format(system_idx))
-    cells_axs_3d[system_idx].set_ylabel('Cantidad de celdas vivas')
+    cells_axs_3d[system_idx].set_ylabel('Porcentaje de celdas vivas %')
 
     radius_axs_3d[system_idx].set_title('Sistema {} en 3D'.format(system_idx+1))
     radius_axs_3d[system_idx].set_xlabel('N° de generación'.format(system_idx))
@@ -134,7 +141,8 @@ for string in systems_strings_3d:
 
     obs_axs_3d[system_idx].set_title('Sistema {} en 3D'.format(system_idx+1))
     obs_axs_3d[system_idx].set_xlabel('Porcentaje de celdas vivas en el dominio acotado')
-    obs_axs_3d[system_idx].set_ylabel('Pendiente de celdas vivas por generación')
+    obs_axs_3d[system_idx].set_ylabel('Pendiente de celdas vivas')
+    obs_axs_3d[system_idx].set_xticks([0.15, 0.3, 0.45, 0.6, 0.75, 0.9])
 
     cells_axs_3d[system_idx].legend(legends)
     radius_axs_3d[system_idx].legend(legends)
