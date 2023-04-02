@@ -18,11 +18,10 @@ class GameParser:
             # Parse positions for each iteration
             while line:
                 if line == '\n':
-                    line = f.readline()
                     iterations.append(cells)
                     cells = []
                 else:
-                    cells.append(tuple(map(int, line.strip().split())))
+                    cells.append(tuple(map(int, line.split())))
                 line = f.readline()
 
             return size, domain, iterations[:-1]

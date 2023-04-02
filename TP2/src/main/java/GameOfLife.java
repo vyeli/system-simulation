@@ -21,9 +21,8 @@ public class GameOfLife {
 
     private static final String[] OBS_CSV_HEADERS = {"porcentaje", "pendiente"};
     private static final String[] CONFIGS_CSV_HEADERS = {"porcentaje", "iteracion", "cant_celulas_vivas", "dist_al_centro"};
-    // TODO: Get percentages info from config file
-    private static final int GRID_SIZE = 19;
-    private static final int DOMAIN = 11;
+    private static final int GRID_SIZE = 59;
+    private static final int DOMAIN = 15;
 
     public static void main(String[] args) {
         try {
@@ -75,14 +74,14 @@ public class GameOfLife {
         int maxSteps = -1;
 
         for (int j = 0; j < 10; j++) {
-            List<Double> csvLineObs = new ArrayList<>();
+            // List<Double> csvLineObs = new ArrayList<>();
             List<Cycle> cycles = new ArrayList<>();
             // List<Double> csvLineConfigs = new ArrayList<>();
 
             // System.out.println("Sistema con " + p + "%:");
             for (int p = 15; p < 100; p += 15) {
                 double percentage = (double) p / 100;
-                csvLineObs.add(percentage);
+                // csvLineObs.add(percentage);
 
                 // Set up initial pattern
                 if (dimension == 2) {
@@ -136,13 +135,12 @@ public class GameOfLife {
                 // Add cycle iteration to complete later
                 if (previousStates.contains(grid)) {
                     // Create a new SimpleRegression instance based on the initial one
-                    // TODO: VER SI ESTO ESTA BIEN DE CREAR UN NUEVO REGRESION A BASE DE OTRO
                     SimpleRegression newRegression = new SimpleRegression();
                     newRegression.append(regression);
                     cycles.add(new Cycle(percentage, steps, new HashSet<>(grid.getLiveCells()), newRegression));
                 } else {
-                    csvLineObs.add(regression.getSlope());
-                    printerObs.printRecord(csvLineObs);
+                    // csvLineObs.add(regression.getSlope());
+                    printerObs.printRecord(percentage, regression.getSlope());
                 }
 
                 if (outputWriter != null) {
@@ -150,7 +148,7 @@ public class GameOfLife {
                 }
 
                 regression.clear();
-                csvLineObs.clear();
+                // csvLineObs.clear();
             }
 
             // Complete cycles
@@ -176,13 +174,13 @@ public class GameOfLife {
                         printerConfigs.printRecord(cycle.getPercentage(), i+1, cycle.getLiveCells().size(), cycleGrid.getCellsRadius());
                     }
                 }
-                List<Double> cycleObs = new ArrayList<>();
-                cycleObs.add(cycle.getPercentage());
-                cycleObs.add(cycle.getRegression().getSlope());
-                printerObs.printRecord(cycleObs);
-                cycle.getRegression().clear();
-                cycleObs.clear();
+                // List<Double> cycleObs = Arrays.asList(cycle.getPercentage(), cycle.getRegression().getSlope());
+                // cycleObs.add(cycle.getPercentage());
+                // cycleObs.add(cycle.getRegression().getSlope());
+                printerObs.printRecord(cycle.getPercentage(), cycle.getRegression().getSlope());
+                // cycle.getRegression().clear();
                 outputWriter.close();
+                fileWriter.close();
             }
 
 

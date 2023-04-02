@@ -66,7 +66,7 @@ class GameOfLife(Scene):
         prev_gen = generation - 1
         if prev_gen > -1:
             for cell in self.generations[prev_gen]:
-                if not cell in self.generations[generation]:
+                if cell not in self.generations[generation]:
                     self.grid[cell].set_fill(BLACK, opacity=1)
         
         for cell in self.generations[generation]:
