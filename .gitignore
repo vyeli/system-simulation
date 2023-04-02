@@ -148,6 +148,7 @@ Thumbs.db
 *.mov
 *.wmv
 *.csv
+*.png
 
 *.txt
 !TP1/requirements.txt
