@@ -150,4 +150,15 @@ for string in systems_strings_3d:
     system_idx += 1
 
 plt.xlim(left=0)
+
+cells_fig_2d.savefig("porcentaje_celdas_vivas_2d.png", dpi=300)
+radius_fig_2d.savefig("distancia_al_centro_2d.png", dpi=300)
+obs_fig_2d.savefig("pendiente_2d.png", dpi=300)
+
+cells_fig_3d.savefig("porcentaje_celdas_vivas_3d.png", dpi=300)
+radius_fig_3d.savefig("distancia_al_centro_3d.png", dpi=300)
+obs_fig_3d.savefig("pendiente_3d.png", dpi=300)
+
 plt.show()
+
+
