@@ -67,7 +67,7 @@ class GameOfLife(Scene):
         if prev_gen > -1:
             for cell in self.generations[prev_gen]:
                 if cell not in self.generations[generation]:
-                    self.grid[cell].set_fill(BLACK, opacity=1)
+                    self.grid[cell].set_fill(opacity=0)
         
         for cell in self.generations[generation]:
             self.grid[cell].set_fill(self.get_distance_color(cell[0], cell[1]), opacity=1)
