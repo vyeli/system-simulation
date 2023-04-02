@@ -33,6 +33,7 @@ class GameOfLife(Scene):
         
         end = timer()
         print('Execution time: {}s'.format(end - start))
+
     
     def parse_generations(self):
         self.generations = []
@@ -46,6 +47,7 @@ class GameOfLife(Scene):
         file.close()
         json_file.close()
 
+
     def create_grid(self, side_length):
         # create cells
         cells = [Square(side_length=side_length, stroke_width=1) for _ in np.arange(self.grid_size * self.grid_size)]
@@ -55,6 +57,7 @@ class GameOfLife(Scene):
         print('CHAU 2')
         # set cell colours based on rules
         self.update_grid(0)
+
 
     def update_grid(self, generation):
         prev_gen = generation - 1
@@ -67,18 +70,13 @@ class GameOfLife(Scene):
         for (i, j) in self.generations[generation]:
             pos = i * self.grid_size + j
             self.grid[pos].set_fill(color=self.get_distance_color(i, j), opacity = 1)
-        # for i in range(self.grid_size):
-        #     for j in range(self.grid_size):
-        #         pos = i * self.grid_size + j
-        #         if (i, j) in self.generations[generation]:
-        #             self.grid[pos].set_fill(self.get_distance_color(i, j, self.grid_size), opacity = 1)
-        #         else:
-        #             self.grid[pos].set_fill(BLACK, opacity = 1)
+
     
     def get_distance_color(self, x: int, y: int):
         max_dist = self.get_center_distance(self.grid_size, self.grid_size)
         dist = self.get_center_distance(x, y)
         return utils.color.rgb_to_color((1 - dist/max_dist, 0, dist/max_dist))
+
     
     def get_center_distance(self, x: int, y: int):
         center = int(self.grid_size / 2) + 1
