@@ -1,24 +1,23 @@
 import helpers.Pair;
 
 public class Ball {
-  
     private double mass = 165;        // gr
     private double radius = 2.35;     // cm
-
-
+    private final String color;
     private boolean isHole = false;
     private int number;
-
+    private int collisionCount;
     private Pair<Double, Double> position;      // (x, y)
     private Pair<Double, Double> velocity;         // (x, y)
 
-    public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition) {
-        this(number, radius, isHole, initialPosition, new Pair<>(0.0, 0.0));
+    public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition, String color) {
+        this(number, radius, isHole, color, initialPosition, new Pair<>(0.0, 0.0));
     }
 
 
-    public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition, final Pair<Double, Double> initialVelocity) {
+    public Ball(final int number, final double radius, final boolean isHole, String color, final Pair<Double, Double> initialPosition, final Pair<Double, Double> initialVelocity) {
         this.radius = radius;
+        this.color = color;
         if(isHole) {
             this.isHole = true;
             this.radius *= 2;         // Holes are simulated as balls, but double the width
@@ -26,6 +25,7 @@ public class Ball {
         this.number = number;
         this.position = initialPosition;
         this.velocity = initialVelocity;
+        this.collisionCount = 0;
     }
 
     public int getNumber() {
@@ -66,17 +66,81 @@ public class Ball {
     public double collides(Ball b) {
         double tc = Double.POSITIVE_INFINITY;
 
-        double[] deltaR = {b.position.getX() - this.position.getX(), b.position.getY() - this.position.getY()};
-        double[] deltaV = {b.velocity.getX() - this.velocity.getX(), b.velocity.getY() - this.velocity.getY()};
+        double[] deltaR = deltaR(b);
+        double[] deltaV = deltaV(b);
 
-        double dotProduct = deltaV[0] * deltaR[0] + deltaV[1] * deltaR[1];
-        double deltaR2 = deltaR[0] * deltaR[0] + deltaR[1] * deltaR[1];
-        double deltaV2 = deltaV[0] * deltaV[0] + deltaV[1] * deltaV[1];
+        double dotProduct = dotProduct(deltaR, deltaV);
+        double RSquared = dotProduct(deltaR, deltaR);
+        double VSquared = dotProduct(deltaV, deltaV);
 
+        double sigma = this.radius + b.radius;
 
-        double d = dotProduct * dotProduct - deltaV2 * (deltaR2 - (this.radius + b.radius) * (this.radius + b.radius));
+        double d = dotProduct * dotProduct - VSquared * (RSquared - sigma * sigma);
+
+        if (d >= 0 && dotProduct > 0) {
+            tc = -(dotProduct + Math.sqrt(d)) / VSquared;
+        }
 
         return tc;
     }
+    /**
+     * update the invoking particle to simulate it bouncing off a vertical wall
+     */
+    public void bounceX() {
+        velocity.setX(-velocity.getX());
+        collisionCount++;
+    }
+
+    /**
+     * update the invoking particle to simulate it bouncing off a horizontal wall
+     */
+    public void bounceY() {
+        velocity.setY(-velocity.getY());
+        collisionCount++;
+    }
+
+    /**
+     * update both particles to simulate them bouncing off each other
+     * @param b the other particle
+     */
+    public void bounce(Ball b) {
+        double[] deltaR = deltaR(b);
+        double[] deltaV = deltaV(b);
+
+        double RSquared = dotProduct(deltaR, deltaR);
+        double dotProduct = dotProduct(deltaR, deltaV);
+
+        double sigma = this.radius + b.radius;
+
+        double j = 2 * this.mass * b.mass * dotProduct / ((this.mass + b.mass) * sigma);
+
+        double[] jxy = {j * deltaR[0] / RSquared, j * deltaR[1] / sigma};
+
+        this.velocity.setX(this.velocity.getX() + jxy[0] / this.mass);
+        this.velocity.setY(this.velocity.getY() + jxy[1] / this.mass);
+
+        b.velocity.setX(b.velocity.getX() - jxy[0] / b.mass);
+        b.velocity.setY(b.velocity.getY() - jxy[1] / b.mass);
+
+        collisionCount++;
+
+    }
+
+    public int getCollisionCount() {
+        return collisionCount;
+    }
+
+    private double[] deltaR(Ball b) {
+        return new double[]{b.position.getX() - this.position.getX(), b.position.getY() - this.position.getY()};
+    }
+
+    private double[] deltaV(Ball b) {
+        return new double[]{b.velocity.getX() - this.velocity.getX(), b.velocity.getY() - this.velocity.getY()};
+    }
+
+    private double dotProduct(double[] a, double[] b) {
+        return a[0] * b[0] + a[1] * b[1];
+    }
+
 
 }

@@ -11,6 +11,9 @@ public class Table {
     private final double epsilonMax = 0.03;
     private double ballRadius = 2.85;     // cm
 
+    // TODO : Add a list of balls to the table with different colors
+    private final String color = "#000000";
+
     private Map<Integer, Ball> balls = new HashMap<>();
 
     public Table(final double initialBallYPos, final List<Pair<Double, Double>> ballsEpsilon) {
@@ -19,7 +22,7 @@ public class Table {
 
     public Table(final double initialBallYPos, final Double initialBallXSpeed, final List<Pair<Double, Double>> ballsEpsilon) {
         int ballIndex = 0;
-        balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, new Pair<>(56.0, initialBallYPos), new Pair<>(0.0, initialBallXSpeed)));
+        balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, color, new Pair<>(56.0, initialBallYPos), new Pair<>(0.0, initialBallXSpeed)));
 
         double xyEpsilon = 2 * (epsilonMax + ballRadius);
         // Triangle balls
@@ -28,7 +31,7 @@ public class Table {
             double initialYPos = 56 - (xyEpsilon * i) / 2;
             for (int j=0 ; j <= i ; j++) {
                 Pair<Double, Double> ballEpsilon = ballsEpsilon.get(ballIndex - 1);
-                balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, new Pair<>(xPos + ballEpsilon.getX(), initialYPos + j * xyEpsilon + ballEpsilon.getY())));
+                balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, new Pair<>(xPos + ballEpsilon.getX(), initialYPos + j * xyEpsilon + ballEpsilon.getY()), color));
             }
         }
 
@@ -36,7 +39,7 @@ public class Table {
         for (double xMult=0.0 ; xMult < 1.1 ; xMult += 0.5) {
             for(double yMult=0.0 ; yMult < 1.1 ; yMult += 0.5) {
                 if (!(xMult > 0.4 && xMult < 0.6) || !(yMult > 0.4 && yMult < 0.6)) {
-                    balls.put(ballIndex, new Ball(ballIndex++, ballRadius, true, new Pair<>(xMult * width, yMult * height)));
+                    balls.put(ballIndex, new Ball(ballIndex++, ballRadius, true, new Pair<>(xMult * width, yMult * height), color));
                 }
             }
         }
