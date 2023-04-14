@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Table {
-    private int height = 112;            // cm
-    private int width = 224;           // cm
+    private static final int height = 112;            // cm
+    private static final int width = 224;           // cm
 
     private Map<Integer, Ball> balls = new HashMap<>();
 
@@ -27,6 +27,14 @@ public class Table {
                 }
             }
         }
+    }
+
+    public static int getHeight() {
+        return height;
+    }
+
+    public static int getWidth() {
+        return width;
     }
 
     public Map<Integer, Ball> getBalls() {
