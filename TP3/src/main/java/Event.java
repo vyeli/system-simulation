@@ -62,4 +62,5 @@ public class Event {
         return (ball1 != null && ball1.getCollisionCount() != b1CollitionCount) || (ball2 != null && ball2.getCollisionCount() != b2CollitionCount);
     }
 
+
 }

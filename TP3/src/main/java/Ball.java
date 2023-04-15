@@ -10,6 +10,8 @@ public class Ball {
     private Pair<Double, Double> position;      // (x, y)
     private Pair<Double, Double> velocity;         // (x, y)
 
+    private final Double NEGATIVE_TIME = -1.0;
+
     public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition, String color) {
         this(number, radius, isHole, color, initialPosition, new Pair<>(0.0, 0.0));
     }
@@ -39,7 +41,7 @@ public class Ball {
     // return the duration of time until the invoking particle collides with a vertical wall
     public double collidesX() {
         if (velocity.getX() == 0) {
-            return Double.POSITIVE_INFINITY;
+            return NEGATIVE_TIME;
         }
         if (velocity.getX() > 0) {
             return (Table.getWidth() - radius - position.getX()) / velocity.getX();
@@ -50,7 +52,7 @@ public class Ball {
      // return the duration of time until the invoking particle collides with a horizontal wall
     public double collidesY() {
         if (velocity.getY() == 0) {
-            return Double.POSITIVE_INFINITY;
+            return NEGATIVE_TIME;
         }
         if (velocity.getY() > 0) {
             return (Table.getHeight() - radius - position.getY()) / velocity.getY();
@@ -64,7 +66,7 @@ public class Ball {
      * @return the duration of time until the invoking particle collides with another particle if it does, Double.POSITIVE_INFINITY otherwise
      */
     public double collides(Ball b) {
-        double tc = Double.POSITIVE_INFINITY;
+        double tc = NEGATIVE_TIME;
 
         double[] deltaR = deltaR(b);
         double[] deltaV = deltaV(b);
@@ -142,5 +144,56 @@ public class Ball {
         return a[0] * b[0] + a[1] * b[1];
     }
 
+    public void move(double time) {
+        position.setX(position.getX() + velocity.getX() * time);
+        position.setY(position.getY() + velocity.getY() * time);
+    }
 
+    public double getMass() {
+        return mass;
+    }
+
+    public void setMass(double mass) {
+        this.mass = mass;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public boolean isHole() {
+        return isHole;
+    }
+
+    public void setHole(boolean hole) {
+        isHole = hole;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public void setCollisionCount(int collisionCount) {
+        this.collisionCount = collisionCount;
+    }
+
+    public void setPosition(Pair<Double, Double> position) {
+        this.position = position;
+    }
+
+    public Pair<Double, Double> getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(Pair<Double, Double> velocity) {
+        this.velocity = velocity;
+    }
 }
