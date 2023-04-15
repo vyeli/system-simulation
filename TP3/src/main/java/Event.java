@@ -2,6 +2,7 @@ public class Event {
     private Ball ball1, ball2;
     private double timeToCollision;
 
+    int b1CollitionCount = 0, b2CollitionCount = 0;
 
     /**
      * @param ball1
@@ -16,6 +17,10 @@ public class Event {
         this.ball1 = ball1;
         this.ball2 = ball2;
         this.timeToCollision = timeToCollision;
+        if (ball1 != null)
+            this.b1CollitionCount = ball1.getCollisionCount();
+        if (ball2 != null)
+            this.b2CollitionCount = ball2.getCollisionCount();
     }
 
     /**
@@ -48,17 +53,13 @@ public class Event {
     }
 
     /**
-     *  return true if the event has been invalidated since creation, and false if
-     *  the event has been invalidated.
+     *  return true if the event has been invalidated since creation, and false otherwise
+     *  In order to implement wasSuperveningEvent, the event data type should store the collision counts of two particles at the
+     *  time the event was created. The event corresponds to a physical collision if the current collision counts of the particles are
+     *  the same as when the event was created.
      */
     public boolean wasSuperveningEvent() {
-        if (ball1 != null && ball1.getCollisionCount() != ball1.getCollisionCount()) {
-            return true;
-        }
-        if (ball2 != null && ball2.getCollisionCount() != ball2.getCollisionCount()) {
-            return true;
-        }
-        return false;
+        return (ball1 != null && ball1.getCollisionCount() != b1CollitionCount) || (ball2 != null && ball2.getCollisionCount() != b2CollitionCount);
     }
 
 }
