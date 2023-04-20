@@ -1,4 +1,4 @@
-public class Event {
+public class Event implements Comparable<Event>{
     private Ball ball1, ball2;
     private double timeToCollision;
 
@@ -49,6 +49,7 @@ public class Event {
      * compare the time associated with this event and other.
      * Return a positive number (greater), negative number (less), or zero (equal) accordingly
      */
+    @Override
     public int compareTo(Event other) {
         return Double.compare(timeToCollision, other.timeToCollision);
     }

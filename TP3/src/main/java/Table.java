@@ -11,8 +11,27 @@ public class Table {
     private final double epsilonMax = 0.03;
     private double ballRadius = 2.85;     // cm
 
-    // TODO : Add a list of balls to the table with different colors
-    private final String color = "#000000";
+    // Color of the 16 balls in the pool 51
+    private final String[] colors = {
+            /* 1. White */ "#FFFFFF",
+            /* 2. Yellow */ "#FFFF00",
+            /* 3. Blue */ "#0000FF",
+            /* 4. Red */ "#FF0000",
+            /* 5. Purple */ "#800080",
+            /* 6. Orange */ "#FFA500",
+            /* 7. Green */ "#008000",
+            /* 8. Maroon */ "#800000",
+            /* 9. Black */ "#000000",
+            /* 10. Yellow */ "#FFFF00",
+            /* 11. Blue */ "#0000FF",
+            /* 12. Red */ "#FF0000",
+            /* 13. Purple */ "#800080",
+            /* 14. Orange */ "#FFA500",
+            /* 15. Green */ "#008000",
+            /* 16. Maroon */ "#800000",
+
+    };
+
 
     private Map<Integer, Ball> balls = new HashMap<>();
 
@@ -22,7 +41,7 @@ public class Table {
 
     public Table(final double initialBallYPos, final Double initialBallXSpeed, final List<Pair<Double, Double>> ballsEpsilon) {
         int ballIndex = 0;
-        balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, color, new Pair<>(56.0, initialBallYPos), new Pair<>(0.0, initialBallXSpeed)));
+        balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, colors[ballIndex-1], new Pair<>(56.0, initialBallYPos), new Pair<>(initialBallXSpeed, 0.0)));
 
         double xyEpsilon = 2 * (epsilonMax + ballRadius);
         // Triangle balls
@@ -31,16 +50,14 @@ public class Table {
             double initialYPos = 56 - (xyEpsilon * i) / 2;
             for (int j=0 ; j <= i ; j++) {
                 Pair<Double, Double> ballEpsilon = ballsEpsilon.get(ballIndex - 1);
-                balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, new Pair<>(xPos + ballEpsilon.getX(), initialYPos + j * xyEpsilon + ballEpsilon.getY()), color));
+                balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, new Pair<>(xPos + ballEpsilon.getX(), initialYPos + j * xyEpsilon + ballEpsilon.getY()), colors[ballIndex-1]));
             }
         }
 
         // Corners
         for (double xMult=0.0 ; xMult < 1.1 ; xMult += 0.5) {
-            for(double yMult=0.0 ; yMult < 1.1 ; yMult += 0.5) {
-                if (!(xMult > 0.4 && xMult < 0.6) || !(yMult > 0.4 && yMult < 0.6)) {
-                    balls.put(ballIndex, new Ball(ballIndex++, ballRadius, true, new Pair<>(xMult * width, yMult * height), color));
-                }
+            for (double yMult=0.0 ; yMult < 1.1 ; yMult += 1) {
+                balls.put(ballIndex, new Ball(ballIndex++, ballRadius, true, new Pair<>(xMult * width, yMult * height), "#000000"));
             }
         }
 

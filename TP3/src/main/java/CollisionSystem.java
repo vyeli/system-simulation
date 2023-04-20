@@ -13,94 +13,121 @@ public class CollisionSystem {
 
     public boolean hasNextEvent() {
         int HOLES_AMOUNT = 6;
-        return pq.size() > HOLES_AMOUNT;
+        return balls.size() > HOLES_AMOUNT;
     }
 
     /**
      * Simulates the collision system until there are no more events to simulate
      */
-    public void simulate() {
+    public void simulateNextEvent() {
         calculatePosibleEvents();
-        while (hasNextEvent()) {
-            Event event = pq.poll();
-            assert event != null;
+        Event event = pq.poll();
 
-            if (event.wasSuperveningEvent()) {
+        while(event.wasSuperveningEvent())
+            event = pq.poll();
+
+        // Move all balls to the time of the event
+        for (Ball ball : balls) {
+            if (ball.isHole()) {
                 continue;
             }
-            // Move all balls to the time of the event
-            for (Ball ball : balls) {
-                if (ball.isHole()) {
-                    continue;
-                }
-                ball.move(event.getTimeToCollision() - time);
-            }
-            time = event.getTimeToCollision();
-
-            // Process the event
-            Ball a = event.getBall1();
-            Ball b = event.getBall2();
-
-            // If the event is a collision between two balls and are not holes
-            if (a != null && b != null && !a.isHole() && !b.isHole()) {
-                a.bounce(b);
-            }
-            // If the event is a collision between a ball and a vertical wall
-            else if (a != null && b == null && !a.isHole()) {
-                a.bounceX();
-            }
-            // If the event is a collision between a ball and a horizontal wall
-            else if (a == null && b != null && !b.isHole()) {
-                b.bounceY();
-            }
-            // If the event is a collision between a ball and a hole
-            else if (a != null && b != null && !a.isHole() && b.isHole()) {
-                a.setCollisionCount(a.getCollisionCount()+1);
-                balls.remove(a);
-            }
-            // If the event is a collision between a ball and a hole
-            else if (a != null && b != null && a.isHole() && !b.isHole()) {
-                b.setCollisionCount(b.getCollisionCount()+1);
-                balls.remove(b);
-            }
-            // If the event is a redraw
-            else if (a == null && b == null) {
-                continue;
-            }
-            calculatePosibleEvents();
+            ball.move(event.getTimeToCollision());
         }
+
+        // Process the event
+        Ball a = event.getBall1();
+        Ball b = event.getBall2();
+
+        // If the event is a collision between two balls and are not holes
+        if (a != null && b != null && !a.isHole() && !b.isHole()) {
+            a.bounce(b);
+        }
+        // If the event is a collision between a ball and a vertical wall
+        else if (a != null && b == null && !a.isHole()) {
+            a.bounceX();
+        }
+        // If the event is a collision between a ball and a horizontal wall
+        else if (a == null && b != null && !b.isHole()) {
+            b.bounceY();
+        }
+        // If the event is a collision between a ball and a hole
+        else if (a != null && b != null && !a.isHole() && b.isHole()) {
+            a.setCollisionCount(a.getCollisionCount() + 1);
+            balls.remove(a);
+        }
+        // If the event is a collision between a ball and a hole
+        else if (a != null && b != null && a.isHole() && !b.isHole()) {
+            b.setCollisionCount(b.getCollisionCount() + 1);
+            balls.remove(b);
+        }
+        // If the event is a redraw
+        else if (a == null && b == null) {
+            return;
+        }
+        time += event.getTimeToCollision();
+
     }
 
     // Calculates the minimun time to collision for each balls and add those events to the priority queue
     public void calculatePosibleEvents() {
-        Event minEvent = null;
-        double minTime = Double.POSITIVE_INFINITY;
-
-        // Calculate all possible collisions between balls
         for (Ball ball : balls) {
+            Event minEvent = null;
+            if (ball.isHole()) {
+                continue;
+            }
+            // Calculate all possible collisions between balls
             for (Ball otherBall : balls) {
                 if (ball != otherBall) {
                     double time = ball.collides(otherBall);
-                    if (time > 0 && (time < minTime || minEvent == null)) {
-                        minTime = time;
+                    if (time > 0 && (minEvent == null || time < minEvent.getTimeToCollision())) {
                         minEvent = new Event(ball, otherBall, time);
                     }
                 }
-            }
 
-            // Calculate all possible collisions between balls and walls
-            double verticalTime = ball.collidesY();
-            double horizontalTime = ball.collidesX();
-            if (verticalTime > 0 && (verticalTime < minTime || minEvent == null)) {
-                minTime = verticalTime;
-                minEvent = new Event(ball, null, verticalTime);
+                // Calculate all possible collisions between balls and walls
+                double verticalTime = ball.collidesY();
+                double horizontalTime = ball.collidesX();
+                if (verticalTime > 0 && (minEvent == null || verticalTime < minEvent.getTimeToCollision())) {
+                    minEvent = new Event(ball, null, verticalTime);
+                }
+                if (horizontalTime > 0 && (minEvent == null || horizontalTime < minEvent.getTimeToCollision())) {
+                    minEvent = new Event(null, ball, horizontalTime);
+                }
             }
-            if (horizontalTime > 0 && (horizontalTime < minTime || minEvent == null)) {
-                minTime = horizontalTime;
-                minEvent = new Event(null, ball, horizontalTime);
-            }
+            if (minEvent != null)
+                pq.add(minEvent);
         }
-        pq.add(minEvent);
     }
 
+    /**
+     * Returns a string of the event with the format:
+     * N
+     * time
+     * Number rx ry vx vy mass radius color
+     * Number rx ry vx vy mass radius color
+     * Number rx ry vx vy mass radius color
+     * ...
+     */
+    public String writeEvent() {
+        StringBuilder result = new StringBuilder();
+
+        result.append(balls.size()).append('\n');
+        result.append(time).append('\n');
+        for (Ball ball : balls) {
+            result.append(ball.getNumber()).append(" ");
+            result.append(ball.getPosition().getX()).append(" ");
+            result.append(ball.getPosition().getY()).append(" ");
+            result.append(ball.getVelocity().getX()).append(" ");
+            result.append(ball.getVelocity().getY()).append(" ");
+            result.append(ball.getMass()).append(" ");
+            result.append(ball.getRadius()).append(" ");
+            result.append(ball.getColor()).append(" ");
+            result.append('\n');
+        }
+        return result.toString();
+    }
+
+    public double getTime() {
+        return time;
+    }
 }
