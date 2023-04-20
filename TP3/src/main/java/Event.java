@@ -8,10 +8,11 @@ public class Event {
      * @param ball1
      * @param ball2
      * @param timeToCollision
-     * Create a new event representing a collision between
-     * particles a and b at time t. If neither a nor b is null, then it represents a pairwise collision between a and b; if both a
-     * and b are null, it represents a redraw event; if only b is null, it represents a collision between a and a vertical wall; if
-     * only a is null, it represents a collision between b and a horizontal wall.
+     * Create a new event representing a collision between particles a and b at time t.
+     * If neither a nor b is null, then it represents a pairwise collision between a and b;
+     * If both a and b are null, it represents a redraw event;
+     * If only b is null, it represents a collision between a and a vertical wall;
+     * If only a is null, it represents a collision between b and a horizontal wall.
      */
     public Event(Ball ball1, Ball ball2, double timeToCollision) {
         this.ball1 = ball1;
