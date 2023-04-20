@@ -1,3 +1,4 @@
+from tkinter import RIGHT
 from turtle import circle
 from manim import *
 from manim.utils.color import Colors
@@ -25,6 +26,8 @@ class Pool(Scene):
         lower_right_ball = Sector(outer_radius = self.resize_to_graph(5.7), stroke_width=0, angle=-PI/2, start_angle=PI).set_color(Colors.black.value).shift(RIGHT * self.x_coordinate_to_graph(224), UP * self.y_coordinate_to_graph(0))
 
         self.add(table, table_border, white_ball, upper_mid_ball, lower_mid_ball, upper_left_ball, lower_left_ball, upper_right_ball, lower_right_ball)
+        self.play(white_ball.animate(run_time=1.3).shift(RIGHT * 2))
+        self.play(white_ball.animate(run_time=0.645).shift(UP * 2))
     
     def resize_to_graph(self, value):
         return value / 16
