@@ -13,7 +13,7 @@ public class PoolGame {
             ballsEpsilon.add(new Pair<>(getRandomEpsilon(), getRandomEpsilon()));
         }
 
-        Table gameTable = new Table(56, 4.2, ballsEpsilon);
+        Table gameTable = new Table(56, 420.0, ballsEpsilon);
         for(Ball ball : gameTable.getBalls().values()) {
             // System.out.println("Ball #" + ball.getNumber() + ":");
             Pair<Double, Double> position = ball.getPosition();
@@ -41,7 +41,7 @@ public class PoolGame {
         double randValue = Math.random();
         double epsilon = 0.02 + randValue * 0.01;
         if(randValue > 0.05) {
-            randValue = -randValue;
+            epsilon = -epsilon;
         }
         return epsilon;
     }

@@ -79,7 +79,7 @@ public class Ball {
 
         double d = dotProduct * dotProduct - VSquared * (RSquared - sigma * sigma);
 
-        if (d >= 0 && dotProduct > 0) {
+        if (d >= 0 && dotProduct < 0) {
             tc = -(dotProduct + Math.sqrt(d)) / VSquared;
         }
 
@@ -89,7 +89,8 @@ public class Ball {
      * update the invoking particle to simulate it bouncing off a vertical wall
      */
     public void bounceX() {
-        velocity.setX(-velocity.getX());
+        double currentXSpeed = velocity.getX();
+        velocity.setX(-currentXSpeed);
         collisionCount++;
     }
 
@@ -97,7 +98,8 @@ public class Ball {
      * update the invoking particle to simulate it bouncing off a horizontal wall
      */
     public void bounceY() {
-        velocity.setY(-velocity.getY());
+        double currentYSpeed = velocity.getY();
+        velocity.setY(-currentYSpeed);
         collisionCount++;
     }
 
@@ -195,5 +197,20 @@ public class Ball {
 
     public void setVelocity(Pair<Double, Double> velocity) {
         this.velocity = velocity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Ball ball = (Ball) o;
+
+        return number == ball.number;
+    }
+
+    @Override
+    public int hashCode() {
+        return number;
     }
 }

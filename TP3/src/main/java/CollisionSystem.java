@@ -44,10 +44,12 @@ public class CollisionSystem {
         }
         // If the event is a collision between a ball and a vertical wall
         else if (a != null && b == null && !a.isHole()) {
+            System.out.println("La bola #" + a.getNumber() + " en (" + a.getPosition().getX() + ", " + a.getPosition().getY() + ") choca contra una pared vertical");
             a.bounceX();
         }
         // If the event is a collision between a ball and a horizontal wall
         else if (a == null && b != null && !b.isHole()) {
+            System.out.println("La bola #" + b.getNumber() + " en (" + b.getPosition().getX() + ", " + b.getPosition().getY() + ") choca contra una pared horizontal");
             b.bounceY();
         }
         // If the event is a collision between a ball and a hole
