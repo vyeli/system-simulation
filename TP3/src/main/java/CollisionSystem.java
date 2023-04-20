@@ -38,34 +38,19 @@ public class CollisionSystem {
         Ball a = event.getBall1();
         Ball b = event.getBall2();
 
-        // If the event is a collision between two balls and are not holes
-        if (a != null && b != null && !a.isHole() && !b.isHole()) {
+        // Update the velocity of the balls or remove them
+        if (a == null)
+            b.bounceX();
+        else if (b == null)
+            a.bounceY();
+        else if (a.isHole()) {
+            balls.remove(b);
+        } else if (b.isHole()) {
+            balls.remove(a);
+        } else {
             a.bounce(b);
         }
-        // If the event is a collision between a ball and a vertical wall
-        else if (a != null && b == null && !a.isHole()) {
-            System.out.println("La bola #" + a.getNumber() + " en (" + a.getPosition().getX() + ", " + a.getPosition().getY() + ") choca contra una pared vertical");
-            a.bounceX();
-        }
-        // If the event is a collision between a ball and a horizontal wall
-        else if (a == null && b != null && !b.isHole()) {
-            System.out.println("La bola #" + b.getNumber() + " en (" + b.getPosition().getX() + ", " + b.getPosition().getY() + ") choca contra una pared horizontal");
-            b.bounceY();
-        }
-        // If the event is a collision between a ball and a hole
-        else if (a != null && b != null && !a.isHole() && b.isHole()) {
-            a.setCollisionCount(a.getCollisionCount() + 1);
-            balls.remove(a);
-        }
-        // If the event is a collision between a ball and a hole
-        else if (a != null && b != null && a.isHole() && !b.isHole()) {
-            b.setCollisionCount(b.getCollisionCount() + 1);
-            balls.remove(b);
-        }
-        // If the event is a redraw
-        else if (a == null && b == null) {
-            return;
-        }
+
         time += event.getTimeToCollision();
 
     }
