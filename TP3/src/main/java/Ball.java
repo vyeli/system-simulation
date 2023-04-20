@@ -79,7 +79,7 @@ public class Ball {
 
         double d = dotProduct * dotProduct - VSquared * (RSquared - sigma * sigma);
 
-        if (d >= 0 && dotProduct > 0) {
+        if (d >= 0 && dotProduct < 0) {
             tc = -(dotProduct + Math.sqrt(d)) / VSquared;
         }
 
