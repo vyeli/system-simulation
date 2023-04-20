@@ -5,6 +5,9 @@ from manim.utils.color import Colors
 
 class Pool(Scene):
     def construct(self):
+        self.generations = self.parse_balls_file('output.txt')
+        print(self.generations)
+
         self.table_height = self.resize_to_graph(112)
         self.border_height = self.resize_to_graph(112 + 1)
 
@@ -37,3 +40,46 @@ class Pool(Scene):
     
     def y_coordinate_to_graph(self, y):
         return self.resize_to_graph(y - 112/2)
+
+    def next_line(self, file):
+        next_line = file.readline()
+        if next_line is not None and next_line != '\n':
+            next_line = next_line.split('\n')[0]
+        return next_line
+
+        
+    def parse_balls_file(self, filename):
+        generations = []
+        current_gen = 0
+        with open(filename, 'r') as file:
+            line = self.next_line(file)
+            while line != '':
+                while line == '\n':
+                    line = self.next_line(file)
+                    if line == '':
+                        return generations
+                generations.append({})
+                print(line)
+                generations[current_gen]['balls_alive'] = int(line)
+                line = self.next_line(file)
+                if current_gen == 0:
+                    generations[current_gen]['time_elapsed'] = float(line)
+                else:
+                    generations[current_gen]['time_elapsed'] = float(line) - generations[current_gen - 1]['time_elapsed']
+                generations[current_gen]['balls'] = []
+                line = self.next_line(file)
+                while line != '\n':
+                    line = line.split()
+                    generations[current_gen]['balls'].append({
+                        'number': int(line[0]),
+                        'x_pos': float(line[1]),
+                        'y_pos': float(line[2]),
+                        'x_vel': float(line[3]),
+                        'y_vel': float(line[4]),
+                        'mass': float(line[5]),
+                        'radius': float(line[6]),
+                        'color': line[7]
+                    })
+                    line = self.next_line(file)
+                current_gen += 1
+        return generations
