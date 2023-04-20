@@ -23,16 +23,31 @@ public class PoolGame {
         List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
         System.out.printf("Simulation started with %d balls %n", balls.size());
         CollisionSystem collisionSystem = new CollisionSystem(balls);
-        while(collisionSystem.hasNextEvent()) {
-            System.out.println("Simulation time: " + collisionSystem.getTime());
-            collisionSystem.simulateNextEvent();
-            try(FileWriter fileWriter = new FileWriter("output.txt", true)) {
+
+        try {
+            FileWriter fileWriter = new FileWriter("output.txt");
+            fileWriter.write(collisionSystem.writeEvent());
+            while(collisionSystem.hasNextEvent()) {
+                System.out.println("Simulation time: " + collisionSystem.getTime());
+                collisionSystem.simulateNextEvent();
                 fileWriter.write(collisionSystem.writeEvent());
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
             }
+            fileWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
+
+        // while(collisionSystem.hasNextEvent()) {
+        //     System.out.println("Simulation time: " + collisionSystem.getTime());
+        //     collisionSystem.simulateNextEvent();
+        //     try(FileWriter fileWriter = new FileWriter("output.txt", true)) {
+        //         fileWriter.write(collisionSystem.writeEvent());
+        //     } catch (IOException e) {
+        //         System.out.println("An error occurred.");
+        //         e.printStackTrace();
+        //     }
+        // }
 
         System.out.printf("Simulation ended after %f seconds %n", collisionSystem.getTime());
     }
