@@ -109,8 +109,9 @@ public class CollisionSystem {
             result.append(ball.getMass()).append(" ");
             result.append(ball.getRadius()).append(" ");
             result.append(ball.getColor()).append(" ");
-            result.append('\n');
+            result.append("\n");
         }
+        result.append("\n");
         return result.toString();
     }
 
