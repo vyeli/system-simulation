@@ -26,6 +26,11 @@ public class CollisionSystem {
         while(event.wasSuperveningEvent())
             event = pq.poll();
 
+        // If there are no more events, the simulation ends
+        if (event == null) {
+            return;
+        }
+
         // Move all balls to the time of the event
         for (Ball ball : balls) {
             if (ball.isHole()) {

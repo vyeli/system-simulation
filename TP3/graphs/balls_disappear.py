@@ -30,22 +30,22 @@ def clear_time_by_y0():
     plt.savefig('clear_time_by_y0.png', dpi=300, bbox_inches='tight')
 
 def clear_time_by_v0():
-    df = pd.read_csv('./execution_data.csv')
+    df = pd.read_csv('./execution_data_vx0.csv')
 
-    # Calculate the clear time by initial position (y0) and generation
-    clear_time = df.groupby(['generation', 'v0'])['timestamp'].last()
+    # Calculate the clear time by initial velocity (vx0) and generation
+    clear_time = df.groupby(['generation', 'vx0'])['timestamp'].last()
 
-    # Calculate the mean clear time by initial position (y0)
-    mean_clear_time = clear_time.groupby('v0').mean() 
+    # calculate the mean clear time by initial velocity (vx0)
+    mean_clear_time = clear_time.groupby('vx0').mean() 
 
-    # Calculate the standard deviation of the clear time by initial position (y0)
-    std_clear_time = clear_time.groupby('v0').std() / np.sqrt(16)
+    # Calculate the standard deviation of the clear time by initial velocity (vx0)
+    std_clear_time = clear_time.groupby('vx0').std() / np.sqrt(16)
 
-    # Plot the mean clear time by initial position (y0) with error bars
+    # Plot the mean clear time by initial velocity (vx0) with error bars
     plt.errorbar(mean_clear_time.index, mean_clear_time.values, yerr=std_clear_time.values, fmt='o', linestyle='dotted', capsize=4)
 
     # Define the desired x coordinates
-    plt.xticks(np.linspace(42, 56, num=10))
+    plt.xticks(np.linspace(100, 1000, num=10))
 
 
     # Add axis labels and title
@@ -54,9 +54,8 @@ def clear_time_by_v0():
 
     plt.savefig('clear_time_by_v0.png', dpi=300, bbox_inches='tight')
 
-    # Display the plot
-    plt.show()
-
 
 if __name__ == '__main__':
     clear_time_by_y0()
+    plt.close()
+    clear_time_by_v0()
