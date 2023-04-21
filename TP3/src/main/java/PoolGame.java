@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 public class PoolGame {
 
-    private static final String[] CONFIGS_CSV_HEADERS = {"generation", "y0", "vx0", "event_time"};
+    private static final String[] CONFIGS_CSV_HEADERS = {"generation", "y0", "vx0", "event_time", "timestamp"};
 
     private static final double MIN_Y0_WHITE_BALL = 42;
     private static final double MAX_Y0_WHITE_BALL = 56;
@@ -50,7 +50,7 @@ public class PoolGame {
                         }
                         double pastEventTime = collisionSystem.getTime();
                         collisionSystem.simulateNextEvent();
-                        csvPrinter.printRecord(i, y0, vx0, collisionSystem.getTime() - pastEventTime);
+                        csvPrinter.printRecord(i, y0, vx0, collisionSystem.getTime() - pastEventTime, collisionSystem.getTime());
                     }
                     if (i == 9 && w == 0) {
                         fileWriter.write(collisionSystem.writeEvent());
