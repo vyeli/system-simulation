@@ -26,10 +26,8 @@ def clear_time_by_y0():
     # Add axis labels and title
     plt.xlabel('Posiciones iniciales de la bola blanca (cm)')
     plt.ylabel('Tiempo medio de que desaparezcan todas las bolas (s)')
-    plt.title('Tiempo promedio y desviación estándar para que desaparezcan todas las bolas frente a la posición inicial')
 
-    # Display the plot
-    plt.show()
+    plt.savefig('clear_time_by_y0.png', dpi=300, bbox_inches='tight')
 
 def clear_time_by_v0():
     df = pd.read_csv('./execution_data.csv')
@@ -53,7 +51,8 @@ def clear_time_by_v0():
     # Add axis labels and title
     plt.xlabel('Velocidades iniciales de la bola blanca (cm/s)')
     plt.ylabel('Tiempo medio de que desaparezcan todas las bolas (s)')
-    plt.title('Tiempo promedio y desviación estándar para que desaparezcan todas las bolas frente a la velocidad inicial')
+
+    plt.savefig('clear_time_by_v0.png', dpi=300, bbox_inches='tight')
 
     # Display the plot
     plt.show()
