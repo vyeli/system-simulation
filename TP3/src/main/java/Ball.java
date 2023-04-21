@@ -111,14 +111,13 @@ public class Ball {
         double[] deltaR = deltaR(b);
         double[] deltaV = deltaV(b);
 
-        double RSquared = dotProduct(deltaR, deltaR);
         double dotProduct = dotProduct(deltaR, deltaV);
 
         double sigma = this.radius + b.radius;
 
         double j = 2 * this.mass * b.mass * dotProduct / ((this.mass + b.mass) * sigma);
 
-        double[] jxy = {j * deltaR[0] / RSquared, j * deltaR[1] / sigma};
+        double[] jxy = {j * deltaR[0] / sigma, j * deltaR[1] / sigma};
 
         this.velocity.setX(this.velocity.getX() + jxy[0] / this.mass);
         this.velocity.setY(this.velocity.getY() + jxy[1] / this.mass);
