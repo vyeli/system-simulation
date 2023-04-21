@@ -50,7 +50,7 @@ public class PoolGame {
                         }
                         double pastEventTime = collisionSystem.getTime();
                         collisionSystem.simulateNextEvent();
-                        csvPrinter.printRecord(i, y0, vx0, collisionSystem.getTime() - pastEventTime, collisionSystem.getTime());
+                        csvPrinter.printRecord(w, y0, vx0, collisionSystem.getTime() - pastEventTime, collisionSystem.getTime());
                     }
                     if (i == 9 && w == 0) {
                         fileWriter.write(collisionSystem.writeEvent());
