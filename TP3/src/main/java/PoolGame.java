@@ -19,7 +19,7 @@ public class PoolGame {
 
     private static final double MIN_Y0_WHITE_BALL = 42;
     private static final double MAX_Y0_WHITE_BALL = 56;
-    private static final double ITERATIONS_PER_POSITION = 20;
+    private static final double ITERATIONS_PER_POSITION = 50;
 
     public static void main(String[] args) throws IOException {
         BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get("execution_data.csv"));
@@ -69,7 +69,7 @@ public class PoolGame {
     public static double getRandomEpsilon() {
         double randValue = Math.random();
         double epsilon = 0.02 + randValue * 0.01;
-        if(randValue > 0.05) {
+        if(randValue > 0.5) {
             epsilon = -epsilon;
         }
         return epsilon;
