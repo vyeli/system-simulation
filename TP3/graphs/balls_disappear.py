@@ -12,8 +12,11 @@ def clear_time_by_y0():
     # Calculate the mean clear time by initial position (y0)
     mean_clear_time = clear_time.groupby('y0').mean() 
 
-    # Plot the mean clear time by initial position (y0)
-    plt.plot(mean_clear_time.index, mean_clear_time.values)
+    # Calculate the standard deviation of the clear time by initial position (y0)
+    std_clear_time = clear_time.groupby('y0').std() / np.sqrt(16)
+
+    # Plot the mean clear time by initial position (y0) with error bars
+    plt.errorbar(mean_clear_time.index, mean_clear_time.values, yerr=std_clear_time.values, fmt='o', linestyle='dotted', capsize=4)
 
     # Define the desired x coordinates
     plt.xticks(np.linspace(42, 56, num=10))
@@ -36,10 +39,10 @@ def clear_time_by_v0():
     mean_clear_time = clear_time.groupby('v0').mean() 
 
     # Calculate the standard deviation of the clear time by initial position (y0)
-    # std_clear_time = clear_time.groupby('v0').std() / np.sqrt(16)
+    std_clear_time = clear_time.groupby('v0').std() / np.sqrt(16)
 
-    # Plot the mean clear time by initial position (y0)
-    plt.plot(mean_clear_time.index, mean_clear_time.values)
+    # Plot the mean clear time by initial position (y0) with error bars
+    plt.errorbar(mean_clear_time.index, mean_clear_time.values, yerr=std_clear_time.values, fmt='o', linestyle='dotted', capsize=4)
 
     # Define the desired x coordinates
     plt.xticks(np.linspace(42, 56, num=10))
