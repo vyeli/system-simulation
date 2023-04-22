@@ -16,7 +16,7 @@ public class PoolGame {
 
     private static final double MIN_Y0_WHITE_BALL = 42;
     private static final double MAX_Y0_WHITE_BALL = 56;
-    private static final double ITERATIONS_PER_POSITION = 50;
+    private static final double ITERATIONS = 50;
 
     public static void main(String[] args) throws IOException {
         BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get("execution_data.csv"));
@@ -26,7 +26,7 @@ public class PoolGame {
 
         // Change white ball y0 position
         for (int i=0; i < 10; i++) {
-            for (int w=0 ; w < ITERATIONS_PER_POSITION ; w++) {
+            for (int w=0 ; w < ITERATIONS ; w++) {
                 double y0 = MIN_Y0_WHITE_BALL + i * (MAX_Y0_WHITE_BALL - MIN_Y0_WHITE_BALL) / 9;
                 double vx0 = 200;
 
@@ -61,6 +61,39 @@ public class PoolGame {
         }
         fileWriter.close();
         csvPrinter.close();
+
+        // change white ball vx0 velocity
+        BufferedWriter bwConfigs2 = Files.newBufferedWriter(Paths.get("execution_data_vx0.csv"));
+        final CSVPrinter csvPrinter2 = new CSVPrinter(bwConfigs2, csvFormatConfigs);
+        for (int i=0; i < 10; i++) {
+            for (int w=0 ; w < ITERATIONS ; w++) {
+                double y0 = 56;
+                double vx0 = 100 + i * 100;
+
+                List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
+                for (int j = 0; j < 15; j++) {
+                    ballsEpsilon.add(new Pair<>(getRandomEpsilon(), getRandomEpsilon()));
+                }
+
+                Table gameTable = new Table(y0, vx0, ballsEpsilon);
+                List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
+                CollisionSystem collisionSystem = new CollisionSystem(balls);
+
+                try {
+                    while (collisionSystem.hasNextEvent()) {
+                        double pastEventTime = collisionSystem.getTime();
+                        collisionSystem.simulateNextEvent();
+                        csvPrinter2.printRecord(w, y0, vx0, collisionSystem.getTime() - pastEventTime, collisionSystem.getTime());
+                    }
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                System.out.printf("Simulation ended after %f seconds %n", collisionSystem.getTime());
+            }
+        }
+        csvPrinter2.close();
+
     }
 
     public static double getRandomEpsilon() {
