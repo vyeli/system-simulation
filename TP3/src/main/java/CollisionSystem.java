@@ -45,8 +45,10 @@ public class CollisionSystem {
             a.bounceY();
         else if (a.isHole()) {
             balls.remove(b);
+            b.setCollisionCount(b.getCollisionCount() + 1);
         } else if (b.isHole()) {
             balls.remove(a);
+            a.setCollisionCount(a.getCollisionCount() + 1);
         } else {
             a.bounce(b);
         }

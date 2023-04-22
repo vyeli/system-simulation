@@ -152,6 +152,7 @@ public class Ball {
         // }
 
         collisionCount++;
+        b.setCollisionCount(b.getCollisionCount() + 1);
 
     }
 
