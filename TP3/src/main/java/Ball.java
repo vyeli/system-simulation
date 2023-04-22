@@ -66,12 +66,16 @@ public class Ball {
      * @return the duration of time until the invoking particle collides with another particle if it does, Double.POSITIVE_INFINITY otherwise
      */
     public double collides(Ball b) {
-        double tc = NEGATIVE_TIME;
 
         double[] deltaR = deltaR(b);
         double[] deltaV = deltaV(b);
 
         double dotProduct = dotProduct(deltaR, deltaV);
+
+        if (dotProduct >= 0) {
+            return NEGATIVE_TIME;
+        }
+
         double RSquared = dotProduct(deltaR, deltaR);
         double VSquared = dotProduct(deltaV, deltaV);
 
@@ -79,11 +83,11 @@ public class Ball {
 
         double d = dotProduct * dotProduct - VSquared * (RSquared - sigma * sigma);
 
-        if (d >= 0 && dotProduct < 0) {
-            tc = -(dotProduct + Math.sqrt(d)) / VSquared;
+        if (d < 0) {
+            return NEGATIVE_TIME;
         }
 
-        return tc;
+        return -(dotProduct + Math.sqrt(d)) / VSquared;
     }
     /**
      * update the invoking particle to simulate it bouncing off a vertical wall
