@@ -7,7 +7,10 @@ def clear_time_by_y0():
     df = pd.read_csv('./execution_data.csv')
 
     # Calculate the clear time by initial position (y0) and generation
-    clear_time = df.groupby(['generation', 'y0'])['timestamp'].last()
+    clear_time = df.groupby(['generation', 'y0'])[['timestamp']].last()
+
+    # Remove outliers
+    clear_time = clear_time[clear_time['timestamp'] < 80000]['timestamp']
 
     # Calculate the mean clear time by initial position (y0)
     mean_clear_time = clear_time.groupby('y0').mean() 
@@ -27,13 +30,17 @@ def clear_time_by_y0():
     plt.xlabel('Posiciones iniciales de la bola blanca (cm)')
     plt.ylabel('Tiempo medio de desaparicion (s)')
 
+
     plt.savefig('clear_time_by_y0.png', dpi=300, bbox_inches='tight')
 
 def clear_time_by_v0():
     df = pd.read_csv('./execution_data_vx0.csv')
 
     # Calculate the clear time by initial velocity (vx0) and generation
-    clear_time = df.groupby(['generation', 'vx0'])['timestamp'].last()
+    clear_time = df.groupby(['generation', 'vx0'])[['timestamp']].last()
+
+    # Remove the outliers
+    clear_time = clear_time[clear_time['timestamp'] < 80000]['timestamp']
 
     # calculate the mean clear time by initial velocity (vx0)
     mean_clear_time = clear_time.groupby('vx0').mean() 
