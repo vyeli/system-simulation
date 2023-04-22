@@ -22,14 +22,14 @@ public class PoolGame {
         BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get("execution_data.csv"));
         CSVFormat csvFormatConfigs = CSVFormat.DEFAULT.builder().setHeader(CONFIGS_CSV_HEADERS).build();
         final CSVPrinter csvPrinter = new CSVPrinter(bwConfigs, csvFormatConfigs);
-        FileWriter fileWriter = new FileWriter("output.txt");
+        FileWriter fileWriter = null;
 
         // Change white ball y0 position
         for (int i=0; i < 10; i++) {
             for (int w=0 ; w < ITERATIONS ; w++) {
                 double y0 = MIN_Y0_WHITE_BALL + i * (MAX_Y0_WHITE_BALL - MIN_Y0_WHITE_BALL) / 9;
                 double vx0 = 200;
-
+                fileWriter = new FileWriter("result_" + i + "_" + w + ".txt");
                 List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
                 for (int j = 0; j < 15; j++) {
                     ballsEpsilon.add(new Pair<>(getRandomEpsilon(), getRandomEpsilon()));
@@ -42,16 +42,12 @@ public class PoolGame {
 
                 try {
                     while (collisionSystem.hasNextEvent()) {
-                        if (i == 9 && w == 0) {
-                            fileWriter.write(collisionSystem.writeEvent());
-                        }
+                        fileWriter.write(collisionSystem.writeEvent());
                         double pastEventTime = collisionSystem.getTime();
                         collisionSystem.simulateNextEvent();
                         csvPrinter.printRecord(w, y0, vx0, collisionSystem.getTime() - pastEventTime, collisionSystem.getTime());
                     }
-                    if (i == 9 && w == 0) {
                         fileWriter.write(collisionSystem.writeEvent());
-                    }
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
