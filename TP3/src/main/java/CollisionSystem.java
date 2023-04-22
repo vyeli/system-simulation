@@ -81,8 +81,9 @@ public class CollisionSystem {
                     minEvent = new Event(null, ball, horizontalTime);
                 }
             }
-            if (minEvent != null)
+            if (minEvent != null) {
                 pq.add(minEvent);
+            }
         }
     }
 

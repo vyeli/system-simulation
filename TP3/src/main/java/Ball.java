@@ -115,15 +115,37 @@ public class Ball {
 
         double sigma = this.radius + b.radius;
 
-        double j = 2 * this.mass * b.mass * dotProduct / ((this.mass + b.mass) * sigma);
+        double j = (2 * this.mass * b.mass * dotProduct) / ((this.mass + b.mass) * sigma);
 
         double[] jxy = {j * deltaR[0] / sigma, j * deltaR[1] / sigma};
+
+        double prevVelAX = velocity.getX();
+        double prevVelAY = velocity.getY();
+
+        double prevVelBX = b.velocity.getX();
+        double prevVelBY = b.velocity.getY();
 
         this.velocity.setX(this.velocity.getX() + jxy[0] / this.mass);
         this.velocity.setY(this.velocity.getY() + jxy[1] / this.mass);
 
         b.velocity.setX(b.velocity.getX() - jxy[0] / b.mass);
         b.velocity.setY(b.velocity.getY() - jxy[1] / b.mass);
+
+        if (Math.abs(prevVelAY - this.velocity.getY()) > 5000) {
+            // System.out.println("ME VOY A LA MIERDA EN Y con jxy[0]:" + jxy[0] + ", jxy[1]:" + jxy[1]); TAL VEZ
+            // System.out.println("ME VOY A LA MIERDA CON deltaR[0]: " + deltaR[0] + ", deltaR[1]: " + deltaR[1]); NO CREO
+            System.out.println("ME VOY A LA MIERDA CON deltaV[0]: " + deltaV[0] + " y deltaV[1]: " + deltaV[1]);
+            System.out.println("ME VOY A LA MIERDA Y LA VELOCIDAD ANTES ERA v:" + prevVelAY);
+        }
+        // if (Math.abs(prevVelAX - this.velocity.getX()) > 5000) {
+        //     System.out.println("ME VOY A LA MIERDA EN X");
+        // }
+        // if (Math.abs(prevVelBY - b.velocity.getY()) > 5000) {
+        //     System.out.println("ME VOY A LA MIERDA EN Y");
+        // }
+        // if (Math.abs(prevVelBX - b.velocity.getX()) > 5000) {
+        //     System.out.println("ME VOY A LA MIERDA EN X");
+        // }
 
         collisionCount++;
 

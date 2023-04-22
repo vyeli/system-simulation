@@ -8,6 +8,7 @@ manim = "*"
 pandas = "*"
 matplotlib = "*"
 numpy = "*"
+scipy = "*"
 
 [dev-packages]
 
