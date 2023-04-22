@@ -36,7 +36,7 @@ public class Table {
     private Map<Integer, Ball> balls = new HashMap<>();
 
     public Table(final double initialBallYPos, final List<Pair<Double, Double>> ballsEpsilon) {
-        this(initialBallYPos, 2.0, ballsEpsilon);
+        this(initialBallYPos, 200.0, ballsEpsilon);
     }
 
     public Table(final double initialBallYPos, final Double initialBallXSpeed, final List<Pair<Double, Double>> ballsEpsilon) {
