@@ -1,4 +1,3 @@
-from re import A
 from manim import *
 from manim.utils.color import Colors
 import numpy as np
@@ -38,14 +37,14 @@ class Pool(Scene):
                 case 21:
                     new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=PI/2, start_angle=PI)
                 case _:
-                    new_ball = Circle(radius = self.resize_to_graph(ball['radius']), stroke_width=0, fill_color=ball['color'], fill_opacity=1)
+                    new_ball = Circle(radius = self.resize_to_graph(ball['radius']), stroke_width=0, fill_color=Colors.yellow_e.value, fill_opacity=1)
             if ball_number > 15:         # A corner
                 new_ball.set_color(Colors.black.value)
             new_ball.shift(RIGHT * self.x_coordinate_to_graph(ball['x_pos']), UP * self.y_coordinate_to_graph(ball['y_pos']))
             balls.append(new_ball)
             self.add(new_ball)
             if ball['number'] == 0:         # White ball
-                new_ball.next_pos = [self.x_coordinate_to_graph(ball['x_pos']) + self.resize_to_graph(ball['x_vel']) * self.generations[1]['time_elapsed'], 0, 0]
+                new_ball.next_pos = [self.x_coordinate_to_graph(ball['x_pos']) + self.resize_to_graph(ball['x_vel']) * self.generations[1]['time_elapsed'], self.y_coordinate_to_graph(ball['y_pos']), 0]
             else:
                 new_ball.next_pos = [-1, -1, -1]
 
@@ -74,10 +73,7 @@ class Pool(Scene):
                     self.remove(balls[ball])
                     balls[ball] = None
             
-            if current_gen > 150:
-                self.play(ChangeSpeed(AnimationGroup(*gen_animations), speedinfo={1:2}))
-            else:
-                self.play(AnimationGroup(*gen_animations))
+            self.play(AnimationGroup(*gen_animations))
             current_gen += 1
     
     

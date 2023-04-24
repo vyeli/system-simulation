@@ -49,8 +49,6 @@ def events_mean_time():
     plt.xlabel('Posición inicial [cm]', fontsize=12, labelpad=10)
     plt.ylabel('Tiempo medio [s]', fontsize=12, labelpad=10)
 
-    plt.yscale('log')
-
     plt.tight_layout()
     plt.show()
 
@@ -61,19 +59,17 @@ def events_mean_frecuency():
     yerrs = []
 
     for y0, grouped_by_y0 in df.groupby('y0'):
-        events_frec = 1 / grouped_by_y0['event_time']
+        events_frec = grouped_by_y0['event_time']
 
         x.append(y0)
-        y.append(events_frec.mean())
-        yerrs.append(events_frec.std() / sqrt(len(events_frec)))
+        y.append(1 / events_frec.mean())
+        yerrs.append(1 / events_frec.std())
 
     plt.errorbar(x=x, y=y, yerr=yerrs, linestyle='dotted', fmt='o', capsize=4)
     plt.xticks(x)
 
     plt.xlabel('Posición inicial [cm]', fontsize=12, labelpad=10)
     plt.ylabel('Frecuencia media [1/s]', fontsize=12, labelpad=10)
-
-    plt.yscale('log')
 
     plt.tight_layout()
     plt.show()

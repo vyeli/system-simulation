@@ -23,7 +23,7 @@ public class CollisionSystem {
         calculatePosibleEvents();
         Event event = pq.poll();
 
-        while(event.wasSuperveningEvent())
+        while(event == null || event.wasSuperveningEvent())
             event = pq.poll();
 
         // Move all balls to the time of the event

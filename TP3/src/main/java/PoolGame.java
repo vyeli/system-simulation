@@ -56,7 +56,6 @@ public class PoolGame {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
-                System.out.printf("Simulation ended after %f seconds %n", collisionSystem.getTime());
             }
         }
         fileWriter.close();
@@ -89,7 +88,6 @@ public class PoolGame {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
-                System.out.printf("Simulation ended after %f seconds %n", collisionSystem.getTime());
             }
         }
         csvPrinter2.close();
@@ -146,36 +144,36 @@ public class PoolGame {
 
     public static float getDeterministicFloatEpsilons(int epsilonIdx) {
         float epsilons[] = {
-            -0.025596315f,
-            0.024343103f,
-            -0.02838714f,
-            -0.029417235f,
-            0.022747952f,
-            -0.028205177f,
-            -0.026237985f,
-            -0.027319811f,
-            0.023575434f,
-            -0.02582139f,
-            0.021362368f,
-            0.022162775f,
-            -0.028338164f,
-            0.020601558f,
-            -0.028244011f,
-            -0.026999932f,
-            -0.02950929f,
-            0.020943455f,
-            -0.028236402f,
-            -0.029102143f,
-            0.020404557f,
-            0.023038285f,
-            -0.028032625f,
-            -0.028947951f,
-            -0.027090013f,
-            0.021726482f,
-            0.022232033f,
-            -0.027297636f,
-            0.02262886f,
-            -0.025273262f
+            -0.028792826f,
+            -0.028979674f,
+            -0.029060215f,
+            0.02105733f,  
+            0.023895605f, 
+            0.02095217f,  
+            -0.02641131f, 
+            0.02440638f,  
+            0.023331495f, 
+            -0.026705587f,
+            0.020751735f, 
+            -0.029478062f,
+            -0.027588578f,
+            -0.02726412f, 
+            0.02020634f,  
+            0.022366522f, 
+            0.024202934f, 
+            0.024454853f, 
+            -0.029077772f,
+            0.02182581f,  
+            0.024283746f,
+            -0.027173134f,
+            -0.026929239f,
+            0.021658776f,
+            0.02074862f,
+            -0.02536989f,
+            -0.026660318f,
+            -0.029669588f,
+            -0.028696656f,
+            0.021185035f,
         };
         if (epsilonIdx < 0 || epsilonIdx >= epsilons.length) {
             throw new ArrayIndexOutOfBoundsException();

@@ -7,10 +7,10 @@ def clear_time_by_y0():
     df = pd.read_csv('./execution_data.csv')
 
     # Calculate the clear time by initial position (y0) and generation
-    clear_time = df.groupby(['generation', 'y0'])[['timestamp']].last()
+    clear_time = df.groupby(['generation', 'y0'])['timestamp'].last()
 
     # Remove outliers
-    clear_time = clear_time[clear_time['timestamp'] < 80000]['timestamp']
+    # clear_time = clear_time[clear_time['timestamp'] < 80000]['timestamp']
 
     # Calculate the mean clear time by initial position (y0)
     mean_clear_time = clear_time.groupby('y0').mean() 
@@ -24,11 +24,11 @@ def clear_time_by_y0():
     # Define the desired x coordinates
     plt.xticks(np.linspace(42, 56, num=10))
 
-    
+    plt.tight_layout()
 
     # Add axis labels and title
-    plt.xlabel('Posiciones iniciales de la bola blanca (cm)')
-    plt.ylabel('Tiempo medio de desaparicion (s)')
+    plt.xlabel('Posición inicial de la bola blanca [cm]', fontsize=12, labelpad=10)
+    plt.ylabel('Tiempo medio de desaparición [s]', fontsize=12, labelpad=10)
 
 
     plt.savefig('clear_time_by_y0.png', dpi=300, bbox_inches='tight')
@@ -56,8 +56,10 @@ def clear_time_by_v0():
 
 
     # Add axis labels and title
-    plt.xlabel('Velocidades iniciales de la bola blanca (cm/s)')
-    plt.ylabel('Tiempo medio de desaparicion (s)')
+    plt.tight_layout()
+
+    plt.xlabel('Velocidad inicial de la bola blanca [cm/s]', fontsize=12, labelpad=10)
+    plt.ylabel('Tiempo medio de desaparicion [s]', fontsize=12, labelpad=10)
 
     plt.savefig('clear_time_by_v0.png', dpi=300, bbox_inches='tight')
 
