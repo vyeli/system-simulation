@@ -1,14 +1,34 @@
 import java.util.List;
-import java.util.PriorityQueue;
 
 public class CollisionSystem {
     private final List<Ball> balls;
     private double t;
 
-    public CollisionSystem(List<Ball> balls, double tf) {
+    private final double dt;
+
+    private final double tf;
+
+    public CollisionSystem(List<Ball> balls, double tf, double dt) {
         this.balls = balls;
+        this.tf = tf;
+        this.dt = dt;
     }
 
+    public void evolveSystem() {
+        // evolucionar sistema hasta el dt actual
+        for (Ball ball : balls) {
+            ball.move(dt);
+        }
+        // actualizar aceleración de cada bola
+        for (Ball ball : balls) {
+            ball.calculateAcceleration(balls);
+        }
+        // predecir y corregir valores
+        for (Ball ball : balls) {
+            ball.gearPredEvolve(dt);
+        }
+        t += dt;
+    }
 
     /**
      * Returns a string of the event with the format:
@@ -26,10 +46,10 @@ public class CollisionSystem {
         result.append(t).append('\n');
         for (Ball ball : balls) {
             result.append(ball.getNumber()).append(" ");
-            result.append(ball.getPosition().getX()).append(" ");
-            result.append(ball.getPosition().getY()).append(" ");
-            result.append(ball.getVelocity().getX()).append(" ");
-            result.append(ball.getVelocity().getY()).append(" ");
+            result.append(ball.getR().getX()).append(" ");
+            result.append(ball.getR().getY()).append(" ");
+            result.append(ball.getV().getX()).append(" ");
+            result.append(ball.getV().getY()).append(" ");
             result.append(ball.getMass()).append(" ");
             result.append(ball.getRadius()).append(" ");
             result.append(ball.getColor()).append(" ");
