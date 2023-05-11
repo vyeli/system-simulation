@@ -22,4 +22,8 @@ axins.set_ylim(-0.01, 0.04)
 mark_inset(ax, axins, loc1=3, loc2=4, fc="none", ec="0.5")
 
 ax.legend(loc=4)
+
+plt.xlabel('Tiempo [s]', fontsize=12, labelpad=10)
+plt.ylabel('Posición [m]', fontsize=12, labelpad=10)
+
 plt.show()
