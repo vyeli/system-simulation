@@ -38,6 +38,33 @@ public class Ball {
         return this.position;
     }
 
+    public boolean collideX(double time) {
+        if (velocity.getX() == 0) {
+            return false;
+        }
+        if (velocity.getX() > 0) {
+            return time >= (Table.getWidth() - radius - position.getX()) / velocity.getX();
+        }
+        return time >= (radius - position.getX()) / velocity.getX();
+    }
+
+    public boolean collideY(double time) {
+        if (velocity.getY() == 0) {
+            return false;
+        }
+        if (velocity.getY() > 0) {
+            return time >= (Table.getHeight() - radius - position.getY()) / velocity.getY();
+        }
+        return time >= (radius - position.getY()) / velocity.getY();
+    }
+
+    public boolean collide(Ball b) {
+        double norm = Math.sqrt(Math.pow(b.position.getX() - this.position.getX(), 2) + Math.pow(b.position.getY() - this.position.getY(), 2));
+        return norm <= this.radius + b.radius;
+    }
+
+
+
 
     /**
      * Get the force between two balls

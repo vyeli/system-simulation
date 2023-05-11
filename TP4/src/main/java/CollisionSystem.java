@@ -10,9 +10,6 @@ public class CollisionSystem {
     }
 
 
-
-
-
     /**
      * Returns a string of the event with the format:
      * N
@@ -22,7 +19,7 @@ public class CollisionSystem {
      * Number rx ry vx vy mass radius color
      * ...
      */
-    public String writeEvent() {
+    public String writeTable() {
         StringBuilder result = new StringBuilder();
 
         result.append(balls.size()).append('\n');

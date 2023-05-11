@@ -14,6 +14,7 @@ public class PoolGame {
 
         // Parallel universes Experiment
         double tf = 100; //s
+        double dt = 0.01; //s
 
         double y0 = 56;
         double vx0 = 100; //cm/s
@@ -24,6 +25,11 @@ public class PoolGame {
             ballsEpsilon.add(new Pair<>(getDeterministicDoubleEpsilons(j), getDeterministicDoubleEpsilons(j+1)));
         }
         Table gameTable = new Table(y0, vx0, ballsEpsilon);
+
+        int iterations = (int) (tf / dt);
+        for (int i = 0; i < iterations; i++) {
+
+        }
 
 
     }
