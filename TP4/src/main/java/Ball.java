@@ -146,12 +146,17 @@ public class Ball {
 
 
     /**
-     * Get the force between two balls
+     * Get the force between two balls, if they are colliding
      */
     public Double[] getForce(Ball b) {
         double norm = Math.sqrt(Math.pow(b.r.getX() - this.r.getX(), 2) + Math.pow(b.r.getY() - this.r.getY(), 2));
         Double[] rvector = {(b.r.getX() - this.r.getX())/norm, (b.r.getY() - this.r.getY())/norm};
         Double[] force;
+        // If the balls are not colliding, return 0 force
+        if (norm > this.radius + b.radius) {
+            force = new Double[]{0.0, 0.0};
+            return force;
+        }
         force = new Double[]{k * (norm - (this.radius + b.radius)) * rvector[0], k * (norm - (this.radius + b.radius)) * rvector[1]};
         return force;
     }
