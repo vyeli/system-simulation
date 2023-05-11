@@ -17,6 +17,8 @@ public class Ball {
     private Pair<Double, Double> r4;
     private Pair<Double, Double> r5;
 
+    private Pair<Double, Double> aPred;         // (ax, ay)
+
     private final double k = 10^4;        // N/m
 
     public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition, String color) {
@@ -34,6 +36,15 @@ public class Ball {
         this.number = number;
         this.r = initialPosition;
         this.v = initialVelocity;
+    }
+
+    public void initValues(List<Ball> otherBalls) {
+        this.predictAcceleration(otherBalls);
+        this.a = new Pair<>(aPred.getX(), aPred.getY());
+        // TODO: Check this
+        this.r3 = new Pair<>(-k/mass * v.getX(), -k/mass * v.getY());
+        this.r4 = new Pair<>(-k/mass * a.getX(), -k/mass * a.getY());
+        this.r5 = new Pair<>(-k/mass * r3.getX(), -k/mass * r3.getY());
         this.collisionCount = 0;
     }
 
@@ -64,7 +75,7 @@ public class Ball {
         return norm <= this.radius + b.radius;
     }
 
-    public void calculateAcceleration(List<Ball> otherBalls) {
+    public void predictAcceleration(List<Ball> otherBalls) {
         Pair<Double, Double> totalForce = new Pair<>(0.0, 0.0);
         for (Ball otherBall : otherBalls) {
             if (otherBall == this) {
@@ -74,11 +85,11 @@ public class Ball {
             totalForce.setX(totalForce.getX() + addedForce[0]);
             totalForce.setY(totalForce.getY() + addedForce[1]);
         }
-        this.a = new Pair<>(totalForce.getX() / mass, totalForce.getY() / mass);
+        this.aPred = new Pair<>(totalForce.getX() / mass, totalForce.getY() / mass);
     }
 
 
-    public void gearPredEvolve(double dt, List<Ball> otherBalls) {
+    public void predictValues(double dt) {
         double factor2 = Math.pow(dt, 2) / 2;
         double factor3 = Math.pow(dt, 3) / 6;
         double factor4 = Math.pow(dt, 4) / 24;
@@ -101,19 +112,35 @@ public class Ball {
         r4.setY(r4.getY() + dt * r5.getY());
 
         // Useless, but part of gear pred
-        r5.setX(r5.getX());
-        r5.setY(r5.getY());
+        // r5.setX(r5.getX());
+        // r5.setY(r5.getY());
+    }
 
-        // Evaluating acceleration
-        //  dR2 = ((calculateAcceleration(rPred, vPred) - aPred) * Math.pow(dt, 2)) / 2;
+    public void correctValues(double dt) {
+        double factor2 = Math.pow(dt, 2) / 2;
+        double factor3 = Math.pow(dt, 3) / 6;
+        double factor4 = Math.pow(dt, 4) / 24;
+        double factor5 = Math.pow(dt, 5) / 120;
 
-        // Correcting predictions
-        // r = rPred + 3.0/16 * dR2;
-        // v = vPred + ((251.0/360) * dR2) / dt;
-        // a = aPred + dR2 / factor2;
-        // r3 = r3Pred + ((11.0/18) * dR2) / factor3;
-        // r4 = r4Pred + ((1.0/6) * dR2) / factor4;
-        // r5 = r5Pred + ((1.0/60) * dR2) / factor5;
+        Pair<Double, Double> dR2 = new Pair<Double,Double>((aPred.getX() - a.getX()) * factor2, (aPred.getY() - a.getY()) * factor2);
+
+        r.setX(r.getX() + 3.0/20 * dR2.getX());
+        r.setY(r.getY() + 3.0/20 * dR2.getY());
+
+        v.setX(v.getX() + (251.0/360 * dR2.getX()) / dt);
+        v.setY(v.getY() + (251.0/360 * dR2.getY()) / dt);
+
+        a.setX(a.getX() + dR2.getX() / factor2);
+        a.setY(a.getY() + dR2.getY() / factor2);
+
+        r3.setX(r3.getX() + (11.0/18 * dR2.getX()) / factor3);
+        r3.setY(r3.getY() + (11.0/18 * dR2.getY()) / factor3);
+
+        r4.setX(r4.getX() + (1.0/6 * dR2.getX()) / factor4);
+        r4.setY(r4.getY() + (1.0/6 * dR2.getY()) / factor4);
+
+        r5.setX(r5.getX() + (1.0/60 * dR2.getX()) / factor5);
+        r5.setY(r5.getY() + (1.0/60 * dR2.getY()) / factor5);
     }
 
 

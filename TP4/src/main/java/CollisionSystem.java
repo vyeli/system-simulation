@@ -12,20 +12,28 @@ public class CollisionSystem {
         this.balls = balls;
         this.tf = tf;
         this.dt = dt;
+        for (Ball ball : balls) {
+            ball.initValues(balls);
+        }
     }
 
+    // TODO: Stop condition when no balls are alive
     public void evolveSystem() {
-        // evolucionar sistema hasta el dt actual
+        // evolucionar el sistema hasta t
         for (Ball ball : balls) {
             ball.move(dt);
         }
-        // actualizar aceleración de cada bola
+        // predecir valores
         for (Ball ball : balls) {
-            ball.calculateAcceleration(balls);
+            ball.predictValues(dt);
         }
-        // predecir y corregir valores
+        // predecir aceleraciones
         for (Ball ball : balls) {
-            ball.gearPredEvolve(dt);
+            ball.predictAcceleration(balls);
+        }
+        // corregir valores
+        for (Ball ball : balls) {
+            ball.correctValues(dt);
         }
         t += dt;
     }

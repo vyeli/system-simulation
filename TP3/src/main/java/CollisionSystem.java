@@ -5,6 +5,7 @@ public class CollisionSystem {
     private final PriorityQueue<Event> pq;
     private final List<Ball> balls;
     private double time;
+    private double dt;
 
     public CollisionSystem(List<Ball> balls) {
         pq = new PriorityQueue<>();

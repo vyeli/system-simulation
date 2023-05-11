@@ -23,9 +23,6 @@ for dt, grouped_dt in grouped_by_dt:
     verlet_mse.append(mean_squared_error(verlet_group['value'], analytic_group['value']))
     beeman_mse.append(mean_squared_error(beeman_group['value'], analytic_group['value']))
     gear_pred_mse.append(mean_squared_error(gear_pred_group['value'], analytic_group['value']))
-    # verlet_mse.append(((verlet_group['value'] - analytic_group['value'])**2).mean(axis=None))
-    # beeman_mse.append(((beeman_group['value'] - analytic_group['value'])**2).mean(axis=None))
-    # gear_pred_mse.append(((gear_pred_group['value'] - analytic_group['value'])**2).mean(axis=None))
 
 plt.loglog(x, verlet_mse, '-o', label='verlet')
 plt.loglog(x, beeman_mse, '-o', label='beeman')

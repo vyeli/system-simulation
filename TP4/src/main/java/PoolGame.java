@@ -22,13 +22,13 @@ public class PoolGame {
         List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
         // Triangle balls positions
         for (int j = 0; j < 15; j++) {
-            ballsEpsilon.add(new Pair<>(getDeterministicDoubleEpsilons(j), getDeterministicDoubleEpsilons(j+1)));
+            ballsEpsilon.add(new Pair<>(getDeterministicDoubleEpsilons(2*j), getDeterministicDoubleEpsilons(2*j+1)));
         }
         Table gameTable = new Table(y0, vx0, ballsEpsilon);
 
         int iterations = (int) (tf / dt);
         for (int i = 0; i < iterations; i++) {
-
+            
         }
 
 
