@@ -63,6 +63,10 @@ public class Oscillator {
         }
     }
 
+    public double getR() {
+        return r;
+    }
+
     private void verletInit() {
         // Predict -dt position and v using Euler Modified Method (R using dt v)
         this.vPrev = v - dt * a;
@@ -152,12 +156,12 @@ public class Oscillator {
     public void printOscillatorValues() {
         System.out.println("Time: " + t);
         System.out.println("Calculated\tr: " + this.r + "m, v: " + this.v + "m/s, a: " + this.a + "m/s^2)");
-        System.out.println("Analytic\tr: " + analytic());
+        System.out.println("Analytic\tr: " + analytic(t));
     }
 
-    public double analytic() {
+    public double analytic(double time) {
         // System.out.println((k/m) - (Math.pow(gamma, 2) / (4 * Math.pow(m, 2))));
-        return Math.exp(-(gamma / (2 * m)) * t) * Math.cos(Math.sqrt((k/m) - (Math.pow(gamma, 2) / (4 * Math.pow(m, 2)))) * t);
+        return Math.exp(-(gamma / (2 * m)) * time) * Math.cos(Math.sqrt((k/m) - (Math.pow(gamma, 2) / (4 * Math.pow(m, 2)))) * time);
     }
 
 }
