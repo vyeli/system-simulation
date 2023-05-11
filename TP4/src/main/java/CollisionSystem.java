@@ -35,6 +35,15 @@ public class CollisionSystem {
         for (Ball ball : balls) {
             ball.correctValues(dt);
         }
+        // chequear colisiones con paredes
+        for (Ball ball : balls) {
+            if (ball.collideX()) {
+                ball.bounceX();
+            }
+            if (ball.collideY()) {
+                ball.bounceY();
+            }
+        }
         t += dt;
     }
 

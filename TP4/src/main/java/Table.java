@@ -63,6 +63,14 @@ public class Table {
 
     }
 
+    // Remove the 6 corner balls
+    public void removeCornerBall() {
+        for (int i=16 ; i < 22 ; i++) {
+            balls.remove(i);
+        }
+    }
+
+
     public static int getHeight() {
         return height;
     }

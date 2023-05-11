@@ -1,5 +1,7 @@
 import helpers.Pair;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,10 +9,8 @@ public class PoolGame {
 
     private static final double MIN_Y0_WHITE_BALL = 42;
     private static final double MAX_Y0_WHITE_BALL = 56;
-    private static final double ITERATIONS = 50;
 
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         // Parallel universes Experiment
         double tf = 100; //s
@@ -19,18 +19,34 @@ public class PoolGame {
         double y0 = 56;
         double vx0 = 100; //cm/s
 
+        FileWriter fileWriter = new FileWriter("output.txt");
+
         List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
         // Triangle balls positions
         for (int j = 0; j < 15; j++) {
             ballsEpsilon.add(new Pair<>(getDeterministicDoubleEpsilons(2*j), getDeterministicDoubleEpsilons(2*j+1)));
         }
         Table gameTable = new Table(y0, vx0, ballsEpsilon);
+        gameTable.removeCornerBall();
+        List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
         int iterations = (int) (tf / dt);
+        CollisionSystem collisionSystem = new CollisionSystem(balls, tf, dt);
         for (int i = 0; i < iterations; i++) {
-            
+            int j = 10;
+            collisionSystem.evolveSystem();
+            if (iterations % j == 0) {
+                try {
+                    fileWriter.write(collisionSystem.writeTable());
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+            }
         }
 
+        fileWriter.close();
+        // End of Parallel universes Experiment
 
     }
 

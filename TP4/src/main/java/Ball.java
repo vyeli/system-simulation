@@ -158,6 +158,7 @@ public class Ball {
             return force;
         }
         force = new Double[]{k * (norm - (this.radius + b.radius)) * rvector[0], k * (norm - (this.radius + b.radius)) * rvector[1]};
+        this.collisionCount++;
         return force;
     }
 
