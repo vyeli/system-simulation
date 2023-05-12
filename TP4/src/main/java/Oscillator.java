@@ -115,9 +115,9 @@ public class Oscillator {
     }
 
     private void gearPredInit() {
-        this.r3 = -k/m * v;
-        this.r4 = -k/m * a;
-        this.r5 = -k/m * r3;
+        this.r3 = (-k*v-gamma*a)/m;
+        this.r4 = (-k*a-gamma*r3)/m;
+        this.r5 = (-k*r3-gamma*r4)/m;
     }
 
     private void gearPredEvolve() {
