@@ -7,33 +7,33 @@ import java.util.List;
 
 public class PoolGame {
 
-    private static final double MIN_Y0_WHITE_BALL = 42;
-    private static final double MAX_Y0_WHITE_BALL = 56;
+    private static final double MIN_Y0_WHITE_BALL = 0.42;
+    private static final double MAX_Y0_WHITE_BALL = 0.56;
 
     public static void main(String[] args) throws IOException {
 
         // Parallel universes Experiment
-        double tf = 20; //s
-        double dt = 0.0001; //s
+        double tf = 20;         // s
+        double dt = 0.0001;     // s
 
-        double y0 = 56;
-        double vx0 = 100; //cm/s
+        double y0 = 0.56;       // m
+        double vx0 = 1;         // m/s
 
         FileWriter fileWriter = new FileWriter("output.txt");
 
         List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
         // Triangle balls positions
         for (int j = 0; j < 15; j++) {
-            ballsEpsilon.add(new Pair<>(getDeterministicDoubleEpsilons(2*j), getDeterministicDoubleEpsilons(2*j+1)));
+            ballsEpsilon.add(new Pair<>(getDeterministicDoubleEpsilons(2*j) / 100, getDeterministicDoubleEpsilons(2*j+1) / 100));
         }
         Table gameTable = new Table(y0, vx0, ballsEpsilon);
         gameTable.removeCornerBall();
         List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
         int iterations = (int) (tf / dt);
-        CollisionSystem collisionSystem = new CollisionSystem(balls, tf, dt);
+        CollisionSystem collisionSystem = new CollisionSystem(balls, tf, dt, Table.getWidth(), Table.getHeight());
         for (int i = 0; i < iterations; i++) {
-            int j = 5000;
+            int j = 500;
             collisionSystem.evolveSystem();
             if (i % j == 0) {
                 try {

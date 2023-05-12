@@ -8,11 +8,11 @@ class Pool(Scene):
         balls = []
         print('Total gens: {}'.format(len(self.generations)))
 
-        self.table_height = self.resize_to_graph(112)
-        self.border_height = self.resize_to_graph(112 + 1)
+        self.table_height = self.resize_to_graph(1.12)
+        self.border_height = self.resize_to_graph(1.12 + 0.01)
 
-        self.table_width = self.resize_to_graph(224)
-        self.border_width = self.resize_to_graph(224 + 1)
+        self.table_width = self.resize_to_graph(2.24)
+        self.border_width = self.resize_to_graph(2.24 + 0.01)
 
         table = Rectangle(width=self.table_width, height=self.table_height, fill_color=Colors.green_e.value, fill_opacity=1, stroke_width=0)
         table_border = Rectangle(width=self.border_width, height=self.border_height, stroke_color=Colors.dark_brown.value, stroke_width=8)
@@ -79,15 +79,15 @@ class Pool(Scene):
     
     
     def resize_to_graph(self, value):
-        return value / 16
+        return value / 0.16
     
 
     def x_coordinate_to_graph(self, x):
-        return self.resize_to_graph(x - 224/2)
+        return self.resize_to_graph(x - 2.24/2)
     
 
     def y_coordinate_to_graph(self, y):
-        return self.resize_to_graph(y - 112/2)
+        return self.resize_to_graph(y - 1.12/2)
 
 
     def next_line(self, file):

@@ -6,10 +6,10 @@ import java.util.Map;
 
 public class Table {
 
-    private static final int height = 112;            // cm
-    private static final int width = 224;           // cm
-    private final double epsilonMax = 0.03;
-    private double ballRadius = 2.85;     // cm
+    private static final double height = 1.12;            // m
+    private static final double width = 2.24;           // m
+    private final double epsilonMax = 0.0003;
+    private double ballRadius = 0.0285;     // cm
 
     // Color of the 16 balls in the pool 51
     private final String[] colors = {
@@ -36,18 +36,18 @@ public class Table {
     private Map<Integer, Ball> balls = new HashMap<>();
 
     public Table(final double initialBallYPos, final List<Pair<Double, Double>> ballsEpsilon) {
-        this(initialBallYPos, 200.0, ballsEpsilon);
+        this(initialBallYPos, 1.0, ballsEpsilon);
     }
 
     public Table(final double initialBallYPos, final Double initialBallXSpeed, final List<Pair<Double, Double>> ballsEpsilon) {
         int ballIndex = 0;
-        balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, colors[ballIndex-1], new Pair<>(56.0, initialBallYPos), new Pair<>(initialBallXSpeed, 0.0)));
+        balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, colors[ballIndex-1], new Pair<>(0.56, initialBallYPos), new Pair<>(initialBallXSpeed, 0.0)));
 
         double xyEpsilon = 2 * (epsilonMax + ballRadius);
         // Triangle balls
         for (int i=0 ; i < 5 ; i++) {
-            double xPos = 168 + xyEpsilon * i;
-            double initialYPos = 56 - (xyEpsilon * i) / 2;
+            double xPos = 1.68 + xyEpsilon * i;
+            double initialYPos = 0.56 - (xyEpsilon * i) / 2;
             for (int j=0 ; j <= i ; j++) {
                 Pair<Double, Double> ballEpsilon = ballsEpsilon.get(ballIndex - 1);
                 balls.put(ballIndex, new Ball(ballIndex++, ballRadius, false, new Pair<>(xPos + ballEpsilon.getX(), initialYPos + j * xyEpsilon + ballEpsilon.getY()), colors[ballIndex-1]));
@@ -71,11 +71,11 @@ public class Table {
     }
 
 
-    public static int getHeight() {
+    public static double getHeight() {
         return height;
     }
 
-    public static int getWidth() {
+    public static double getWidth() {
         return width;
     }
 

@@ -2,37 +2,28 @@ import java.util.List;
 
 public class CollisionSystem {
     private final List<Ball> balls;
+    private double xWall;
+    private double yWall;
     private double t;
 
     private final double dt;
 
     private final double tf;
 
-    public CollisionSystem(List<Ball> balls, double tf, double dt) {
+    public CollisionSystem(List<Ball> balls, double tf, double dt, double xWall, double yWall) {
         this.balls = balls;
         this.tf = tf;
         this.dt = dt;
-        for (Ball ball : balls) {
-            ball.initValues(balls);
-        }
+        this.xWall = xWall;
+        this.yWall = yWall;
     }
 
     // TODO: Stop condition when no balls are alive
     public void evolveSystem() {
         // evolucionar el sistema hasta t
-        for (Ball ball : balls) {
-            ball.move(dt);
-        }
-
-        // chequear colisiones con paredes
-        for (Ball ball : balls) {
-            if (ball.collideX()) {
-                ball.bounceX();
-            }
-            if (ball.collideY()) {
-                ball.bounceY();
-            }
-        }
+        // for (Ball ball : balls) {
+        //     ball.move(dt);
+        // }
 
         // predecir valores
         for (Ball ball : balls) {
@@ -41,7 +32,7 @@ public class CollisionSystem {
 
         // predecir aceleraciones
         for (Ball ball : balls) {
-            ball.predictAcceleration(balls);
+            ball.predictAcceleration(balls, xWall, yWall);
         }
         
         // corregir valores

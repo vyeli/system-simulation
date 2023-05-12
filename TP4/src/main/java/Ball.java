@@ -3,8 +3,8 @@ import helpers.Pair;
 import java.util.List;
 
 public class Ball {
-    private double mass = 165;        // gr
-    private double radius = 2.35;     // cm
+    private double mass = 0.165;        // kg
+    private double radius = 0.0285;     // m
     private final String color;
     private boolean isHole = false;
     private int number;
@@ -12,19 +12,18 @@ public class Ball {
 
     private Pair<Double, Double> r;         // (x, y)
     private Pair<Double, Double> v;         // (vx, vy)
-    private Pair<Double, Double> a;         // (ax, ay)
-    private Pair<Double, Double> r3;
-    private Pair<Double, Double> r4;
-    private Pair<Double, Double> r5;
+    private Pair<Double, Double> a = new Pair<>(0.0, 0.0);         // (ax, ay)
+    private Pair<Double, Double> r3 = new Pair<>(0.0, 0.0);
+    private Pair<Double, Double> r4 = new Pair<>(0.0, 0.0);
+    private Pair<Double, Double> r5 = new Pair<>(0.0, 0.0);
 
-    private Pair<Double, Double> aPred;         // (ax, ay)
+    private Pair<Double, Double> aCalc;         // (ax, ay)
 
-    private final double k = 10^4 * 1000 * 100;        // N/m
+    private final double k = 10000;        // N/m
 
     public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition, String color) {
         this(number, radius, isHole, color, initialPosition, new Pair<>(0.0, 0.0));
     }
-
 
     public Ball(final int number, final double radius, final boolean isHole, String color, final Pair<Double, Double> initialPosition, final Pair<Double, Double> initialVelocity) {
         this.radius = radius;
@@ -36,16 +35,6 @@ public class Ball {
         this.number = number;
         this.r = initialPosition;
         this.v = initialVelocity;
-    }
-
-    public void initValues(List<Ball> otherBalls) {
-        this.predictAcceleration(otherBalls);
-        this.a = new Pair<>(aPred.getX(), aPred.getY());
-        // TODO: Check this
-        this.r3 = new Pair<>(-k/mass * v.getX(), -k/mass * v.getY());
-        this.r4 = new Pair<>(-k/mass * a.getX(), -k/mass * a.getY());
-        this.r5 = new Pair<>(-k/mass * r3.getX(), -k/mass * r3.getY());
-        this.collisionCount = 0;
     }
 
     public int getNumber() {
@@ -75,7 +64,7 @@ public class Ball {
         return norm <= this.radius + b.radius;
     }
 
-    public void predictAcceleration(List<Ball> otherBalls) {
+    public void predictAcceleration(List<Ball> otherBalls, double xWall, double yWall) {
         Pair<Double, Double> totalForce = new Pair<>(0.0, 0.0);
         for (Ball otherBall : otherBalls) {
             if (otherBall == this) {
@@ -85,13 +74,25 @@ public class Ball {
             totalForce.setX(totalForce.getX() + addedForce[0]);
             totalForce.setY(totalForce.getY() + addedForce[1]);
         }
-        if (totalForce.getX() > 1 || totalForce.getY() > 1) {
-            // System.out.println("Force on ball #" + number + ": (" + totalForce.getX() + ", " + totalForce.getY() + ")");
+        if (r.getX() - radius <= 0) {
+            // totalForce.setX(totalForce.getX() - k * r.getX());
+            totalForce.setX(totalForce.getX() + k * radius);
+        }
+        if (r.getX() + radius >= xWall) {
+            totalForce.setX(totalForce.getX() - k * radius);
+            // totalForce.setX(totalForce.getX() - k * (xWall - r.getX()));
+        }
+        if (r.getY() - radius <= 0) {
+            totalForce.setY(totalForce.getY() + k * radius);
+            // totalForce.setY(totalForce.getY() - k * r.getY());
+        }
+        if (r.getY() + radius >= yWall) {
+            totalForce.setY(totalForce.getY() - k * radius);
+            // totalForce.setY(totalForce.getY() - k * (yWall - r.getY()));
         }
         // System.out.println("Force on ball #" + number + ": (" + totalForce.getX() + ", " + totalForce.getY() + ")");
-        this.aPred = new Pair<>(totalForce.getX() / mass, totalForce.getY() / mass);
+        this.aCalc = new Pair<>(totalForce.getX() / mass, totalForce.getY() / mass);
     }
-
 
     public void predictValues(double dt) {
         double factor2 = Math.pow(dt, 2) / 2;
@@ -126,7 +127,7 @@ public class Ball {
         double factor4 = Math.pow(dt, 4) / 24;
         double factor5 = Math.pow(dt, 5) / 120;
 
-        Pair<Double, Double> dR2 = new Pair<Double,Double>((aPred.getX() - a.getX()) * factor2, (aPred.getY() - a.getY()) * factor2);
+        Pair<Double, Double> dR2 = new Pair<Double,Double>((aCalc.getX() - a.getX()) * factor2, (aCalc.getY() - a.getY()) * factor2);
 
         r.setX(r.getX() + 3.0/20 * dR2.getX());
         r.setY(r.getY() + 3.0/20 * dR2.getY());
@@ -146,7 +147,6 @@ public class Ball {
         r5.setX(r5.getX() + (1.0/60 * dR2.getX()) / factor5);
         r5.setY(r5.getY() + (1.0/60 * dR2.getY()) / factor5);
     }
-
 
 
     /**
