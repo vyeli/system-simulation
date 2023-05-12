@@ -13,8 +13,8 @@ public class PoolGame {
     public static void main(String[] args) throws IOException {
 
         // Parallel universes Experiment
-        double tf = 100; //s
-        double dt = 0.01; //s
+        double tf = 20; //s
+        double dt = 0.0001; //s
 
         double y0 = 56;
         double vx0 = 100; //cm/s
@@ -33,9 +33,9 @@ public class PoolGame {
         int iterations = (int) (tf / dt);
         CollisionSystem collisionSystem = new CollisionSystem(balls, tf, dt);
         for (int i = 0; i < iterations; i++) {
-            int j = 10;
+            int j = 5000;
             collisionSystem.evolveSystem();
-            if (iterations % j == 0) {
+            if (i % j == 0) {
                 try {
                     fileWriter.write(collisionSystem.writeTable());
                 } catch (IOException e) {

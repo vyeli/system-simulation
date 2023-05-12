@@ -23,18 +23,7 @@ public class CollisionSystem {
         for (Ball ball : balls) {
             ball.move(dt);
         }
-        // predecir valores
-        for (Ball ball : balls) {
-            ball.predictValues(dt);
-        }
-        // predecir aceleraciones
-        for (Ball ball : balls) {
-            ball.predictAcceleration(balls);
-        }
-        // corregir valores
-        for (Ball ball : balls) {
-            ball.correctValues(dt);
-        }
+
         // chequear colisiones con paredes
         for (Ball ball : balls) {
             if (ball.collideX()) {
@@ -44,6 +33,22 @@ public class CollisionSystem {
                 ball.bounceY();
             }
         }
+
+        // predecir valores
+        for (Ball ball : balls) {
+            ball.predictValues(dt);
+        }
+
+        // predecir aceleraciones
+        for (Ball ball : balls) {
+            ball.predictAcceleration(balls);
+        }
+        
+        // corregir valores
+        for (Ball ball : balls) {
+            ball.correctValues(dt);
+        }
+        
         t += dt;
     }
 

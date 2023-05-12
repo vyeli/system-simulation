@@ -19,7 +19,7 @@ public class Ball {
 
     private Pair<Double, Double> aPred;         // (ax, ay)
 
-    private final double k = 10^4;        // N/m
+    private final double k = 10^4 * 1000 * 100;        // N/m
 
     public Ball(final int number, final double radius, final boolean isHole, final Pair<Double, Double> initialPosition, String color) {
         this(number, radius, isHole, color, initialPosition, new Pair<>(0.0, 0.0));
@@ -85,6 +85,10 @@ public class Ball {
             totalForce.setX(totalForce.getX() + addedForce[0]);
             totalForce.setY(totalForce.getY() + addedForce[1]);
         }
+        if (totalForce.getX() > 1 || totalForce.getY() > 1) {
+            // System.out.println("Force on ball #" + number + ": (" + totalForce.getX() + ", " + totalForce.getY() + ")");
+        }
+        // System.out.println("Force on ball #" + number + ": (" + totalForce.getX() + ", " + totalForce.getY() + ")");
         this.aPred = new Pair<>(totalForce.getX() / mass, totalForce.getY() / mass);
     }
 
