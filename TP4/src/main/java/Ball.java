@@ -76,18 +76,18 @@ public class Ball {
         }
         if (r.getX() - radius <= 0) {
             // totalForce.setX(totalForce.getX() - k * r.getX());
-            totalForce.setX(totalForce.getX() + k * radius);
+            totalForce.setX(totalForce.getX() + k * r.getX());
         }
         if (r.getX() + radius >= xWall) {
-            totalForce.setX(totalForce.getX() - k * radius);
+            totalForce.setX(totalForce.getX() - k * (xWall - r.getX()));
             // totalForce.setX(totalForce.getX() - k * (xWall - r.getX()));
         }
         if (r.getY() - radius <= 0) {
-            totalForce.setY(totalForce.getY() + k * radius);
+            totalForce.setY(totalForce.getY() + k * r.getY());
             // totalForce.setY(totalForce.getY() - k * r.getY());
         }
         if (r.getY() + radius >= yWall) {
-            totalForce.setY(totalForce.getY() - k * radius);
+            totalForce.setY(totalForce.getY() - k * (yWall - r.getY()));
             // totalForce.setY(totalForce.getY() - k * (yWall - r.getY()));
         }
         // System.out.println("Force on ball #" + number + ": (" + totalForce.getX() + ", " + totalForce.getY() + ")");
