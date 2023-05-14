@@ -46,7 +46,7 @@ public class LuckyStrike {
 
                 CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
                 while (collisionSystem.getNumberOfBalls() > 9) {
-                    collisionSystem.evolveSystem();
+                    collisionSystem.evolveSystemWithHoles();
                     if (j == 0 && collisionSystem.getTime() % dt2 == 0) {
                         fileWriter = new FileWriter("output" + MIN_Y0_WHITE_BALL + dy * i + ".txt");
                         fileWriter.write(collisionSystem.writeTable());
