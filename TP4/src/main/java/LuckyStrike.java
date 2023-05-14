@@ -34,9 +34,9 @@ public class LuckyStrike {
                 List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
                 CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
-                while (collisionSystem.getBalls().size() > 9) {
+                while (collisionSystem.getNumberOfBalls() > 9) {
                     collisionSystem.evolveSystem();
-                    if (j == 0 && collisionSystem.getT() % dt2 == 0) {
+                    if (j == 0 && collisionSystem.getTime() % dt2 == 0) {
                         fileWriter = new FileWriter("output" + MIN_Y0_WHITE_BALL + dy * i + ".txt");
                         fileWriter.write(collisionSystem.writeTable());
                     }

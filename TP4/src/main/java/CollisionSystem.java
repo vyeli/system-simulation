@@ -69,12 +69,12 @@ public class CollisionSystem {
         t += dt;
     }
 
-    public double getT() {
-        return t;
-    }
-
     public List<Ball> getBalls() {
         return balls;
+    }
+
+    public int getNumberOfBalls() {
+        return balls.size();
     }
 
     /**
