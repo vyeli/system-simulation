@@ -4,7 +4,7 @@ import numpy as np
 
 class Pool(Scene):
     def construct(self):
-        self.generations = self.parse_balls_file('output.txt')
+        self.generations = self.parse_balls_file('output-42.0.txt')
         balls = []
         print('Total gens: {}'.format(len(self.generations)))
 

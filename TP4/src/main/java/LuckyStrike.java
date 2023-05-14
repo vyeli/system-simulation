@@ -3,7 +3,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,18 +27,18 @@ public class LuckyStrike {
         double vx0 = 1;         // m/s
 
         Long iteration = 0L;
-        Long snapshot = 1000L;
+        Long snapshot = 200L;
 
         FileWriter[] fileWriters = new FileWriter[20];
 
-        double dy = (MAX_Y0_WHITE_BALL - MIN_Y0_WHITE_BALL) / 20;
+        double dy = (MAX_Y0_WHITE_BALL - MIN_Y0_WHITE_BALL) / 19;
 
         // 20 y0 values
         for (int i = 0; i< 20; i++) {
             // 20 files
-            fileWriters[i] = new FileWriter("output" + (MIN_Y0_WHITE_BALL + dy * i) + ".txt");
+            fileWriters[i] = new FileWriter("output-" + (MIN_Y0_WHITE_BALL + dy * i) * 100 + ".txt");
             // 5 random epsilons values for each y0
-            for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < 10; j++) {
                 List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
                 // Triangle balls positions
                 for (int k = 0; k < 15; k++) {
@@ -50,16 +49,17 @@ public class LuckyStrike {
 
                 CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
                 while (collisionSystem.getNumberOfBalls() > 9) {
-                    iteration++;
-                    collisionSystem.evolveSystemWithHoles();
                     if (j == 0 && iteration % snapshot == 0 ) {
                         fileWriters[i].write(collisionSystem.writeTable());
                     }
+                    iteration++;
+                    collisionSystem.evolveSystemWithHoles();
 
                 }
                 csvPrinter.printRecord(MIN_Y0_WHITE_BALL + dy * i, collisionSystem.getTime());
             }
             fileWriters[i].close();
+            iteration = 0L;
         }
         csvPrinter.close();
         // End of Lucky Strike Experiment

@@ -33,8 +33,8 @@ public class PoolGame {
         int iterations = (int) (tf / dt);
         CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
         for (int i = 0; i < iterations; i++) {
-            int j = 8173;
-            if (i == 0 || (i > j && i < 8199)) {
+            int j = 8170;
+            if (i == 0 || i > j && i < j + 250) {
             // if (i == 0 || (i >= j && i < j + 100)) {
                 try {
                     fileWriter.write(collisionSystem.writeTable());

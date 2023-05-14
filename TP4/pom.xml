@@ -29,7 +29,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                       <manifest>
-                        <mainClass>PoolGame</mainClass>
+                        <mainClass>LuckyStrike</mainClass>
                       </manifest>
                     </archive>
 
