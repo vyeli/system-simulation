@@ -148,6 +148,11 @@ public class Ball {
         return force;
     }
 
+    public boolean collidesWith(Ball b) {
+        double distance = Math.sqrt(Math.pow(b.r.getX() - this.r.getX(), 2) + Math.pow(b.r.getY() - this.r.getY(), 2));
+        return distance <= this.radius + b.radius;
+    }
+
 
     public double getMass() {
         return mass;

@@ -8,11 +8,8 @@ public class CollisionSystem {
 
     private final double dt;
 
-    private final double tf;
-
-    public CollisionSystem(List<Ball> balls, double tf, double dt, double xWall, double yWall) {
+    public CollisionSystem(List<Ball> balls, double dt, double xWall, double yWall) {
         this.balls = balls;
-        this.tf = tf;
         this.dt = dt;
         this.xWall = xWall;
         this.yWall = yWall;
@@ -20,11 +17,6 @@ public class CollisionSystem {
 
     // TODO: Stop condition when no balls are alive
     public void evolveSystem() {
-        // evolucionar el sistema hasta t
-        // for (Ball ball : balls) {
-        //     ball.move(dt);
-        // }
-
         // predecir valores
         for (Ball ball : balls) {
             ball.predictValues(dt);
@@ -41,6 +33,48 @@ public class CollisionSystem {
         }
         
         t += dt;
+    }
+
+    public void evolveSystemWithHoles() {
+        // predecir valores
+        for (Ball ball : balls) {
+            ball.predictValues(dt);
+        }
+
+        // predecir aceleraciones
+        for (Ball ball : balls) {
+            ball.predictAcceleration(balls, xWall, yWall);
+        }
+
+        // corregir valores
+        for (Ball ball : balls) {
+            ball.correctValues(dt);
+        }
+
+        // check collisions with holes to remove balls
+        for (Ball ball : balls) {
+            if (ball.isHole()) {
+                for (Ball otherBall : balls) {
+                    if (otherBall == ball || otherBall.isHole()) {
+                        continue;
+                    }
+                    if (ball.collidesWith(otherBall)) {
+                        balls.remove(otherBall);
+                    }
+                }
+            }
+
+        }
+
+        t += dt;
+    }
+
+    public double getT() {
+        return t;
+    }
+
+    public List<Ball> getBalls() {
+        return balls;
     }
 
     /**
