@@ -1,7 +1,12 @@
 import helpers.Pair;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +14,13 @@ public class LuckyStrike {
     private static final double MIN_Y0_WHITE_BALL = 0.42;
     private static final double MAX_Y0_WHITE_BALL = 0.56;
 
+    private static final String[] CSV_HEADERS = {"y0", "duration"};
+
     public static void main(String[] args) throws IOException {
+
+        BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get("execution_data.csv"));
+        CSVFormat csvFormatConfigs = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
+        final CSVPrinter csvPrinter = new CSVPrinter(bwConfigs, csvFormatConfigs);
 
         // Lucky Strike Experiment
         double dt = 10^-4;     // s
@@ -42,12 +53,13 @@ public class LuckyStrike {
                     }
 
                 }
+                csvPrinter.printRecord(MIN_Y0_WHITE_BALL + dy * i, collisionSystem.getTime());
                 if (j == 0) {
                     fileWriter.close();
                 }
             }
         }
-
+        csvPrinter.close();
         // End of Lucky Strike Experiment
     }
 
