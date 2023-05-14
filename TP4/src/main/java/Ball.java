@@ -45,24 +45,6 @@ public class Ball {
         return this.r;
     }
 
-    public boolean collideX() {
-        if (v.getX() == 0) {
-            return false;
-        }
-        return v.getX() > 0 ? Table.getWidth() - radius - r.getX() <= 0 : radius - r.getX() <= 0;
-    }
-
-    public boolean collideY() {
-        if (v.getY() == 0) {
-            return false;
-        }
-        return v.getY() > 0 ? Table.getHeight() - radius - r.getY() <= 0 : radius - r.getY() <= 0;
-    }
-
-    public boolean collide(Ball b) {
-        double norm = Math.sqrt(Math.pow(b.r.getX() - this.r.getX(), 2) + Math.pow(b.r.getY() - this.r.getY(), 2));
-        return norm <= this.radius + b.radius;
-    }
 
     public void predictAcceleration(List<Ball> otherBalls, double xWall, double yWall) {
         Pair<Double, Double> totalForce = new Pair<>(0.0, 0.0);
@@ -153,57 +135,19 @@ public class Ball {
      * Get the force between two balls, if they are colliding
      */
     public Double[] getForce(Ball b) {
-        double norm = Math.sqrt(Math.pow(b.r.getX() - this.r.getX(), 2) + Math.pow(b.r.getY() - this.r.getY(), 2));
-        Double[] rvector = {(b.r.getX() - this.r.getX())/norm, (b.r.getY() - this.r.getY())/norm};
+        double distance = Math.sqrt(Math.pow(b.r.getX() - this.r.getX(), 2) + Math.pow(b.r.getY() - this.r.getY(), 2));
+        Double[] rvector = {(b.r.getX() - this.r.getX())/distance, (b.r.getY() - this.r.getY())/distance};
         Double[] force;
         // If the balls are not colliding, return 0 force
-        if (norm > this.radius + b.radius) {
+        if (distance > this.radius + b.radius) {
             force = new Double[]{0.0, 0.0};
             return force;
         }
-        force = new Double[]{k * (norm - (this.radius + b.radius)) * rvector[0], k * (norm - (this.radius + b.radius)) * rvector[1]};
+        force = new Double[]{k * (distance - (this.radius + b.radius)) * rvector[0], k * (distance - (this.radius + b.radius)) * rvector[1]};
         this.collisionCount++;
         return force;
     }
 
-    /**
-     * update the invoking particle to simulate it bouncing off a vertical wall
-     */
-    public void bounceX() {
-        double currentXSpeed = v.getX();
-        v.setX(-currentXSpeed);
-        collisionCount++;
-    }
-
-    /**
-     * update the invoking particle to simulate it bouncing off a horizontal wall
-     */
-    public void bounceY() {
-        double currentYSpeed = v.getY();
-        v.setY(-currentYSpeed);
-        collisionCount++;
-    }
-
-    public int getCollisionCount() {
-        return collisionCount;
-    }
-
-    private double[] deltaR(Ball b) {
-        return new double[]{b.r.getX() - this.r.getX(), b.r.getY() - this.r.getY()};
-    }
-
-    private double[] deltaV(Ball b) {
-        return new double[]{b.v.getX() - this.v.getX(), b.v.getY() - this.v.getY()};
-    }
-
-    private double dotProduct(double[] a, double[] b) {
-        return a[0] * b[0] + a[1] * b[1];
-    }
-
-    public void move(double time) {
-        r.setX(r.getX() + v.getX() * time);
-        r.setY(r.getY() + v.getY() * time);
-    }
 
     public double getMass() {
         return mass;
