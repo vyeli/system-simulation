@@ -23,7 +23,7 @@ class Pool(Scene):
         for ball in self.generations[0]['balls']:
             ball_number = ball['number']
             new_ball = None
-            new_ball = Circle(radius = self.resize_to_graph(ball['radius']), stroke_width=0, fill_color=ball['color'], fill_opacity=1)
+            new_ball = Circle(radius = ball['radius'], stroke_width=0, fill_color=ball['color'], fill_opacity=1)
             # match ball['number']:
             #     case 16:
             #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=PI/2)
@@ -41,11 +41,11 @@ class Pool(Scene):
             #         new_ball = Circle(radius = self.resize_to_graph(ball['radius']), stroke_width=0, fill_color=Colors.yellow_e.value, fill_opacity=1)
             if ball_number > 15:         # A corner
                 new_ball.set_color(Colors.black.value)
-            new_ball.shift(RIGHT * self.x_coordinate_to_graph(ball['x_pos']), UP * self.y_coordinate_to_graph(ball['y_pos']))
+            new_ball.shift(RIGHT * ball['x_pos'], UP * ball['y_pos'])
             balls.append(new_ball)
             self.add(new_ball)
             if ball['number'] == 0:         # White ball
-                new_ball.next_pos = [self.x_coordinate_to_graph(ball['x_pos']) + self.resize_to_graph(ball['x_vel']) * self.generations[1]['time_elapsed'], self.y_coordinate_to_graph(ball['y_pos']), 0]
+                new_ball.next_pos = [ball['x_pos'] + ball['x_vel'] * self.generations[1]['time_elapsed'], ball['y_pos'], 0]
             else:
                 new_ball.next_pos = [-1, -1, -1]
 
@@ -66,7 +66,8 @@ class Pool(Scene):
                     balls[ball_number].set_y(balls[ball_number].next_pos[1])
                 if ball_number <= 15 and ball['x_vel'] != 0 or ball['y_vel'] != 0:
                     runtime = self.generations[current_gen+1]['time_elapsed']
-                    balls[ball_number].next_pos = [balls[ball_number].get_x() + self.resize_to_graph(ball['x_vel']) * runtime, balls[ball_number].get_y() + self.resize_to_graph(ball['y_vel']) * runtime, 0]
+                    # balls[ball_number].next_pos = [balls[ball_number].get_x() + ball['x_vel'] * runtime, balls[ball_number].get_y() + ball['y_vel'] * runtime, 0]
+                    balls[ball_number].next_pos = [ball['x_pos'], ball['y_pos'], 0]
                     gen_animations.append(balls[ball_number].animate(run_time=runtime, rate_func=rate_functions.linear).move_to(Point(location=balls[ball_number].next_pos)))
             
             for ball in np.arange(max_alive_balls):
@@ -80,7 +81,6 @@ class Pool(Scene):
     
     def resize_to_graph(self, value):
         return value / 0.16
-    
 
     def x_coordinate_to_graph(self, x):
         return self.resize_to_graph(x - 2.24/2)
@@ -123,12 +123,12 @@ class Pool(Scene):
                     line = line.split()
                     generations[current_gen]['balls'].append({
                         'number': int(line[0]),
-                        'x_pos': float(line[1]),
-                        'y_pos': float(line[2]),
-                        'x_vel': float(line[3]),
-                        'y_vel': float(line[4]),
+                        'x_pos': self.x_coordinate_to_graph(float(line[1])),
+                        'y_pos': self.y_coordinate_to_graph(float(line[2])),
+                        'x_vel': self.resize_to_graph(float(line[3])),
+                        'y_vel': self.resize_to_graph(float(line[4])),
                         'mass': float(line[5]),
-                        'radius': float(line[6]),
+                        'radius': self.resize_to_graph(float(line[6])),
                         'color': line[7]
                     })
                     line = self.next_line(file)

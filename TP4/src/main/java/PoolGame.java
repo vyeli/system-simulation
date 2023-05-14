@@ -13,11 +13,11 @@ public class PoolGame {
     public static void main(String[] args) throws IOException {
 
         // Parallel universes Experiment
-        double tf = 20;         // s
-        double dt = 0.0001;     // s
+        double tf = 100;            // s
+        double dt = 0.01;            // s
 
-        double y0 = 0.56;       // m
-        double vx0 = 1;         // m/s
+        double y0 = 0.56;           // m
+        double vx0 = 0.013;          // m/s
 
         FileWriter fileWriter = new FileWriter("output.txt");
 
@@ -33,9 +33,9 @@ public class PoolGame {
         int iterations = (int) (tf / dt);
         CollisionSystem collisionSystem = new CollisionSystem(balls, tf, dt, Table.getWidth(), Table.getHeight());
         for (int i = 0; i < iterations; i++) {
-            int j = 500;
-            collisionSystem.evolveSystem();
-            if (i % j == 0) {
+            int j = 8173;
+            if (i == 0 || (i > j && i < 8199)) {
+            // if (i == 0 || (i >= j && i < j + 100)) {
                 try {
                     fileWriter.write(collisionSystem.writeTable());
                 } catch (IOException e) {
@@ -43,6 +43,7 @@ public class PoolGame {
                     e.printStackTrace();
                 }
             }
+            collisionSystem.evolveSystem();
         }
 
         fileWriter.close();
@@ -50,6 +51,14 @@ public class PoolGame {
 
     }
 
+    public static double getRandomEpsilon() {
+        double randValue = Math.random();
+        double epsilon = 0.02 + randValue * 0.01;
+        if(randValue > 0.5) {
+            epsilon = -epsilon;
+        }
+        return epsilon;
+    }
 
     public static double getDeterministicDoubleEpsilons(int epsilonIdx) {
         double[] epsilons = {

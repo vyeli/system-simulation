@@ -8,7 +8,6 @@ public class Ball {
     private final String color;
     private boolean isHole = false;
     private int number;
-    private int collisionCount;
 
     private Pair<Double, Double> r;         // (x, y)
     private Pair<Double, Double> v;         // (vx, vy)
@@ -16,6 +15,8 @@ public class Ball {
     private Pair<Double, Double> r3 = new Pair<>(0.0, 0.0);
     private Pair<Double, Double> r4 = new Pair<>(0.0, 0.0);
     private Pair<Double, Double> r5 = new Pair<>(0.0, 0.0);
+
+    private Pair<Double, Double> rPred = new Pair<>(0.0, 0.0);
 
     private Pair<Double, Double> aCalc;         // (ax, ay)
 
@@ -35,16 +36,8 @@ public class Ball {
         this.number = number;
         this.r = initialPosition;
         this.v = initialVelocity;
+        this.rPred = new Pair<>(this.r.getX(), this.r.getY());
     }
-
-    public int getNumber() {
-        return this.number;
-    }
-
-    public Pair<Double, Double> getR() {
-        return this.r;
-    }
-
 
     public void predictAcceleration(List<Ball> otherBalls, double xWall, double yWall) {
         Pair<Double, Double> totalForce = new Pair<>(0.0, 0.0);
@@ -57,20 +50,20 @@ public class Ball {
             totalForce.setY(totalForce.getY() + addedForce[1]);
         }
         if (r.getX() - radius <= 0) {
-            // totalForce.setX(totalForce.getX() - k * r.getX());
-            totalForce.setX(totalForce.getX() + k * r.getX());
+            // totalForce.setX(totalForce.getX() + k * radius);
+            totalForce.setX(totalForce.getX() + k * (radius - r.getX()));
         }
         if (r.getX() + radius >= xWall) {
-            totalForce.setX(totalForce.getX() - k * (xWall - r.getX()));
-            // totalForce.setX(totalForce.getX() - k * (xWall - r.getX()));
+            // totalForce.setX(totalForce.getX() - k * radius);
+            totalForce.setX(totalForce.getX() - k * (r.getX() + radius - xWall));
         }
         if (r.getY() - radius <= 0) {
-            totalForce.setY(totalForce.getY() + k * r.getY());
-            // totalForce.setY(totalForce.getY() - k * r.getY());
+            // totalForce.setY(totalForce.getY() + k * radius);
+            totalForce.setY(totalForce.getY() + k * (radius - r.getY()));
         }
         if (r.getY() + radius >= yWall) {
-            totalForce.setY(totalForce.getY() - k * (yWall - r.getY()));
-            // totalForce.setY(totalForce.getY() - k * (yWall - r.getY()));
+            // totalForce.setY(totalForce.getY() - k * radius);
+            totalForce.setY(totalForce.getY() - k * (r.getY() + radius - yWall));
         }
         // System.out.println("Force on ball #" + number + ": (" + totalForce.getX() + ", " + totalForce.getY() + ")");
         this.aCalc = new Pair<>(totalForce.getX() / mass, totalForce.getY() / mass);
@@ -85,6 +78,9 @@ public class Ball {
         // Calculating predictions
         r.setX(r.getX() + dt * v.getX() + factor2 * a.getX() + factor3 * r3.getX() + factor4 * r4.getX() + factor5 * r5.getX());
         r.setY(r.getY() + dt * v.getY() + factor2 * a.getY() + factor3 * r3.getY() + factor4 * r4.getY() + factor5 * r5.getY());
+
+        rPred.setX(r.getX());
+        rPred.setY(r.getY());
 
         v.setX(v.getX() + dt * a.getX() + factor2 * r3.getX() + factor3 * r4.getX() + factor4 * r5.getX());
         v.setY(v.getY() + dt * a.getY() + factor2 * r3.getY() + factor3 * r4.getY() + factor4 * r5.getY());
@@ -141,10 +137,16 @@ public class Ball {
         // If the balls are not colliding, return 0 force
         if (distance > this.radius + b.radius) {
             force = new Double[]{0.0, 0.0};
-            return force;
+        } else {
+            double forceFactor = k * (distance - (this.radius + b.radius));
+            force = new Double[]{forceFactor * rvector[0], forceFactor * rvector[1]};
+            // if (this.number == 6 && b.number == 10 && !Double.isNaN(force[0]) && !Double.isNaN(force[1])) {
+            //     System.out.println("Positions: ");
+            //     System.out.println("- 10: (" + b.getR().getX() + ", " + b.getR().getY() + ")");
+            //     System.out.println("- 6: (" + getR().getX() + ", " + getR().getY() + ")");
+            //     System.out.println("\tForce on contact (from 10 to 6): (" + force[0] + ", " + force[1] + ")");
+            // }
         }
-        force = new Double[]{k * (distance - (this.radius + b.radius)) * rvector[0], k * (distance - (this.radius + b.radius)) * rvector[1]};
-        this.collisionCount++;
         return force;
     }
 
@@ -177,16 +179,24 @@ public class Ball {
         isHole = hole;
     }
 
+    public int getNumber() {
+        return this.number;
+    }
+
     public void setNumber(int number) {
         this.number = number;
     }
 
-    public void setCollisionCount(int collisionCount) {
-        this.collisionCount = collisionCount;
+    public Pair<Double, Double> getR() {
+        return this.r;
     }
 
     public void setR(Pair<Double, Double> r) {
         this.r = r;
+    }
+
+    public Pair<Double, Double> getRPred() {
+        return this.rPred;
     }
 
     public Pair<Double, Double> getV() {

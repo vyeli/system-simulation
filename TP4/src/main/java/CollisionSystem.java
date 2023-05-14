@@ -59,8 +59,8 @@ public class CollisionSystem {
         result.append(t).append('\n');
         for (Ball ball : balls) {
             result.append(ball.getNumber()).append(" ");
-            result.append(ball.getR().getX()).append(" ");
-            result.append(ball.getR().getY()).append(" ");
+            result.append(ball.getRPred().getX()).append(" ");
+            result.append(ball.getRPred().getY()).append(" ");
             result.append(ball.getV().getX()).append(" ");
             result.append(ball.getV().getY()).append(" ");
             result.append(ball.getMass()).append(" ");
