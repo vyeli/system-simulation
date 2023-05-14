@@ -3,6 +3,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,12 +29,14 @@ public class LuckyStrike {
 
         double dt2 = 1;
 
-        FileWriter fileWriter = null;
+        FileWriter[] fileWriters = new FileWriter[20];
 
         double dy = (MAX_Y0_WHITE_BALL - MIN_Y0_WHITE_BALL) / 20;
 
         // 20 y0 values
         for (int i = 0; i< 20; i++) {
+            // 20 files
+            fileWriters[i] = new FileWriter("output" + (MIN_Y0_WHITE_BALL + dy * i) + ".txt");
             // 5 random epsilons values for each y0
             for (int j = 0; j < 5; j++) {
                 List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
@@ -48,16 +51,13 @@ public class LuckyStrike {
                 while (collisionSystem.getNumberOfBalls() > 9) {
                     collisionSystem.evolveSystemWithHoles();
                     if (j == 0 && collisionSystem.getTime() % dt2 == 0) {
-                        fileWriter = new FileWriter("output" + MIN_Y0_WHITE_BALL + dy * i + ".txt");
-                        fileWriter.write(collisionSystem.writeTable());
+                        fileWriters[i].write(collisionSystem.writeTable());
                     }
 
                 }
                 csvPrinter.printRecord(MIN_Y0_WHITE_BALL + dy * i, collisionSystem.getTime());
-                if (j == 0) {
-                    fileWriter.close();
-                }
             }
+            fileWriters[i].close();
         }
         csvPrinter.close();
         // End of Lucky Strike Experiment
