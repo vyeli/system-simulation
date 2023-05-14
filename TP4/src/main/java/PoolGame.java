@@ -1,25 +1,43 @@
 import helpers.Pair;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PoolGame {
 
     private static final double MIN_Y0_WHITE_BALL = 0.42;
     private static final double MAX_Y0_WHITE_BALL = 0.56;
 
+    private static final String[] CSV_HEADERS = {"k", "t", "x", "y"};
+
     public static void main(String[] args) throws IOException {
+
+        BufferedWriter bwConfigs = Files.newBufferedWriter(Paths.get("phit.csv"));
+        CSVFormat csvFormatConfigs = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
+        final CSVPrinter csvPrinter = new CSVPrinter(bwConfigs, csvFormatConfigs);
+
 
         // Parallel universes Experiment
         double tf = 20;         // s
-        double dt = 0.0001;     // s
+        //double dt = 0.001;     // s
+
+        double[] dts = {0.001, 0.0001, 0.00001};
 
         double y0 = 0.56;       // m
         double vx0 = 1;         // m/s
 
-        FileWriter fileWriter = new FileWriter("output.txt");
+        Map<Integer, Map<Double, List<Pair<Double, Double>>>> ballsPositions = new HashMap<>();
+
+        // FileWriter fileWriter = new FileWriter("output.txt");
 
         List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
         // Triangle balls positions
@@ -30,22 +48,64 @@ public class PoolGame {
         gameTable.removeCornerBall();
         List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
-        int iterations = (int) (tf / dt);
-        CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
-        for (int i = 0; i < iterations; i++) {
-            int j = 500;
-            collisionSystem.evolveSystem();
-            if (i % j == 0) {
-                try {
-                    fileWriter.write(collisionSystem.writeTable());
-                } catch (IOException e) {
-                    System.out.println("An error occurred.");
-                    e.printStackTrace();
+        int k = 3;
+        for (Double dt : dts) {
+            int iterations = (int) (tf / dt);
+            CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
+            for (int i = 0; i < iterations; i++) {
+                collisionSystem.evolveSystem();
+                switch (k) {
+                    case 3:
+                        for (Ball ball : balls) {
+                            try {
+                                csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getR().getX(), ball.getR().getY());
+                            } catch (IOException e) {
+                                System.out.println("An error occurred.");
+                                e.printStackTrace();
+                            }
+                        }
+                    case 4:
+                        if (i % 10 == 0) {
+                            for (Ball ball : balls) {
+                                try {
+                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getR().getX(), ball.getR().getY());
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred.");
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    case 5:
+                        if (i % 100 == 0) {
+                            for (Ball ball : balls) {
+                                try {
+                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getR().getX(), ball.getR().getY());
+                                } catch (IOException e) {
+                                    System.out.println("An error occurred.");
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
                 }
             }
+            k++;
         }
 
-        fileWriter.close();
+
+//        for (int i = 0; i < iterations; i++) {
+//            int j = 500;
+//            collisionSystem.evolveSystem();
+//            if (i % j == 0) {
+//                try {
+//                    fileWriter.write(collisionSystem.writeTable());
+//                } catch (IOException e) {
+//                    System.out.println("An error occurred.");
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+
+        //fileWriter.close();
         // End of Parallel universes Experiment
 
     }
