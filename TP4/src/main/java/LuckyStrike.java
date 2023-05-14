@@ -3,7 +3,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,6 +59,7 @@ public class LuckyStrike {
                 csvPrinter.printRecord(MIN_Y0_WHITE_BALL + dy * i, collisionSystem.getTime());
             }
             fileWriters[i].close();
+            iteration = 0L;
         }
         csvPrinter.close();
         // End of Lucky Strike Experiment
