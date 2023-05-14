@@ -24,10 +24,11 @@ public class LuckyStrike {
         final CSVPrinter csvPrinter = new CSVPrinter(bwConfigs, csvFormatConfigs);
 
         // Lucky Strike Experiment
-        double dt = 10^-4;     // s
+        double dt = 0.0001;     // s
         double vx0 = 1;         // m/s
 
-        double dt2 = 1;
+        Long iteration = 0L;
+        Long snapshot = 1000L;
 
         FileWriter[] fileWriters = new FileWriter[20];
 
@@ -49,8 +50,9 @@ public class LuckyStrike {
 
                 CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
                 while (collisionSystem.getNumberOfBalls() > 9) {
+                    iteration++;
                     collisionSystem.evolveSystemWithHoles();
-                    if (j == 0 && collisionSystem.getTime() % dt2 == 0) {
+                    if (j == 0 && iteration % snapshot == 0 ) {
                         fileWriters[i].write(collisionSystem.writeTable());
                     }
 
