@@ -31,7 +31,7 @@ public class PoolGame {
         List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
         int iterations = (int) (tf / dt);
-        CollisionSystem collisionSystem = new CollisionSystem(balls, tf, dt, Table.getWidth(), Table.getHeight());
+        CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
         for (int i = 0; i < iterations; i++) {
             int j = 8173;
             if (i == 0 || (i > j && i < 8199)) {

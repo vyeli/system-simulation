@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class CollisionSystem {
@@ -6,25 +8,24 @@ public class CollisionSystem {
     private double yWall;
     private double t;
 
+    private List<Ball> holes = new ArrayList<>();
+
     private final double dt;
 
-    private final double tf;
-
-    public CollisionSystem(List<Ball> balls, double tf, double dt, double xWall, double yWall) {
+    public CollisionSystem(List<Ball> balls, double dt, double xWall, double yWall) {
         this.balls = balls;
-        this.tf = tf;
         this.dt = dt;
         this.xWall = xWall;
         this.yWall = yWall;
+        for (Ball ball : balls) {
+            if (ball.isHole()) {
+                holes.add(ball);
+            }
+        }
     }
 
     // TODO: Stop condition when no balls are alive
     public void evolveSystem() {
-        // evolucionar el sistema hasta t
-        // for (Ball ball : balls) {
-        //     ball.move(dt);
-        // }
-
         // predecir valores
         for (Ball ball : balls) {
             ball.predictValues(dt);
@@ -41,6 +42,49 @@ public class CollisionSystem {
         }
         
         t += dt;
+    }
+
+    public void evolveSystemWithHoles() {
+        List<Ball> ballsToRemove = new ArrayList<>();
+        // predecir valores
+        for (Ball ball : balls) {
+            ball.predictValues(dt);
+        }
+
+        // predecir aceleraciones
+        for (Ball ball : balls) {
+            ball.predictAcceleration(balls, xWall, yWall);
+        }
+
+        // corregir valores
+        for (Ball ball : balls) {
+            ball.correctValues(dt);
+        }
+
+        // remove balls that are in a hole
+        for (Ball ball : balls) {
+            if (ball.isHole()) {
+                continue;
+            }
+            for (Ball hole : holes) {
+                if (ball.isInHole(hole)) {
+                    ballsToRemove.add(ball);
+                }
+            }
+        }
+        for (Ball ball : ballsToRemove) {
+            balls.remove(ball);
+        }
+
+        t += dt;
+    }
+
+    public List<Ball> getBalls() {
+        return balls;
+    }
+
+    public int getNumberOfBalls() {
+        return balls.size();
     }
 
     /**
