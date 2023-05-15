@@ -17,7 +17,7 @@ public class PoolGame {
     private static final double MIN_Y0_WHITE_BALL = 0.42;
     private static final double MAX_Y0_WHITE_BALL = 0.56;
 
-    private static final String[] CSV_HEADERS = {"k", "t", "x", "y"};
+    private static final String[] CSV_HEADERS = {"k", "t", "n", "x", "y"};
 
     public static void main(String[] args) throws IOException {
 
@@ -27,7 +27,7 @@ public class PoolGame {
 
 
         // Parallel universes Experiment
-        double tf = 20;         // s
+        double tf = 100;         // s
         //double dt = 0.001;     // s
 
         double[] dts = {0.001, 0.0001, 0.00001};
@@ -72,7 +72,7 @@ public class PoolGame {
                     case 3:
                         for (Ball ball : balls) {
                             try {
-                                csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getR().getX(), ball.getR().getY());
+                                csvPrinter.printRecord(k, collisionSystem.getTime(),ball.getNumber(), ball.getR().getX(), ball.getR().getY());
                             } catch (IOException e) {
                                 System.out.println("An error occurred.");
                                 e.printStackTrace();
@@ -82,7 +82,7 @@ public class PoolGame {
                         if (i % 10 == 0) {
                             for (Ball ball : balls) {
                                 try {
-                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getR().getX(), ball.getR().getY());
+                                    csvPrinter.printRecord(k, collisionSystem.getTime(),ball.getNumber(), ball.getR().getX(), ball.getR().getY());
                                 } catch (IOException e) {
                                     System.out.println("An error occurred.");
                                     e.printStackTrace();
@@ -93,7 +93,7 @@ public class PoolGame {
                         if (i % 100 == 0) {
                             for (Ball ball : balls) {
                                 try {
-                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getR().getX(), ball.getR().getY());
+                                    csvPrinter.printRecord(k, collisionSystem.getTime(),ball.getNumber(), ball.getR().getX(), ball.getR().getY());
                                 } catch (IOException e) {
                                     System.out.println("An error occurred.");
                                     e.printStackTrace();

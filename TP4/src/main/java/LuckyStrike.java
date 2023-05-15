@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LuckyStrike {
     private static final double MIN_Y0_WHITE_BALL = 0.42;
@@ -27,7 +28,7 @@ public class LuckyStrike {
         double vx0 = 1;         // m/s
 
         Long iteration = 0L;
-        Long snapshot = 200L;
+        Long snapshot = 1000L;
 
         FileWriter[] fileWriters = new FileWriter[20];
 
@@ -47,14 +48,19 @@ public class LuckyStrike {
                 Table gameTable = new Table(MIN_Y0_WHITE_BALL + dy * i, vx0, ballsEpsilon);
                 List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
+                // List<Ball> holes = balls.stream().filter(ball -> !ball.isHole()).collect(Collectors.toList());
+                // balls.removeAll(holes);
+
                 CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
-                while (collisionSystem.getNumberOfBalls() > 9) {
+                while (collisionSystem.getNumberOfBalls() > 8) {
                     if (j == 0 && iteration % snapshot == 0 ) {
                         fileWriters[i].write(collisionSystem.writeTable());
                     }
                     iteration++;
                     collisionSystem.evolveSystemWithHoles();
-
+                }
+                if (j == 0 && iteration % snapshot == 0 ) {
+                    fileWriters[i].write(collisionSystem.writeTable());
                 }
                 csvPrinter.printRecord(MIN_Y0_WHITE_BALL + dy * i, collisionSystem.getTime());
             }

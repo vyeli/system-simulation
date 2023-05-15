@@ -4,7 +4,7 @@ import numpy as np
 
 class Pool(Scene):
     def construct(self):
-        self.generations = self.parse_balls_file('output-42.0.txt')
+        self.generations = self.parse_balls_file('output-56.0.txt')
         balls = []
         print('Total gens: {}'.format(len(self.generations)))
 
@@ -23,22 +23,22 @@ class Pool(Scene):
         for ball in self.generations[0]['balls']:
             ball_number = ball['number']
             new_ball = None
-            new_ball = Circle(radius = ball['radius'], stroke_width=0, fill_color=ball['color'], fill_opacity=1)
-            # match ball['number']:
-            #     case 16:
-            #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=PI/2)
-            #     case 17:
-            #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=-PI/2)
-            #     case 18:
-            #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=PI)
-            #     case 19:
-            #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=-PI)
-            #     case 20:
-            #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=-PI/2, start_angle=PI)
-            #     case 21:
-            #         new_ball = Sector(outer_radius = self.resize_to_graph(ball['radius']), stroke_width=0, angle=PI/2, start_angle=PI)
-            #     case _:
-            #         new_ball = Circle(radius = self.resize_to_graph(ball['radius']), stroke_width=0, fill_color=Colors.yellow_e.value, fill_opacity=1)
+            # new_ball = Circle(radius = ball['radius'], stroke_width=0, fill_color=ball['color'], fill_opacity=1)
+            match ball_number:
+                case 16:
+                    new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=PI/2)
+                case 17:
+                    new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=-PI/2)
+                case 18:
+                    new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=PI)
+                case 19:
+                    new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=-PI)
+                case 20:
+                    new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=-PI/2, start_angle=PI)
+                case 21:
+                    new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=PI/2, start_angle=PI)
+                case _:
+                    new_ball = Circle(radius = ball['radius'], stroke_width=0, fill_color=ball['color'], fill_opacity=1)
             if ball_number > 15:         # A corner
                 new_ball.set_color(Colors.black.value)
             new_ball.shift(RIGHT * ball['x_pos'], UP * ball['y_pos'])

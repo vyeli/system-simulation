@@ -17,11 +17,14 @@ public class CollisionSystem {
         this.dt = dt;
         this.xWall = xWall;
         this.yWall = yWall;
+
         for (Ball ball : balls) {
             if (ball.isHole()) {
                 holes.add(ball);
             }
         }
+
+        balls.removeAll(holes);
     }
 
     // TODO: Stop condition when no balls are alive
@@ -63,9 +66,6 @@ public class CollisionSystem {
 
         // remove balls that are in a hole
         for (Ball ball : balls) {
-            if (ball.isHole()) {
-                continue;
-            }
             for (Ball hole : holes) {
                 if (ball.isInHole(hole)) {
                     ballsToRemove.add(ball);
@@ -102,6 +102,17 @@ public class CollisionSystem {
         result.append(balls.size()).append('\n');
         result.append(t).append('\n');
         for (Ball ball : balls) {
+            result.append(ball.getNumber()).append(" ");
+            result.append(ball.getRPred().getX()).append(" ");
+            result.append(ball.getRPred().getY()).append(" ");
+            result.append(ball.getV().getX()).append(" ");
+            result.append(ball.getV().getY()).append(" ");
+            result.append(ball.getMass()).append(" ");
+            result.append(ball.getRadius()).append(" ");
+            result.append(ball.getColor()).append(" ");
+            result.append("\n");
+        }
+        for (Ball ball : holes) {
             result.append(ball.getNumber()).append(" ");
             result.append(ball.getRPred().getX()).append(" ");
             result.append(ball.getRPred().getY()).append(" ");

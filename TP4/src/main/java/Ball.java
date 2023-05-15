@@ -152,7 +152,7 @@ public class Ball {
 
     public boolean isInHole(Ball hole) {
         double distance = Math.sqrt(Math.pow(hole.r.getX() - this.r.getX(), 2) + Math.pow(hole.r.getY() - this.r.getY(), 2));
-        return distance < hole.radius;
+        return distance <= hole.radius + this.radius ;
     }
 
 
