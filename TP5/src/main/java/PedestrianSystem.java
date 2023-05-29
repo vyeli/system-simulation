@@ -40,6 +40,7 @@ public class PedestrianSystem {
                 if (current == other) {
                     continue;
                 }
+                // Check particle overlap
                 if (current.overlapsWith(other)) {
                     double[] eij = current.calculateEij(other);
                     eijAcum[0] += eij[0];
@@ -47,20 +48,40 @@ public class PedestrianSystem {
                 }
             }
 
-            // TODO: Check if this is correct
-            // Collision with door -> Remove ball
+            // Collision with door -> Change Ball Target to go to the second destination
             if (current.getPosition().getY() - current.getR() <= 0 && current.getPosition().getX() >= doorStart && current.getPosition().getX() <= doorEnd) {
                 toRemove.add(current);
                 continue;
             }
 
-            if (current.getPosition().getX() - current.getR() <= 0 || current.getPosition().getX() + current.getR() >= boxSize) {
-                // wall on the left -> add eij to the right (1, 0)
-                eijAcum[0] -= current.getE().getX();
+            // Collision with walls
+            // Left wall
+            if (current.getPosition().getX() - current.getR() <= 0) {
+                double[] eij = {current.getPosition().getX() - 0, 0 };
+                double norm = Math.sqrt(Math.pow(eij[0], 2) + Math.pow(eij[1], 2));
+                eijAcum[0] += eij[0] / norm;
+                eijAcum[1] += eij[1] / norm;
             }
-
-            if (current.getPosition().getY() - current.getR() <= 0 || current.getPosition().getY() + current.getR() >= boxSize) {
-                eijAcum[0] -= current.getE().getY();
+            // Right wall
+            if (current.getPosition().getX() + current.getR() >= boxSize) {
+                double[] eij = {current.getPosition().getX() - boxSize, 0 };
+                double norm = Math.sqrt(Math.pow(eij[0], 2) + Math.pow(eij[1], 2));
+                eijAcum[0] += eij[0] / norm;
+                eijAcum[1] += eij[1] / norm;
+            }
+            // Bottom wall
+            if (current.getPosition().getY() - current.getR() <= 0) {
+                double[] eij = {0, current.getPosition().getY() - 0 };
+                double norm = Math.sqrt(Math.pow(eij[0], 2) + Math.pow(eij[1], 2));
+                eijAcum[0] += eij[0] / norm;
+                eijAcum[1] += eij[1] / norm;
+            }
+            // Top wall
+            if (current.getPosition().getY() + current.getR() >= boxSize) {
+                double[] eij = {0, current.getPosition().getY() - boxSize };
+                double norm = Math.sqrt(Math.pow(eij[0], 2) + Math.pow(eij[1], 2));
+                eijAcum[0] += eij[0] / norm;
+                eijAcum[1] += eij[1] / norm;
             }
 
             double norm = Math.sqrt(Math.pow(eijAcum[0], 2) + Math.pow(eijAcum[1], 2));
