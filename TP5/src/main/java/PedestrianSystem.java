@@ -17,6 +17,10 @@ public class PedestrianSystem {
     private final double doorStart;
     private final double doorEnd;
 
+    private double secondTargetXStart = 8.5;
+    private double secondTargetXEnd = 11.5;
+    private double secondTargetY = -10.0;
+
     public PedestrianSystem(List<Pedestrian> pedestrians, double dt, double vdMax, double rMin, double rMax, double beta, double tau, double boxSize, double doorWidth) {
         this.pedestrians = pedestrians;
         this.dt = dt;
@@ -33,7 +37,7 @@ public class PedestrianSystem {
     public void evolveSystem() {
 
         // First iteration (Calculate Ve)
-        List<Pedestrian> toRemove = new ArrayList<>();
+
         for (Pedestrian current : pedestrians) {
             double[] eijAcum = {0d, 0d};
             for (Pedestrian other : pedestrians) {
@@ -48,10 +52,9 @@ public class PedestrianSystem {
                 }
             }
 
-            // Collision with door -> Change Ball Target to go to the second destination
+            // Existing the 1st door -> Change Ball Target to go to the second destination
             if (current.getPosition().getY() - current.getR() <= 0 && current.getPosition().getX() >= doorStart && current.getPosition().getX() <= doorEnd) {
-                toRemove.add(current);
-                continue;
+                current.setExisted(true);
             }
 
             // Collision with walls
@@ -92,8 +95,6 @@ public class PedestrianSystem {
             }
         }
 
-        pedestrians.removeAll(toRemove);
-
         // System.out.println(pedestrians.get(0).getE());
 
         // Second iteration (Update Rii)
@@ -108,8 +109,11 @@ public class PedestrianSystem {
         // Third iteration (Calculate Vd)
         for (Pedestrian current : pedestrians) {
             // if the particle is not colliding with any other particle, calculate Vd
-            if (Double.compare(current.getR(), rMin) != 0) {
-                current.calculateVd();
+            if (Double.compare(current.getR(), rMin) != 0 ) {
+                if (!current.isExisted())
+                    current.calculateVd();
+                else
+                    current.calculateVdAfterExit();
             }
         }
 
@@ -124,6 +128,15 @@ public class PedestrianSystem {
             current.getPosition().setX(current.getPosition().getX() + current.getV().getX() * this.dt);
             current.getPosition().setY(current.getPosition().getY() + current.getV().getY() * this.dt);
         }
+
+        // Check if there are pedestrians that have left the box
+        List<Pedestrian> pedestriansToRemove = new ArrayList<>();
+        for (Pedestrian current : pedestrians) {
+            if (current.isExisted() && current.getPosition().getY() <= secondTargetY && current.getPosition().getX() >= secondTargetXStart && current.getPosition().getX() <= secondTargetXEnd) {
+                pedestriansToRemove.add(current);
+            }
+        }
+        pedestrians.removeAll(pedestriansToRemove);
 
         this.time += this.dt;
     }

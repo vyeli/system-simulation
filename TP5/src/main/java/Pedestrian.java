@@ -10,6 +10,12 @@ public class Pedestrian {
     private double doorStart;
     private double doorEnd;
 
+    private boolean existed;
+
+    private double secondTargetXStart = 8.5;
+    private double secondTargetXEnd = 11.5;
+    private double secondTargetY = -10.0;
+
     public Pedestrian(double initialR, Pair<Double, Double> position, double rMin, double rMax, double vdMax, double doorStart, double doorEnd, double beta) {
         this.r = initialR;
         this.position = position;
@@ -21,6 +27,7 @@ public class Pedestrian {
         this.beta = beta;
         calculateVd();
         this.v = vd;
+        this.existed = false;
     }
 
     public boolean overlapsWith(Pedestrian otherPedestrian) {
@@ -61,9 +68,27 @@ public class Pedestrian {
         }
     }
 
-    public void updateVelocity(boolean isColliding, double[] eij) {
-        if (isColliding) {
+    public void calculateVdAfterExit() {
+        double vdMagnitud = vdMax * Math.pow((r - rMin) / (rMax - rMin), beta);
+        if (position.getX() < secondTargetXStart) {
+            double[] dij = {secondTargetXStart - position.getX(), secondTargetY - position.getY()};
+            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
 
+            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
+            this.setVd(new Pair<>(vd[0], vd[1]));
+
+        } else if (position.getX() > secondTargetXEnd) {
+            double[] dij = {secondTargetXEnd - position.getX(), secondTargetY - position.getY()};
+            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
+
+            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
+            this.setVd(new Pair<>(vd[0], vd[1]));
+        } else {
+            double[] dij = {0, secondTargetY - position.getY()};
+            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
+
+            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
+            this.setVd(new Pair<>(vd[0], vd[1]));
         }
     }
 
@@ -129,5 +154,13 @@ public class Pedestrian {
 
     public void setrMax(double rMax) {
         this.rMax = rMax;
+    }
+
+    public boolean isExisted() {
+        return existed;
+    }
+
+    public void setExisted(boolean existed) {
+        this.existed = existed;
     }
 }
