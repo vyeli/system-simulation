@@ -5,12 +5,13 @@ import helpers.Config;
 import helpers.Pair;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Simulator {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Gson gson = new Gson();
         Config config = new Config();
 
@@ -27,6 +28,7 @@ public class Simulator {
         double doorEnd = (config.getBoxSize() - config.getDoorWidth()) / 2 - 0.1;
         List<Pedestrian> pedestrians = new ArrayList<>();
 
+        // Generate pedestrians
         do {
             boolean hasOverlap = false;
             double x = Math.random() * (config.getBoxSize() - 2 * config.getMaxR());
@@ -43,16 +45,23 @@ public class Simulator {
             }
         } while (pedestrians.size() < config.getParticles());
 
+        FileWriter writer = new FileWriter("output.txt");
+
+
         double dt = config.getMinR() / 2 * config.getVdMax();
         PedestrianSystem system = new PedestrianSystem(pedestrians, dt, config.getVdMax(), config.getMinR(), config.getMaxR(), config.getBeta(), config.getTau(), config.getBoxSize(), config.getDoorWidth());
 
-        int i = 0;
-        while(system.hasPedestriansLeft() && i < 50) {
-            System.out.println("Iteracion #" + i + ":");
-            Pedestrian current = system.getPedestrians().get(0);
-            System.out.println("\t-x: " + current.getPosition().getX() + ", y: " + current.getPosition().getY());
-            i++;
+        // Write initial state
+        writer.write(system.writePedestrians());
+
+        while(system.hasPedestriansLeft()) {
             system.evolveSystem();
+            try {
+                writer.write(system.writePedestrians());
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
         }
 
     }

@@ -148,4 +148,26 @@ public class PedestrianSystem {
     public List<Pedestrian> getPedestrians() {
         return pedestrians;
     }
+
+    /**
+     * Returns a string of the event with the format:
+     * N
+     * time
+     * rx ry vx vy radius
+     * rx ry vx vy radius
+     * rx ry vx vy radius
+     * ...
+     */
+    public String writePedestrians() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(pedestrians.size()).append("\n");
+        sb.append(time).append("\n");
+
+        for (Pedestrian current : pedestrians) {
+            sb.append(current.getPosition().getX()).append(" ").append(current.getPosition().getY()).append(" ");
+            sb.append(current.getV().getX()).append(" ").append(current.getV().getY()).append(" ");
+            sb.append(current.getR()).append("\n");
+        }
+        return sb.toString();
+    }
 }
