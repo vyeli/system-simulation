@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +27,16 @@ public class PoolGame {
         CSVFormat csvFormatConfigs = CSVFormat.DEFAULT.builder().setHeader(CSV_HEADERS).build();
         final CSVPrinter csvPrinter = new CSVPrinter(bwConfigs, csvFormatConfigs);
 
-
         // Parallel universes Experiment
         double tf = 100;         // s
-        //double dt = 0.001;     // s
+        double dt = 0.001;     // s
 
         double[] dts = {0.001, 0.0001, 0.00001, 0.000001};
 
         double y0 = 0.56;           // m
         double vx0 = 1;          // m/s
 
-        // FileWriter fileWriter = new FileWriter("output.txt");
+        FileWriter fileWriter = new FileWriter("output.txt");
 
         List<Pair<Double, Double>> ballsEpsilon = new ArrayList<>();
         // Triangle balls positions
@@ -46,84 +47,95 @@ public class PoolGame {
         gameTable.removeCornerBall();
         List<Ball> balls = new ArrayList<>(gameTable.getBalls().values());
 
-        // int iterations = (int) (tf / dts[1]);
-        // CollisionSystem collisionSystem = new CollisionSystem(balls, dts[1], Table.getWidth(), Table.getHeight());
-        // for (int i = 0; i < iterations; i++) {
-        //     int j = 8170;
-        //     if (i == 0 || i > j && i < j + 250) {
-        //     // if (i == 0 || (i >= j && i < j + 100)) {
-        //         try {
-        //             fileWriter.write(collisionSystem.writeTable());
-        //         } catch (IOException e) {
-        //             System.out.println("An error occurred.");
-        //             e.printStackTrace();
-        //         }
-        //     }
-        //     collisionSystem.evolveSystem();
-        // }
-        
-        int k = 3;
-        for (Double dt : dts) {
-            int iterations = (int) (tf / dt);
-            CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
-            for (int i = 0; i < iterations; i++) {
-                switch (k) {
-                    case 3:
-                        if (i % 10 == 0) {
-                            for (Ball ball : balls) {
-                                try {
-                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
-                                } catch (IOException e) {
-                                    System.out.println("An error occurred.");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    break;
-                    case 4:
-                        if (i % 100 == 0) {
-                            for (Ball ball : balls) {
-                                try {
-                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
-                                } catch (IOException e) {
-                                    System.out.println("An error occurred.");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    break;
-                    case 5:
-                        if (i % 1000 == 0) {
-                            for (Ball ball : balls) {
-                                try {
-                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
-                                } catch (IOException e) {
-                                    System.out.println("An error occurred.");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    break;
-                    case 6:
-                        if (i % 10000 == 0) {
-                            for (Ball ball : balls) {
-                                try {
-                                    csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
-                                } catch (IOException e) {
-                                    System.out.println("An error occurred.");
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    break;
+        int iterations = (int) (tf / dt);
+        CollisionSystem collisionSystem = new CollisionSystem(balls, dt, Table.getWidth(), Table.getHeight());
+        for (int i = 0; i < iterations; i++) {
+            int j = 100;
+            // if (i == 0 || i > j && i < j + 250) {
+            // if (i == 0 || (i >= j && i < j + 100)) {
+            if (i % j == 0) {
+                try {
+                    fileWriter.write(collisionSystem.writeTable());
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
                 }
-                collisionSystem.evolveSystem();
             }
-            k++;
+            collisionSystem.evolveSystem();
         }
-        csvPrinter.close();
+        
+        // int k = 3;
+        // for (Double dt : dts) {
+            
+        //     int iterations = (int) (tf / dt);
+        //     List<Ball> ballsCopy = new ArrayList<>();
+        //     for (Ball ball : balls) {
+        //         ballsCopy.add(new Ball(ball.getNumber(), ball.getRadius(), false, ball.getColor(), new Pair<>(ball.getR().getX(), ball.getR().getY()), new Pair<>(ball.getV().getX(), ball.getV().getY())));
+        //     }
+        //     CollisionSystem collisionSystem = new CollisionSystem(ballsCopy, dt, Table.getWidth(), Table.getHeight());
 
-        //fileWriter.close();
+        //     for (int i = 0; i < iterations; i++) {
+        //         if(i == 0) {
+        //             System.out.println("Ball 0: (" + ballsCopy.get(0).getR().getX() + ", " + ballsCopy.get(0).getR().getX() + ")");
+        //         }
+        //         switch (k) {
+        //             case 3:
+        //                 if (i % 10 == 0) {
+        //                     for (Ball ball : ballsCopy) {
+        //                         try {
+        //                             csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
+        //                         } catch (IOException e) {
+        //                             System.out.println("An error occurred.");
+        //                             e.printStackTrace();
+        //                         }
+        //                     }
+        //                 }
+        //             break;
+        //             case 4:
+        //                 if (i % 100 == 0) {
+        //                     for (Ball ball : ballsCopy) {
+        //                         try {
+        //                             csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
+        //                         } catch (IOException e) {
+        //                             System.out.println("An error occurred.");
+        //                             e.printStackTrace();
+        //                         }
+        //                     }
+        //                 }
+        //             break;
+        //             case 5:
+        //                 if (i % 1000 == 0) {
+        //                     for (Ball ball : ballsCopy) {
+        //                         try {
+        //                             csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
+        //                         } catch (IOException e) {
+        //                             System.out.println("An error occurred.");
+        //                             e.printStackTrace();
+        //                         }
+        //                     }
+        //                 }
+        //             break;
+        //             case 6:
+        //                 if (i % 10000 == 0) {
+        //                     for (Ball ball : ballsCopy) {
+        //                         try {
+        //                             csvPrinter.printRecord(k, collisionSystem.getTime(), ball.getNumber(), ball.getR().getX(), ball.getR().getY());
+        //                         } catch (IOException e) {
+        //                             System.out.println("An error occurred.");
+        //                             e.printStackTrace();
+        //                         }
+        //                     }
+        //                 }
+        //             break;
+        //         }
+        //         collisionSystem.evolveSystem();
+        //     }
+        //     System.out.println("TERMINE CON " + dt);
+        //     k++;
+        // }
+        // csvPrinter.close();
+
+        fileWriter.close();
     }
 
     public static double getRandomEpsilon() {

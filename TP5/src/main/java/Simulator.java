@@ -55,15 +55,19 @@ public class Simulator {
         writer.write(system.writePedestrians());
         writer.write('\n');
 
+        long i = 0L;
         while(system.hasPedestriansLeft()) {
             system.evolveSystem();
-            try {
-                writer.write(system.writePedestrians());
-                writer.write('\n');
-            } catch (IOException e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
+            if (i % 10 == 0) {
+                try {
+                    writer.write(system.writePedestrians());
+                    writer.write('\n');
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
             }
+            i++;
         }
 
         writer.close();

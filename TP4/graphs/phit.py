@@ -39,6 +39,11 @@ for t, grouped_t in group_by_t:
         phi5_value = points.loc[points['k'] == 5]
         phi6_value = points.loc[points['k'] == 6]
 
+        # print(phi3_value)
+        # print(phi4_value)
+        # print(phi5_value)
+        # print(phi6_value)
+
         # phi3_dist += math.sqrt(math.pow(phi3_value['x'] - phi4_value['x'], 2) + math.pow(phi3_value['y'] - phi4_value['y'], 2))
         # phi4_dist += math.sqrt(math.pow(phi4_value['x'] - phi5_value['x'], 2) + math.pow(phi4_value['y'] - phi5_value['y'], 2))
         # phi5_dist += math.sqrt(math.pow(phi5_value['x'] - phi6_value['x'], 2) + math.pow(phi5_value['y'] - phi6_value['y'], 2))
@@ -55,6 +60,7 @@ for t, grouped_t in group_by_t:
     phi3.append(phi3_dist)
     phi4.append(phi4_dist)
     phi5.append(phi5_dist)
+    print(t)
 
     # print(grouped_t.loc[grouped_t['n'] == 3])
 

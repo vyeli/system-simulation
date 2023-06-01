@@ -4,7 +4,7 @@ import numpy as np
 
 class Pool(Scene):
     def construct(self):
-        self.generations = self.parse_balls_file('output-56.0.txt')
+        self.generations = self.parse_balls_file('output.txt')
         balls = []
         print('Total gens: {}'.format(len(self.generations)))
 
@@ -38,7 +38,7 @@ class Pool(Scene):
                 case 21:
                     new_ball = Sector(outer_radius = ball['radius'], stroke_width=0, angle=PI/2, start_angle=PI)
                 case _:
-                    new_ball = Circle(radius = ball['radius'], stroke_width=0, fill_color=ball['color'], fill_opacity=1)
+                    new_ball = Circle(radius = ball['radius'], stroke_width=0, fill_color='#00ffff', fill_opacity=1)
             if ball_number > 15:         # A corner
                 new_ball.set_color(Colors.black.value)
             new_ball.shift(RIGHT * ball['x_pos'], UP * ball['y_pos'])
@@ -127,9 +127,7 @@ class Pool(Scene):
                         'y_pos': self.y_coordinate_to_graph(float(line[2])),
                         'x_vel': self.resize_to_graph(float(line[3])),
                         'y_vel': self.resize_to_graph(float(line[4])),
-                        'mass': float(line[5]),
-                        'radius': self.resize_to_graph(float(line[6])),
-                        'color': line[7]
+                        'radius': self.resize_to_graph(float(line[5]))
                     })
                     line = self.next_line(file)
                 current_gen += 1
