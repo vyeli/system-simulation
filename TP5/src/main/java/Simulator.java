@@ -53,16 +53,20 @@ public class Simulator {
 
         // Write initial state
         writer.write(system.writePedestrians());
+        writer.write('\n');
 
         while(system.hasPedestriansLeft()) {
             system.evolveSystem();
             try {
                 writer.write(system.writePedestrians());
+                writer.write('\n');
             } catch (IOException e) {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
         }
+
+        writer.close();
 
     }
 }

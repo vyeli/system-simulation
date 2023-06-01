@@ -101,8 +101,11 @@ public class PedestrianSystem {
         for (Pedestrian current : pedestrians) {
             if (current.getE().getX() != 0 || current.getE().getY() != 0) {
                 current.setR(rMin);
-            } else {
+            } else if (Double.compare(current.getR(), rMax) != 0) {
                 current.setR(current.getR() + rMax / (this.tau / this.dt));
+                if (Double.compare(current.getR(), rMax) > 0) {
+                    current.setR(rMax);
+                }
             }
         }
 
