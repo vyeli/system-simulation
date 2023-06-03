@@ -57,7 +57,7 @@ public class Simulator {
         long i = 0L;
         while(system.hasPedestriansLeft()) {
             system.evolveSystem();
-            if (i % 10 == 0) {
+            if (i % 5 == 0) {
                 try {
                     writer.write(system.writePedestrians());
                     writer.write('\n');

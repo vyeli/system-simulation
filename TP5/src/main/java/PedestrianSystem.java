@@ -49,27 +49,38 @@ public class PedestrianSystem {
                 eijAcum[1] += eij[1];
             }
 
+            if (current.isExited() && current.getPosition().getY() - current.getR() > 0) {
+                current.setExited(false);
+            }
+
             // Pedestrian has exited the box -> Change Target to go to the second destination
+            /* 
             if (!current.isExited() &&
                     current.getPosition().getY() - current.getR() <= 0 &&
                     current.getPosition().getX() >= doorTargetStart && current.getPosition().getX() <= doorTargetEnd) {
                 current.setExited(true);
             }
+            */
 
             if (!current.isExited()) {
                 // Collision with walls
                 double[] wallsEij = {0d, 0d};
 
-                if (current.getPosition().getX() - current.getR() <= 0) {    // Left wall
+                if (current.getPosition().getX() - current.getR() <= 0) {           // Left wall
                     wallsEij[0] += current.getPosition().getX();
                 }
-                else if (current.getPosition().getX() + current.getR() >= boxSize) {  // Right wall
+                if (current.getPosition().getX() + current.getR() >= boxSize) {     // Right wall
                     wallsEij[0] += current.getPosition().getX() - boxSize;
                 }
-                else if (current.getPosition().getY() - current.getR() <= 0) {    // Bottom wall
-                    wallsEij[1] += Math.abs(current.getPosition().getY());
+                if (current.getPosition().getY() - current.getR() <= 0) {           // Bottom wall
+                    double yVector = 1;
+                    if (current.getPosition().getX() >= doorTargetStart && current.getPosition().getX() <= doorTargetEnd) {
+                        current.setExited(true);
+                        yVector = 0;
+                    }
+                    wallsEij[1] += yVector;
                 }
-                else if (current.getPosition().getY() + current.getR() >= boxSize) {     // Top wall
+                if (current.getPosition().getY() + current.getR() >= boxSize) {     // Top wall
                     wallsEij[1] += current.getPosition().getY() - boxSize;
                 }
 
