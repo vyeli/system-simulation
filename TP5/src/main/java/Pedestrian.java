@@ -1,33 +1,36 @@
+import java.util.Random;
+
 import helpers.Pair;
 
 public class Pedestrian {
     
+    private int id;
     private double r, vdMax, rMin, rMax, beta;
     private Pair<Double, Double> v;
     private Pair<Double, Double> position;
-    private Pair<Double, Double> e;
     private Pair<Double, Double> vd;
-    private double doorStart;
-    private double doorEnd;
 
-    private boolean existed;
+    private Pair<Double, Double> e;
+    private Pair<Double, Double> d;
+
+    private boolean exited;
 
     private double secondTargetXStart = 8.5;
     private double secondTargetXEnd = 11.5;
     private double secondTargetY = -10.0;
 
-    public Pedestrian(double initialR, Pair<Double, Double> position, double rMin, double rMax, double vdMax, double doorStart, double doorEnd, double beta) {
+    public Pedestrian(int id, double initialR, Pair<Double, Double> position, double rMin, double rMax, double vdMax, double initialTargetStart, double initialTargetEnd, double beta) {
+        this.id = id;
         this.r = initialR;
         this.position = position;
         this.vdMax = vdMax;
         this.rMin = rMin;
         this.rMax = rMax;
-        this.doorStart = doorStart;
-        this.doorEnd = doorEnd;
         this.beta = beta;
+        this.exited = false;
+        calculateD(initialTargetStart, initialTargetEnd);
         calculateVd();
         this.v = vd;
-        this.existed = false;
     }
 
     public boolean overlapsWith(Pedestrian otherPedestrian) {
@@ -44,52 +47,30 @@ public class Pedestrian {
         return eij;
     }
 
-    public void calculateVd() {
-        double vdMagnitud = vdMax * Math.pow((r - rMin) / (rMax - rMin), beta);
-        if (position.getX() < doorStart) {
-            double[] dij = {doorStart - position.getX(), 0 - position.getY()};
-            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
-
-            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
-            this.setVd(new Pair<>(vd[0], vd[1]));
-
-        } else if (position.getX() > doorEnd) {
-            double[] dij = {doorEnd - position.getX(), 0 - position.getY()};
-            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
-
-            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
-            this.setVd(new Pair<>(vd[0], vd[1]));
-        } else {
-            double[] dij = {0, 0 - position.getY()};
-            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
-
-            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
-            this.setVd(new Pair<>(vd[0], vd[1]));
+    public void calculateD(double targetStart, double targetEnd) {
+        double xVector = position.getX();
+        double yVector = -position.getY();
+        if (exited) {
+            yVector = secondTargetY - position.getY(); 
         }
+        if (position.getX() < targetStart || position.getX() > targetEnd) {
+            xVector = randomizeTargetX(targetStart, targetEnd - targetStart);
+        }
+        d = new Pair<>(xVector - position.getX(), yVector);
     }
 
-    public void calculateVdAfterExit() {
+    public void calculateVd() {
         double vdMagnitud = vdMax * Math.pow((r - rMin) / (rMax - rMin), beta);
-        if (position.getX() < secondTargetXStart) {
-            double[] dij = {secondTargetXStart - position.getX(), secondTargetY - position.getY()};
-            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
+        double norm = Math.sqrt(Math.pow(d.getX(), 2) + Math.pow(d.getY(), 2));
+        this.setVd(new Pair<>(d.getX() / norm * vdMagnitud, d.getY() / norm * vdMagnitud));
+    }
 
-            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
-            this.setVd(new Pair<>(vd[0], vd[1]));
+    public double randomizeTargetX(double start, double width) {
+        return start + Math.random() * width;
+    }
 
-        } else if (position.getX() > secondTargetXEnd) {
-            double[] dij = {secondTargetXEnd - position.getX(), secondTargetY - position.getY()};
-            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
-
-            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
-            this.setVd(new Pair<>(vd[0], vd[1]));
-        } else {
-            double[] dij = {0, secondTargetY - position.getY()};
-            double norm = Math.sqrt(Math.pow(dij[0], 2) + Math.pow(dij[1], 2));
-
-            double[] vd = {dij[0] / norm * vdMagnitud, dij[1] / norm * vdMagnitud};
-            this.setVd(new Pair<>(vd[0], vd[1]));
-        }
+    public int getId() {
+        return id;
     }
 
     public double getR() {
@@ -124,6 +105,14 @@ public class Pedestrian {
         this.e = e;
     }
 
+    public Pair<Double, Double> getD() {
+        return d;
+    }
+
+    public void setD(Pair<Double, Double> d) {
+        this.d = d;
+    }
+
     public Pair<Double, Double> getVd() {
         return vd;
     }
@@ -156,11 +145,23 @@ public class Pedestrian {
         this.rMax = rMax;
     }
 
-    public boolean isExisted() {
-        return existed;
+    public boolean isExited() {
+        return exited;
     }
 
-    public void setExisted(boolean existed) {
-        this.existed = existed;
+    public void setExited(boolean exited) {
+        this.exited = exited;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Pedestrian)) {
+            return false;
+        }
+        Pedestrian other = (Pedestrian)o;
+        return other.id == id;
     }
 }

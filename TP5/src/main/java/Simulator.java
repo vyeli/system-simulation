@@ -17,23 +17,21 @@ public class Simulator {
 
         try (FileReader reader = new FileReader("config.json")) {
             config = gson.fromJson(reader, Config.class);
-            System.out.println(config.getBeta());
-            System.out.println(config.getDoorWidth());
-            System.out.println(config.getMinR());
         } catch (JsonSyntaxException | JsonIOException | IOException e) {
             e.printStackTrace();
         }
 
-        double doorStart = (config.getBoxSize() - config.getDoorWidth()) / 2 - 0.1;
-        double doorEnd = (config.getBoxSize() - config.getDoorWidth()) / 2 - 0.1;
+        double doorStart = (config.getBoxSize() - config.getDoorWidth()) / 2;
+        double doorEnd = (config.getBoxSize() + config.getDoorWidth()) / 2;
         List<Pedestrian> pedestrians = new ArrayList<>();
 
         // Generate pedestrians
+        int pedestrianId = 0;
         do {
             boolean hasOverlap = false;
             double x = Math.random() * (config.getBoxSize() - 2 * config.getMaxR());
             double y = Math.random() * (config.getBoxSize() - 2 * config.getMaxR());
-            Pedestrian newPedestrian = new Pedestrian(config.getMaxR(), new Pair<>(x, y), config.getMinR(), config.getMaxR(), config.getVdMax(), doorStart, doorEnd, config.getBeta());
+            Pedestrian newPedestrian = new Pedestrian(pedestrianId, config.getMaxR(), new Pair<>(x, y), config.getMinR(), config.getMaxR(), config.getVdMax(), doorStart + 0.1, doorEnd - 0.1, config.getBeta());
             for (Pedestrian otherPedestrian : pedestrians) {
                 if (otherPedestrian.overlapsWith(newPedestrian)) {
                     hasOverlap = true;
@@ -42,13 +40,14 @@ public class Simulator {
             }
             if (!hasOverlap) {
                 pedestrians.add(newPedestrian);
+                pedestrianId++;
             }
         } while (pedestrians.size() < config.getParticles());
 
         FileWriter writer = new FileWriter("output.txt");
 
 
-        double dt = config.getMinR() / 2 * config.getVdMax();
+        double dt = config.getMinR() / (2 * config.getVdMax());
         PedestrianSystem system = new PedestrianSystem(pedestrians, dt, config.getVdMax(), config.getMinR(), config.getMaxR(), config.getBeta(), config.getTau(), config.getBoxSize(), config.getDoorWidth());
 
         // Write initial state

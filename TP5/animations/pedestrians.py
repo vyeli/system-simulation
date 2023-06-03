@@ -24,6 +24,7 @@ class Box(Scene):
             new_pedestrian.set_color(self.get_radius_color(pedestrian_radius))
             new_pedestrian.shift(RIGHT * pedestrian['x_pos'], UP * pedestrian['y_pos'])
             new_pedestrian.next_pos = [pedestrian['x_pos'] + pedestrian['x_vel'] * self.generations[1]['time_elapsed'], pedestrian['y_pos'], 0]
+            new_pedestrian.prev_radius = pedestrian_radius
             pedestrians.append(new_pedestrian)
             self.add(new_pedestrian)
             
@@ -32,7 +33,7 @@ class Box(Scene):
         current_gen = 1
         max_gen = 50
         # for gen in self.generations[1:-1]:
-        for gen in self.generations[1:max_gen]:
+        for gen in self.generations[1:-1]:
             alive_pedestrians = []
             gen_animations = []
             runtime = self.generations[current_gen]['time_elapsed']
@@ -41,6 +42,8 @@ class Box(Scene):
                 pedestrian_number = pedestrian['number']
                 alive_pedestrians.append(pedestrian_number)
                 pedestrians[pedestrian_number].set_color(self.get_radius_color(pedestrian['radius']))
+                pedestrians[pedestrian_number].scale(pedestrian['radius'] / pedestrians[pedestrian_number].prev_radius)
+                pedestrians[pedestrian_number].prev_radius = pedestrian['radius']
                 if pedestrians[pedestrian_number].next_pos[0] > 0 or pedestrians[pedestrian_number].next_pos[1] > 0:
                     pedestrians[pedestrian_number].set_x(pedestrians[pedestrian_number].next_pos[0])
                     pedestrians[pedestrian_number].set_y(pedestrians[pedestrian_number].next_pos[1])
@@ -60,7 +63,7 @@ class Box(Scene):
     
 
     def resize_to_graph(self, value):
-        return value * 7/20
+        return value * 5/20
     
 
     def next_line(self, file):
@@ -108,12 +111,12 @@ class Box(Scene):
                 while line != '\n':
                     line = line.split()
                     generations[current_gen]['pedestrians'].append({
-                        'number': i,
-                        'x_pos': self.x_coordinate_to_graph(float(line[0])),
-                        'y_pos': self.y_coordinate_to_graph(float(line[1])),
-                        'x_vel': self.resize_to_graph(float(line[2])),
-                        'y_vel': self.resize_to_graph(float(line[3])),
-                        'radius': self.resize_to_graph(float(line[4]))
+                        'number': int(line[0]),
+                        'x_pos': self.x_coordinate_to_graph(float(line[1])),
+                        'y_pos': self.y_coordinate_to_graph(float(line[2])),
+                        'x_vel': self.resize_to_graph(float(line[3])),
+                        'y_vel': self.resize_to_graph(float(line[4])),
+                        'radius': self.resize_to_graph(float(line[5]))
                     })
                     line = self.next_line(file)
                     i += 1
