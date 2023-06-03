@@ -1,6 +1,7 @@
 package helpers;
 
 public class Config {
+    private int iterations;
     private double boxSize;
     private double doorWidth;
     private double minR, maxR, vdMax;
@@ -71,4 +72,13 @@ public class Config {
     public void setTau(double tau) {
         this.tau = tau;
     }
+
+    public int getIterations() {
+        return iterations;
+    }
+
+    public void setIterations(int iterations) {
+        this.iterations = iterations;
+    }
+
 }

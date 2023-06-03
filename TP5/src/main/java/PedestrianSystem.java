@@ -35,7 +35,7 @@ public class PedestrianSystem {
         this.doorTargetEnd = (boxSize + doorWidth) / 2 - 0.1;
     }
 
-    public void evolveSystem() {
+    public List<Pedestrian> evolveSystem() {
 
         // First iteration (Calculate Ve)
         for (Pedestrian current : pedestrians) {
@@ -142,6 +142,8 @@ public class PedestrianSystem {
         pedestrians.removeAll(pedestriansToRemove);
 
         this.time += this.dt;
+
+        return pedestriansToRemove;
     }
 
     public boolean hasPedestriansLeft() {
@@ -150,6 +152,14 @@ public class PedestrianSystem {
 
     public List<Pedestrian> getPedestrians() {
         return pedestrians;
+    }
+
+    public double getDeltaT() {
+        return this.dt;
+    }
+
+    public double getTime() {
+        return this.time;
     }
 
     /**
