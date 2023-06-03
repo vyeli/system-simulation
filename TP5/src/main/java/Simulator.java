@@ -74,11 +74,14 @@ public class Simulator {
             double multiplier = Math.pow(10, deltaTDecimals);
 
             long i = 0L;
+            int lastExitedPedestriansAmount = 0;
+            csvRemovedPrinter.printRecord(j, dt, lastExitedPedestriansAmount, 0);
+
             while(system.hasPedestriansLeft()) {
-                List<Pedestrian> removed = system.evolveSystem();
-                if (removed.size() != 0) {
-                    removedAmount += removed.size();
-                    csvRemovedPrinter.printRecord(j, dt, removedAmount, Math.round((system.getTime() - dt) * multiplier) / multiplier);
+                system.evolveSystem();
+                if (lastExitedPedestriansAmount != system.getExitedPedestriansAmount()) {
+                    lastExitedPedestriansAmount = system.getExitedPedestriansAmount();
+                    csvRemovedPrinter.printRecord(j, dt, lastExitedPedestriansAmount, Math.round((system.getTime() - dt) * multiplier) / multiplier);
                 }
                 if (i % 5 == 0) {
                     try {

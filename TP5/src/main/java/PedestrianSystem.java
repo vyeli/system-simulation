@@ -15,6 +15,8 @@ public class PedestrianSystem {
     private final double tau;
     private final double boxSize;
 
+    private int exitedPedestriansAmount = 0;
+
     private final double doorTargetStart;
     private final double doorTargetEnd;
 
@@ -51,16 +53,9 @@ public class PedestrianSystem {
 
             if (current.isExited() && current.getPosition().getY() - current.getR() > 0) {
                 current.setExited(false);
+                exitedPedestriansAmount--;
+                current.setD(null);         // If exited, need to recalculate target
             }
-
-            // Pedestrian has exited the box -> Change Target to go to the second destination
-            /* 
-            if (!current.isExited() &&
-                    current.getPosition().getY() - current.getR() <= 0 &&
-                    current.getPosition().getX() >= doorTargetStart && current.getPosition().getX() <= doorTargetEnd) {
-                current.setExited(true);
-            }
-            */
 
             if (!current.isExited()) {
                 // Collision with walls
@@ -76,6 +71,8 @@ public class PedestrianSystem {
                     double yVector = 1;
                     if (current.getPosition().getX() >= doorTargetStart && current.getPosition().getX() <= doorTargetEnd) {
                         current.setExited(true);
+                        exitedPedestriansAmount++;
+                        current.setD(null);         // If exited, need to recalculate target
                         yVector = 0;
                     }
                     wallsEij[1] += yVector;
@@ -144,6 +141,10 @@ public class PedestrianSystem {
         this.time += this.dt;
 
         return pedestriansToRemove;
+    }
+
+    public int getExitedPedestriansAmount() {
+        return exitedPedestriansAmount;
     }
 
     public boolean hasPedestriansLeft() {
