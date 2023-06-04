@@ -74,7 +74,7 @@ public class Simulator {
                 } while (pedestrians.size() < particleAmount);
 
                 double dt = config.getMinR() / (2 * config.getVdMax());
-                PedestrianSystem system = new PedestrianSystem(pedestrians, dt, config.getVdMax(), config.getMinR(), config.getMaxR(), config.getBeta(), config.getTau(), config.getBoxSize(), doorWidth);
+                PedestrianSystem system = new PedestrianSystem(pedestrians, dt, config.getVdMax(), config.getMinR(), config.getMaxR(), config.getTau(), config.getBoxSize(), doorWidth, config.getNeighbourRadius(), j == 0);
 
                 // Write initial state
                 if (j == 0) {
@@ -96,7 +96,7 @@ public class Simulator {
                             csvRemovedPrinter.printRecord(j, doorWidth, particleAmount, lastExitedPedestriansAmount, Math.round((system.getTime() - dt) * multiplier) / multiplier, dt);
                         }
                     }
-                    if (i % 5 == 0 && j == 0) {
+                    if (i % config.getKDeltaT() == 0 && j == 0) {
                         try {
                             writer.write(system.writePedestrians());
                             writer.write('\n');
@@ -125,6 +125,8 @@ public class Simulator {
         CSVFormat csvFormatConfigs = CSVFormat.DEFAULT.builder().setHeader(B_CONFIGS_CSV_HEADERS).build();
         final CSVPrinter csvRemovedPrinter = new CSVPrinter(bwConfigs, csvFormatConfigs);
 
+        FileWriter writer = new FileWriter("constant_flow.txt");
+
         for (int j=0 ; j < iterations ; j++) {
             List<Pedestrian> pedestrians = new ArrayList<>();
 
@@ -147,14 +149,14 @@ public class Simulator {
                 }
             } while (pedestrians.size() < config.getParticles()[0]);
 
-            FileWriter writer = new FileWriter("constant_flow.txt");
-
             double dt = config.getMinR() / (2 * config.getVdMax());
-            PedestrianSystem system = new PedestrianSystem(pedestrians, dt, config.getVdMax(), config.getMinR(), config.getMaxR(), config.getBeta(), config.getTau(), config.getBoxSize(), config.getDoorWidth()[0]);
+            PedestrianSystem system = new PedestrianSystem(pedestrians, dt, config.getVdMax(), config.getMinR(), config.getMaxR(), config.getTau(), config.getBoxSize(), config.getDoorWidth()[0], config.getNeighbourRadius(), j == 0);
 
             // Write initial state
-            writer.write(system.writePedestrians());
-            writer.write('\n');
+            if (j == 0) {
+                writer.write(system.writePedestrians());
+                writer.write('\n');
+            }
 
             int deltaTDecimals = Double.toString(dt).split("\\.")[1].length();
             double multiplier = Math.pow(10, deltaTDecimals);
@@ -169,7 +171,7 @@ public class Simulator {
                     lastExitedPedestriansAmount = system.getExitedPedestriansAmount();
                     csvRemovedPrinter.printRecord(j, lastExitedPedestriansAmount, Math.round((system.getTime() - dt) * multiplier) / multiplier, dt);
                 }
-                if (i % 5 == 0) {
+                if (i % config.getKDeltaT() == 0 && j == 0) {
                     try {
                         writer.write(system.writePedestrians());
                         writer.write('\n');
@@ -181,9 +183,8 @@ public class Simulator {
                 i++;
             }
             System.out.println("Finish iteration " + (j+1));
-
-            writer.close();
         }
+        writer.close();
         csvRemovedPrinter.close();
     }
 }

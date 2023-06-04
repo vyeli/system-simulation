@@ -3,9 +3,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import json
 
 if not os.path.exists('figures'):
     os.makedirs('figures')
+
+f = open('config.json')
+config = json.load(f)
 
 df = pd.read_csv('mean_flow.csv')
 dt = df['dt'][0]
@@ -26,7 +30,7 @@ for (d, N), grouped_value in grouped_by_value:
 
     grouped_value_by_iteration = grouped_value.groupby('iteration')
     for iteration, grouped_iter in grouped_value_by_iteration:
-        prev_val = 20
+        prev_val = config['lowerFlowLimit']
         i = 0
         timestamp_amount = len(grouped_iter['t'])
         for j in np.arange(len(t)):

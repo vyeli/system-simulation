@@ -6,9 +6,15 @@
   "maxR": 0.37,
   "tau": 0.5,
 
+  "neighbourRadius": 1,
+
   "particles": [200, 260, 320, 380],
   "doorWidth": [1.2, 1.8, 2.4, 3.0],
   "iterationsPerValue": 10,
-  "lowerFlowLimit": 30,
-  "upperFlowLimit": 130
+  "lowerFlowLimit": 10,
+  "upperFlowLimit": 180,
+
+  "animationCase": 1,
+  "animationFile": "constant_flow.txt",
+  "kDeltaT": 10
 }

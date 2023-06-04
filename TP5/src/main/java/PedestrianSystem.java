@@ -5,17 +5,18 @@ import java.util.List;
 
 public class PedestrianSystem {
 
-    private double time;
+    private double time = 0;
     private final List<Pedestrian> pedestrians;
     private final double dt;
     private final double vdMax;
     private final double rMin;
     private final double rMax;
-    private final double beta;
     private final double tau;
     private final double boxSize;
 
+    private final double neighbourRadius;
     private int exitedPedestriansAmount = 0;
+    private final boolean hasDensityData;
 
     private final double doorTargetStart;
     private final double doorTargetEnd;
@@ -24,24 +25,30 @@ public class PedestrianSystem {
     private double secondTargetXEnd = 11.5;
     private double secondTargetY = -5;
 
-    public PedestrianSystem(List<Pedestrian> pedestrians, double dt, double vdMax, double rMin, double rMax, double beta, double tau, double boxSize, double doorWidth) {
+    public PedestrianSystem(List<Pedestrian> pedestrians, double dt, double vdMax, double rMin, double rMax, double tau, double boxSize, double doorWidth, double neighbourRadius, boolean hasDensityData) {
         this.pedestrians = pedestrians;
         this.dt = dt;
         this.vdMax = vdMax;
         this.rMin = rMin;
         this.rMax = rMax;
-        this.beta = beta;
         this.tau = tau;
         this.boxSize = boxSize;
+        this.neighbourRadius = neighbourRadius;
         this.doorTargetStart = (boxSize - doorWidth) / 2 + 0.1;
         this.doorTargetEnd = (boxSize + doorWidth) / 2 - 0.1;
+        this.hasDensityData = hasDensityData;
     }
 
     public List<Pedestrian> evolveSystem() {
+        if (Double.compare(time, 0) == 0 && hasDensityData) {
+            for (Pedestrian pedestrian : pedestrians) {
+                pedestrian.calculateNeighbourAmount(pedestrians, neighbourRadius);
+            }
+        }
 
         // First iteration (Calculate Ve)
         for (Pedestrian current : pedestrians) {
-            double[] eijAcum = {0d, 0d};
+            double[] eijAcum = new double[]{0.0, 0.0};
             for (Pedestrian other : pedestrians) {
                 if (current == other || !current.overlapsWith(other)) {
                     continue;
@@ -82,8 +89,10 @@ public class PedestrianSystem {
                 }
 
                 double wallsNorm = Math.sqrt(Math.pow(wallsEij[0], 2) + Math.pow(wallsEij[1], 2));
-                eijAcum[0] += wallsEij[0] / wallsNorm;
-                eijAcum[1] += wallsEij[1] / wallsNorm;
+                if (wallsNorm != 0) {
+                    eijAcum[0] += wallsEij[0] / wallsNorm;
+                    eijAcum[1] += wallsEij[1] / wallsNorm;
+                }
             }
 
             double acumNorm = Math.sqrt(Math.pow(eijAcum[0], 2) + Math.pow(eijAcum[1], 2));
@@ -127,13 +136,16 @@ public class PedestrianSystem {
             current.getPosition().setY(current.getPosition().getY() + current.getV().getY() * this.dt);
         }
 
-        // Check if there are pedestrians that have left the box
+        // Check if there are pedestrians that have reached the second target
+        // Meanwhile, calculate density
         List<Pedestrian> pedestriansToRemove = new ArrayList<>();
         for (Pedestrian current : pedestrians) {
             if (current.isExited() && current.getPosition().getY() - current.getR() <= secondTargetY &&
                     current.getPosition().getX() >= secondTargetXStart &&
                     current.getPosition().getX() <= secondTargetXEnd) {
                 pedestriansToRemove.add(current);
+            } else if (hasDensityData){
+                current.calculateNeighbourAmount(pedestrians, neighbourRadius);
             }
         }
         pedestrians.removeAll(pedestriansToRemove);
@@ -181,7 +193,7 @@ public class PedestrianSystem {
             sb.append(current.getId()).append(" ");
             sb.append(current.getPosition().getX()).append(" ").append(current.getPosition().getY()).append(" ");
             sb.append(current.getV().getX()).append(" ").append(current.getV().getY()).append(" ");
-            sb.append(current.getR()).append("\n");
+            sb.append(current.getR()).append(" ").append(current.getNeighbourAmount()).append("\n");
         }
         return sb.toString();
     }

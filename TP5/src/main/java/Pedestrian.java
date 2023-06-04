@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Random;
 
 import helpers.Pair;
@@ -5,6 +6,7 @@ import helpers.Pair;
 public class Pedestrian {
     
     private int id;
+    private long neighbourAmount = 0;
     private double r, vdMax, rMin, rMax, beta;
     private Pair<Double, Double> v;
     private Pair<Double, Double> position;
@@ -34,7 +36,10 @@ public class Pedestrian {
     }
 
     public boolean overlapsWith(Pedestrian otherPedestrian) {
-        return Math.sqrt(Math.pow(position.getX() - otherPedestrian.position.getX(), 2) + Math.pow(position.getY() - otherPedestrian.position.getY(), 2)) < r + otherPedestrian.r;
+        double xDist = Math.abs(position.getX() - otherPedestrian.position.getX());
+        double yDist = Math.abs(position.getY() - otherPedestrian.position.getY());
+        return Math.hypot(xDist, yDist) < r + otherPedestrian.r;
+        // return Math.sqrt(Math.pow(position.getX() - otherPedestrian.position.getX(), 2) + Math.pow(position.getY() - otherPedestrian.position.getY(), 2)) < r + otherPedestrian.r;
     }
 
 
@@ -67,6 +72,18 @@ public class Pedestrian {
 
     public double randomizeTargetX(double start, double width) {
         return start + Math.random() * width;
+    }
+
+    public void calculateNeighbourAmount(List<Pedestrian> possibleNeighbours, double neighbourRadius) {
+        neighbourAmount = possibleNeighbours
+                                .stream()
+                                .filter(maybeNeighbour -> maybeNeighbour == this
+                                        || Math.hypot(Math.abs(position.getX() - maybeNeighbour.position.getX()), Math.abs(position.getY() - maybeNeighbour.position.getY())) <= neighbourRadius + r + maybeNeighbour.r)
+                                        .count();
+    }
+
+    public long getNeighbourAmount() {
+        return this.neighbourAmount;
     }
 
     public int getId() {

@@ -9,9 +9,13 @@ public class Config {
     private double[] doorWidth;
     private int[] particles;
 
+    private double neighbourRadius;
+
     private int iterationsPerValue;
     private int lowerFlowLimit;
     private int upperFlowLimit;
+
+    private int kDeltaT;
 
     public void setBoxSize(double boxSize) {
         this.boxSize = boxSize;
@@ -99,6 +103,22 @@ public class Config {
 
     public void setUpperFlowLimit(int upperFlowLimit) {
         this.upperFlowLimit = upperFlowLimit;
+    }
+
+    public void setNeighbourRadius(double neighbourRadius) {
+        this.neighbourRadius = neighbourRadius;
+    }
+
+    public double getNeighbourRadius() {
+        return neighbourRadius;
+    }
+
+    public int getKDeltaT() {
+        return kDeltaT;
+    }
+
+    public void setKDeltaT(int kDeltaT) {
+        this.kDeltaT = kDeltaT;
     }
 
 }

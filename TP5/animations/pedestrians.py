@@ -1,16 +1,20 @@
+import json
 from manim import *
-from manim.utils.color import Colors
 import numpy as np
+import math
 
 class Box(Scene):
     def construct(self):
+        f = open('config.json')
+        self.config = json.load(f)
         self.box_width = self.resize_to_graph(20)
-        self.hole_width = self.resize_to_graph(1.2)
+        self.hole_width = self.resize_to_graph(self.config['particles'][int(self.config['animationCase']) - 1])
 
         self.balls_min_radius = self.resize_to_graph(0.1)
         self.balls_max_radius = self.resize_to_graph(0.37)
 
-        self.generations = self.parse_pedestrians_file('output.txt')
+        self.max_neighbours = 0
+        self.generations = self.parse_pedestrians_file(self.config['animationFile'])
         print('Gens: {}'.format(len(self.generations)))
         table = Rectangle(width=self.box_width, height=self.box_width, stroke_width=0.75)
         hole = Line([-self.hole_width/2, -self.box_width/2, 0], [self.hole_width/2, -self.box_width/2, 0]).set_color('#000')
@@ -21,7 +25,7 @@ class Box(Scene):
         for pedestrian in self.generations[0]['pedestrians']:
             pedestrian_radius = pedestrian['radius']
             new_pedestrian = Circle(radius = pedestrian_radius, stroke_width=0, fill_opacity=1)
-            new_pedestrian.set_color(self.get_radius_color(pedestrian_radius))
+            new_pedestrian.set_color(self.get_density_color(pedestrian['neighbourAmount']))
             new_pedestrian.shift(RIGHT * pedestrian['x_pos'], UP * pedestrian['y_pos'])
             new_pedestrian.next_pos = [pedestrian['x_pos'] + pedestrian['x_vel'] * self.generations[1]['time_elapsed'], pedestrian['y_pos'], 0]
             new_pedestrian.prev_radius = pedestrian_radius
@@ -41,7 +45,7 @@ class Box(Scene):
             for pedestrian in gen['pedestrians']:
                 pedestrian_number = pedestrian['number']
                 alive_pedestrians.append(pedestrian_number)
-                pedestrians[pedestrian_number].set_color(self.get_radius_color(pedestrian['radius']))
+                pedestrians[pedestrian_number].set_color(self.get_density_color(pedestrian['neighbourAmount']))
                 pedestrians[pedestrian_number].scale(pedestrian['radius'] / pedestrians[pedestrian_number].prev_radius)
                 pedestrians[pedestrian_number].prev_radius = pedestrian['radius']
                 if pedestrians[pedestrian_number].next_pos[0] > 0 or pedestrians[pedestrian_number].next_pos[1] > 0:
@@ -60,6 +64,8 @@ class Box(Scene):
             
             self.play(AnimationGroup(*gen_animations))
             current_gen += 1
+        
+        f.close()
     
 
     def resize_to_graph(self, value):
@@ -81,8 +87,10 @@ class Box(Scene):
         return self.resize_to_graph(y - 20/2)
     
     
-    def get_radius_color(self, radius):
-        return rgb_to_color(rgb=[1, 1 - ((radius - self.balls_min_radius)/(self.balls_max_radius - self.balls_min_radius)), 0])
+    def get_density_color(self, neighbourAmount):
+        # scaled_value = math.log10(1 + 9 * (neighbourAmount / self.max_neighbours))
+        scaled_value = neighbourAmount / self.max_neighbours
+        return rgb_to_color(rgb=[1, scaled_value, 0])
 
 
     def parse_pedestrians_file(self, filename):
@@ -116,8 +124,12 @@ class Box(Scene):
                         'y_pos': self.y_coordinate_to_graph(float(line[2])),
                         'x_vel': self.resize_to_graph(float(line[3])),
                         'y_vel': self.resize_to_graph(float(line[4])),
-                        'radius': self.resize_to_graph(float(line[5]))
+                        'radius': self.resize_to_graph(float(line[5])),
+                        'neighbourAmount': float(line[6])
                     })
+                    maybe_max_neighbours = generations[current_gen]['pedestrians'][-1]['neighbourAmount']
+                    if maybe_max_neighbours > self.max_neighbours:
+                        self.max_neighbours = maybe_max_neighbours
                     line = self.next_line(file)
                     i += 1
                 current_gen += 1
