@@ -1,19 +1,23 @@
 package helpers;
 
 public class Config {
-    private int iterations;
     private double boxSize;
-    private double doorWidth;
     private double minR, maxR, vdMax;
     private double beta;
-    private int particles;
     private double tau;
+
+    private double[] doorWidth;
+    private int[] particles;
+
+    private int iterationsPerValue;
+    private int lowerFlowLimit;
+    private int upperFlowLimit;
 
     public void setBoxSize(double boxSize) {
         this.boxSize = boxSize;
     }
 
-    public void setDoorWidth(double doorWidth) {
+    public void setDoorWidth(double[] doorWidth) {
         this.doorWidth = doorWidth;
     }
 
@@ -37,7 +41,7 @@ public class Config {
         return boxSize;
     }
 
-    public double getDoorWidth() {
+    public double[] getDoorWidth() {
         return doorWidth;
     }
 
@@ -57,11 +61,11 @@ public class Config {
         return beta;
     }
 
-    public int getParticles() {
+    public int[] getParticles() {
         return particles;
     }
 
-    public void setParticles(int particles) {
+    public void setParticles(int[] particles) {
         this.particles = particles;
     }
 
@@ -73,12 +77,28 @@ public class Config {
         this.tau = tau;
     }
 
-    public int getIterations() {
-        return iterations;
+    public int getIterationsPerValue() {
+        return iterationsPerValue;
     }
 
-    public void setIterations(int iterations) {
-        this.iterations = iterations;
+    public void setIterationsPerValue(int iterationsPerValue) {
+        this.iterationsPerValue = iterationsPerValue;
+    }
+
+    public int getLowerFlowLimit() {
+        return lowerFlowLimit;
+    }
+
+    public void setLowerFlowLimit(int lowerFlowLimit) {
+        this.lowerFlowLimit = lowerFlowLimit;
+    }
+
+    public int getUpperFlowLimit() {
+        return upperFlowLimit;
+    }
+
+    public void setUpperFlowLimit(int upperFlowLimit) {
+        this.upperFlowLimit = upperFlowLimit;
     }
 
 }

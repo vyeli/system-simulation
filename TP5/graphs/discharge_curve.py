@@ -2,10 +2,12 @@ from math import sqrt
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import json
 
-df = pd.read_csv('removedPedestrians.csv')
+f = open('config.json')
+config = json.load(f)
+df = pd.read_csv('constant_flow.csv')
 
-iterations = 20
 grouped_by_iteration = df.groupby('iteration')
 dt = df['dt'][0]
 
@@ -16,16 +18,12 @@ n = {}              # With 200 initial balls
 # print(t)
 
 for iteration, grouped_iter in grouped_by_iteration:
-    if 0 not in n:
-        n[0] = []
-    n[0].append(0)
     prev_val = 0
     i = 0
-    count = 0
     timestamp_amount = len(grouped_iter['t'])
-    for j in np.arange(1, len(t)):
+    for j in np.arange(len(t)):
         if i < timestamp_amount and t[j] >= grouped_iter['t'].iat[i]:
-            prev_val = grouped_iter['removed_pedestrians'].iat[i]
+            prev_val = grouped_iter['exited_pedestrians'].iat[i]
             i += 1
         if j not in n:
             n[j] = []
@@ -40,7 +38,7 @@ for values_arr in n.values():
     n_vals.append(np_array.mean())
     n_errs.append(np_array.std())
 
-plt.vlines(x=[20, 170], ymin=0, ymax=max_t, linestyles='dashed', colors='red', label='Límites caudal cte')
+plt.vlines(x=[int(config['lowerFlowLimit']), int(config['upperFlowLimit'])], ymin=0, ymax=max_t, linestyles='dashed', colors='red', label='Límites caudal cte')
 plt.xticks(range(0, 201, 20))
 plt.ylabel('Tiempo [s]', fontsize=12, labelpad=8)
 plt.xlabel('Cantidad de partículas salientes', fontsize=12, labelpad=8)
@@ -49,3 +47,5 @@ plt.legend()
 plt.gca().invert_yaxis()
 plt.errorbar(n_vals, t, xerr=n_errs)
 plt.show()
+
+f.close()

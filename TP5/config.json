@@ -1,5 +1,4 @@
 {
-  "iterations": 20,
   "boxSize": 20,
   "vdMax": 2,
   "beta": 0.9,
@@ -7,6 +6,9 @@
   "maxR": 0.37,
   "tau": 0.5,
 
-  "particles": 200,
-  "doorWidth": 1.2
+  "particles": [200, 260, 320, 380],
+  "doorWidth": [1.2, 1.8, 2.4, 3.0],
+  "iterationsPerValue": 10,
+  "lowerFlowLimit": 30,
+  "upperFlowLimit": 130
 }
