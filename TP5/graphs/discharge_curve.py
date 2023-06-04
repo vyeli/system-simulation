@@ -3,6 +3,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import os
+
+if not os.path.exists('figures'):
+    os.makedirs('figures')
 
 f = open('config.json')
 config = json.load(f)
@@ -46,6 +50,7 @@ plt.xlabel('Cantidad de partículas salientes', fontsize=12, labelpad=8)
 plt.legend()
 plt.gca().invert_yaxis()
 plt.errorbar(n_vals, t, xerr=n_errs)
+plt.savefig('figures/discharge_curve.png')
 plt.show()
 
 f.close()
