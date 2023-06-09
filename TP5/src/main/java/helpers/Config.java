@@ -12,8 +12,6 @@ public class Config {
     private double neighbourRadius;
 
     private int iterationsPerValue;
-    private int lowerFlowLimit;
-    private int upperFlowLimit;
 
     private int kDeltaT;
 
@@ -87,22 +85,6 @@ public class Config {
 
     public void setIterationsPerValue(int iterationsPerValue) {
         this.iterationsPerValue = iterationsPerValue;
-    }
-
-    public int getLowerFlowLimit() {
-        return lowerFlowLimit;
-    }
-
-    public void setLowerFlowLimit(int lowerFlowLimit) {
-        this.lowerFlowLimit = lowerFlowLimit;
-    }
-
-    public int getUpperFlowLimit() {
-        return upperFlowLimit;
-    }
-
-    public void setUpperFlowLimit(int upperFlowLimit) {
-        this.upperFlowLimit = upperFlowLimit;
     }
 
     public void setNeighbourRadius(double neighbourRadius) {

@@ -11,10 +11,11 @@
   "particles": [200, 260, 320, 380],
   "doorWidth": [1.2, 1.8, 2.4, 3.0],
   "iterationsPerValue": 10,
-  "lowerFlowLimit": 10,
-  "upperFlowLimit": 180,
+  "lowerFlowLimit": [30, 50, 70, 90],
+  "upperFlowLimit": [120, 190, 240, 300],
 
-  "animationCase": 1,
+  "animationCaseIdx": 0,
   "animationFile": "constant_flow.txt",
-  "kDeltaT": 10
+  "kDeltaT": 2,
+  "windowSize": 20
 }

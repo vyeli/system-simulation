@@ -8,7 +8,7 @@ class Box(Scene):
         f = open('config.json')
         self.config = json.load(f)
         self.box_width = self.resize_to_graph(20)
-        self.hole_width = self.resize_to_graph(self.config['particles'][int(self.config['animationCase']) - 1])
+        self.hole_width = self.resize_to_graph(float(self.config['doorWidth'][int(self.config['animationCaseIdx'])]))
 
         self.balls_min_radius = self.resize_to_graph(0.1)
         self.balls_max_radius = self.resize_to_graph(0.37)
@@ -69,7 +69,7 @@ class Box(Scene):
     
 
     def resize_to_graph(self, value):
-        return value * 5/20
+        return value * 7/20
     
 
     def next_line(self, file):

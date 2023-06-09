@@ -1,3 +1,4 @@
+from math import sqrt
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,6 +42,26 @@ for values_arr in n.values():
     n_vals.append(np_array.mean())
     n_errs.append(np_array.std())
 
+coefficients = np.polyfit(t, n_vals, 1)
+m = coefficients[0]
+b = coefficients[1]
+m_errs = []
+
+for i in np.arange(len(t)):
+    m_err = 0
+    for n_value in n[i]:
+        m_err += pow((n_value - m * t[i] - b) / (len(n[i]) - 2), 2)
+    m_errs.append(m_err)
+    # m_errs.append(n_vals[i] - m * t[i])
+
+# for i in np.arange(len(t)):
+#     s_squared = 0
+#     ss = 0
+#     for n_value in n[i]:
+#         s_squared += pow( - m * n, 2) / (iterations - 2)
+#         ss += pow(time - t_values[n], 2)
+#     m_errs.append(sqrt(s_squared / ss))
+
 plt.vlines(x=[int(config['lowerFlowLimit']), int(config['upperFlowLimit'])], ymin=0, ymax=max_t, linestyles='dashed', colors='red', label='Límites caudal cte')
 plt.xticks(range(0, 201, 20))
 plt.ylabel('Tiempo [s]', fontsize=12, labelpad=8)
@@ -50,6 +71,9 @@ plt.legend()
 plt.gca().invert_yaxis()
 plt.errorbar(n_vals, t, xerr=n_errs)
 plt.savefig('figures/discharge_curve.png')
+plt.show()
+
+plt.plot(t, m_errs, 'o')
 plt.show()
 
 f.close()

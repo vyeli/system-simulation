@@ -92,9 +92,12 @@ public class Simulator {
                     system.evolveSystem();
                     if (lastExitedPedestriansAmount != system.getExitedPedestriansAmount()) {
                         lastExitedPedestriansAmount = system.getExitedPedestriansAmount();
+                        csvRemovedPrinter.printRecord(j, doorWidth, particleAmount, lastExitedPedestriansAmount, Math.round((system.getTime() - dt) * multiplier) / multiplier, dt);
+                        /*
                         if (lastExitedPedestriansAmount >= config.getLowerFlowLimit() && lastExitedPedestriansAmount <= config.getUpperFlowLimit()) {
                             csvRemovedPrinter.printRecord(j, doorWidth, particleAmount, lastExitedPedestriansAmount, Math.round((system.getTime() - dt) * multiplier) / multiplier, dt);
                         }
+                         */
                     }
                     if (i % config.getKDeltaT() == 0 && j == 0) {
                         try {
