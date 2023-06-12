@@ -15,7 +15,6 @@ config = json.load(f)
 df = pd.read_csv('constant_flow.csv')
 
 fig, ax = plt.subplots()
-axins = ax.inset_axes([0.65, 0.15, 0.3, 0.3])
 
 max_t = df.loc[df['t'].idxmax()]['t']
 grouped_by_iteration = df.groupby('iteration')
@@ -51,41 +50,7 @@ plt.xticks(xticks)
 plt.xlabel('Tiempo [s]', fontsize=12, labelpad=8)
 plt.ylabel('Cantidad de partículas salientes', fontsize=12, labelpad=8)
 
-plt.errorbar(t_values, n_values, xerr=t_values_err, linestyle='dashed')
-axins.errorbar(t_values, n_values, xerr=t_values_err, linestyle='dashed')
+plt.plot(t_values, n_values)
 
-axins.set_ylim(168.4, 172.6)
-axins.set_xlim(50.4, 52.5)
-
-mark_inset(ax, axins, loc1=1, loc2=2, fc="none", ec="0.5")
-
-plt.savefig('figures/discharge_curve.png')
+plt.savefig('figures/discharge_curve_example.png')
 plt.show()
-
-ms = []
-window_size = int(config['windowSize'])
-n_size = len(n_values)
-left_window = int(window_size/2)
-window_ns = np.arange(left_window, n_size - left_window)
-max_m = None
-min_m = None
-
-for i in window_ns:
-    if i >= left_window and i < n_size - left_window:
-        m = np.polyfit(t_values[i:i + window_size], n_values[i:i + window_size], 1)[0]
-        ms.append(m)
-        if max_m is None or m > max_m:
-            max_m = m
-        if min_m is None or m < min_m:
-            min_m = m
-
-plt.plot(window_ns, ms, 'o')
-plt.vlines(x=[int(config['lowerFlowLimit'][0]), int(config['upperFlowLimit'][0])], ymin=min_m, ymax=max_m, linestyles='dashed', colors='red', label='Límites caudal cte')
-plt.legend()
-plt.xticks(range(0, 201, 20))
-plt.ylabel('Caudal [n/s]', fontsize=12, labelpad=8)
-plt.xlabel('Cantidad de partículas salientes', fontsize=12, labelpad=8)
-plt.savefig('figures/windowed_constant_flow.png')
-plt.show()
-
-f.close()

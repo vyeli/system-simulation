@@ -14,8 +14,8 @@
   "lowerFlowLimit": [30, 50, 70, 90],
   "upperFlowLimit": [120, 190, 240, 300],
 
-  "animationCaseIdx": 0,
-  "animationFile": "constant_flow.txt",
+  "animationCaseIdx": 3,
+  "animationFile": "mean_flow_380.txt",
   "kDeltaT": 2,
   "windowSize": 20
 }

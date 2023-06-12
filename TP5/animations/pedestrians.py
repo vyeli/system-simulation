@@ -32,7 +32,7 @@ class Box(Scene):
             pedestrians.append(new_pedestrian)
             self.add(new_pedestrian)
             
-        max_alive_pedestrians = 200
+        max_alive_pedestrians = int(self.config['particles'][int(self.config['animationCaseIdx'])])
         
         current_gen = 1
         max_gen = 50
